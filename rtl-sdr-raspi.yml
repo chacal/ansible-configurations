@@ -1,0 +1,62 @@
+---
+- hosts: all
+  remote_user: pi
+  gather_facts: yes
+  become: yes
+
+  handlers:
+    - include: ../../handlers/handlers.yml
+
+  vars:
+    - hostname: rtl-sdr-raspi
+    - apt_upgrade: false
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+    - role: node-app
+      node_app_name: "rtl_433_sensor_receiver"
+      node_app_git_repo: "https://github.com/chacal/rtl_443_sensor_receiver.git"
+      node_app_use_socket: false
+      node_app_main: "index.js"
+
+  tasks:
+    - name: Install/update dependencies
+      apt: pkg={{ item }} state=latest
+      with_items:
+        - libtool
+        - libusb-dev
+        - librtlsdr-dev
+        - rtl-sdr
+        - cmake
+
+    - name: Download rtl_433
+      git: repo=https://github.com/chacal/rtl_433.git dest=/home/{{ ansible_ssh_user }}/rtl_433 clone=yes force=yes
+      become: no
+      register: rtl433_sources
+
+    - name: Create build dir for rtl_433
+      file: path=/home/{{ ansible_ssh_user }}/rtl_433/build state=directory owner={{ ansible_ssh_user }} mode=0755
+      become: no
+
+    - name: Configure rtl_433
+      command: cmake ../
+      args:
+        chdir: "/home/{{ ansible_ssh_user }}/rtl_433/build"
+      become: no
+      when: rtl433_sources.changed
+
+    - name: Compile rtl_433
+      command: make
+      args:
+        chdir: "/home/{{ ansible_ssh_user }}/rtl_433/build"
+      become: no
+      when: rtl433_sources.changed
+
+    - name: Install rtl_433
+      command: make install
+      args:
+        chdir: "/home/{{ ansible_ssh_user }}/rtl_433/build"
+      when: rtl433_sources.changed

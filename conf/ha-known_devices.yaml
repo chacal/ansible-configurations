@@ -1,0 +1,12 @@
+jouni:
+  name: Jouni
+  mac: 60:F4:45:80:2F:A8
+  gravatar: jouni.hartikainen@reaktor.fi
+  track: yes
+  hide_if_away: no
+
+laura:
+  name: Laura
+  mac: 9C:35:EB:C0:F7:F4
+  track: yes
+  hide_if_away: no

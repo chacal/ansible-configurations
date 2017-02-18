@@ -1,0 +1,27 @@
+{
+  "vessel": {
+    "name": "Freya",
+    "mmsi": "230061450"
+  },
+
+  "pipedProviders": [{
+    "id": "can0",
+    "pipeElements": [{
+      "type": "providers/execute",
+      "options": {
+        "command": "candump can0 | candump2analyzer | analyzer -json -si"
+      }
+    }, {
+      "type": "providers/liner"
+    }, {
+      "type": "providers/from_json"
+    }, {
+      "type": "providers/n2k-signalk"
+    }]
+  }],
+  "interfaces": {
+    "bower": true,
+    "rest": true,
+    "ws": true
+  }
+}

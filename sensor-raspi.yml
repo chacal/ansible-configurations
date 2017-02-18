@@ -1,0 +1,66 @@
+---
+- hosts: all
+  remote_user: pi
+  gather_facts: yes
+  become: yes
+
+  handlers:
+    - include: ../../handlers/handlers.yml
+    - name: restart-alexa-rf-control
+      service: name=alexa-rf-control state=restarted
+
+  vars:
+    - hostname: sensor-raspi
+    - apt_upgrade: false
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+     - role: wificlient
+       wificlient_interface: wlan0
+       wificlient_power_management: "off"
+       wificlient_networks:
+        - ssid: "{{ chacal.known_wlans.home.ssid }}"
+          psk: "{{ chacal.known_wlans.home.psk }}"
+    - node
+    - role: node-app
+      node_app_name: "nrf-receiver"
+      node_app_git_repo: "https://github.com/chacal/nrf-sensor-receiver.git"
+      node_app_main: "server/index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
+        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
+        - NRF24_SPI_DEVICE=/dev/spidev0.0
+        - USE_AUTOPILOT_SIMULATOR=true
+        - INFLUXDB_USERNAME={{ chacal.influxdb.user }}
+        - INFLUXDB_PASSWORD={{ chacal.influxdb.password }}
+        - INFLUXDB_DB=sensors
+    - wiringpi
+    - role: node-app
+      node_app_name: "alexa-rf-control"
+      node_app_git_repo: "https://github.com/chacal/alexa-rf-control.git"
+      node_app_use_socket: false
+      node_app_main: "index.js"
+    - role: node-app
+      node_app_name: "ha-presence-detector"
+      node_app_git_repo: "https://github.com/chacal/ha-presence-detector.git"
+      node_app_use_socket: false
+      node_app_main: "index.js"
+      node_app_env:
+        - SSH_HOST=10.90.70.2
+        - SSH_USERNAME={{ chacal.presence_detector.ssh_username }}
+        - SSH_PASSWORD={{ chacal.presence_detector.ssh_password }}
+
+  tasks:
+    - name: Copy AWS IoT device private key
+      copy:
+        dest: "/opt/alexa-rf-control/iot-us-east-1-private.pem.key"
+        content: "{{ chacal.aws_iot.device_private_key }}"
+        mode: 0400
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+      no_log: true
+      notify: restart-alexa-rf-control

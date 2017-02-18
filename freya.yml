@@ -1,0 +1,90 @@
+---
+- hosts: all
+  remote_user: pi
+  gather_facts: yes
+  sudo: yes
+
+  handlers:
+    - include: ../../handlers/handlers.yml
+
+  vars:
+    - hostname: freya
+    - root_ro_enabled: false
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+    - role: huawei_e3372h
+    - role: upnpc
+      upnpc_interface: eth1
+      upnpc_port_forwards: "500 UDP 4500 UDP 1701 UDP"
+    - canboat
+    - mcp2515-can
+    - crda_domain
+    - role: aws-cli
+      aws_access_key_id: "{{ chacal.aws.freyalogs.access_key }}"
+      aws_secret_access_key: "{{ chacal.aws.freyalogs.secret_key }}"
+    - role: nat_router
+      nat_router_local_interface: eth0
+      nat_router_inet_interface: eth1
+      nat_router_ip: 10.90.100.1
+      nat_router_dhcp_range: "10.90.100.50,10.90.100.150,24h"
+      nat_router_static_ips: "{{ chacal.freya.nat_router_static_ips }}"
+    - role: l2tp_vpn_server
+      l2tp_vpn_psk: "{{ chacal.l2tp_vpn_psk }}"
+      l2tp_vpn_local_ip: 10.90.100.1
+      l2tp_vpn_local_ip_range: 10.90.100.200-10.90.100.250
+    - role: inadyn_ddns
+      inadyn_ddns_username: "{{ chacal.inadyn_ddns_username }}"
+      inadyn_ddns_password: "{{ chacal.inadyn_ddns_password }}"
+      inadyn_ddns_hostname: "{{ chacal.inadyn_ddns_hostname.freya }}"
+    - role: signalk
+      signalk_settings_file: conf/signalk-settings-freya.json
+      node_app_env:
+        - "NODE_ENV=production"
+        - "SIGNALK_NODE_SETTINGS=/etc/signalk-settings.json"
+    - role: node-app
+      node_app_name: "freya-server"
+      node_app_git_repo: "https://github.com/chacal/freya-server.git"
+      node_app_main: "freya-server.js /dev/ngw-1 /dev/tacktick /opt/freya-nmealogs"
+      node_app_user: "root"
+      node_app_group: "root"
+    - role: node-app
+      node_app_name: "nrf-receiver"
+      node_app_git_repo: "https://github.com/chacal/nrf-sensor-receiver.git"
+      node_app_main: "server/index.js"
+      node_app_env:
+        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
+        - INFLUXDB_USERNAME={{ chacal.influxdb.user }}
+        - INFLUXDB_PASSWORD={{ chacal.influxdb.password }}
+        - INFLUXDB_DB=sensors
+    - role: node-app
+      node_app_name: "marinetraffic-reporter"
+      node_app_git_repo: "https://github.com/chacal/marinetraffic-reporter.git"
+      node_app_main: "index.js"
+      node_app_env:
+        - MMSI={{chacal.marinetraffic.mmsi}}
+        - MARINETRAFFIC_IP={{chacal.marinetraffic.ip}}
+        - MARINETRAFFIC_PORT={{chacal.marinetraffic.port}}
+        - SIGNALK_API_URL=http://10.90.100.1:8080/signalk/v1/api
+
+  tasks:
+    - name: Create device link for NGW-1 serial port
+      lineinfile:
+        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
+        create=yes
+        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{serial}=="A900DJRK", SYMLINK+="ngw-1"'
+    - name: Create device link for TackTick NMEA gateway
+      lineinfile:
+        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
+        create=yes
+        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{serial}=="A900DPSJ", SYMLINK+="tacktick"'
+    - name: Mount first USB block device automatically to /mnt/usb (ignore Huawei)
+      lineinfile:
+        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
+        create=yes
+        line="ACTION==\"add\", KERNEL==\"sd[a-h]1\", SUBSYSTEM==\"block\", ENV{ID_BUS}==\"usb\", ATTRS{idVendor}!=\"12d1\", RUN+=\"/bin/mkdir -p /mnt/usb\", RUN+=\"/bin/bash -c '/bin/mountpoint -q /mnt/usb || /bin/mount /dev/%k /mnt/usb'\""
+    - name: Periodically backup NMEA logs to S3
+      cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"

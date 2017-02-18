@@ -1,0 +1,82 @@
+---
+- hosts: all
+  remote_user: jihartik
+  gather_facts: yes
+  become: yes
+
+  handlers:
+    - include: ../../handlers/handlers.yml
+
+  vars:
+    - hostname: ha-opi
+    - apt_upgrade: false
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+
+  tasks:
+    - name: Add default user to sudo group
+      lineinfile:
+        name: /etc/sudoers
+        state: present
+        regexp: '^{{ ansible_ssh_user }}\s'
+        line: '{{ ansible_ssh_user }} ALL=(ALL) NOPASSWD: ALL'
+
+    - name: Install/update dependencies
+      apt: pkg={{ item }} state=latest
+      with_items:
+        - python-pip
+        - python3-dev
+        - python-setuptools
+        - mosquitto
+        - mosquitto-clients
+
+    - name: Install virtualenv
+      pip: name=virtualenv state=latest
+
+    - name: Add user for Home Assistant
+      user: name=homeassistant system=yes
+
+    - name: Create HA installation directory
+      file: path=/srv/homeassistant state=directory mode=0755 owner=homeassistant
+
+    - name: Install Home Assistant
+      pip: name=homeassistant state=latest virtualenv=/srv/homeassistant virtualenv_python=python3
+      become: true
+      become_user: homeassistant
+
+    - name: Copy systemd unit file
+      copy:
+        dest: /etc/systemd/system/home-assistant.service
+        content: |
+          [Unit]
+          Description=Home Assistant
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=homeassistant
+          #make sure the virtualenv python binary is used
+          Environment=VIRTUAL_ENV="/srv/homeassistant"
+          Environment=PATH="$VIRTUAL_ENV/bin:$PATH"
+          ExecStart=/srv/homeassistant/bin/hass -c "/home/homeassistant/.homeassistant"
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      register: unit_file
+
+    - name: Copy configuration file
+      copy: dest=/home/homeassistant/.homeassistant/configuration.yaml src=./ha-configuration.yaml owner=homeassistant
+      register: conf_file
+
+    - name: Copy devicesfile
+      copy: dest=/home/homeassistant/.homeassistant/known_devices.yaml.yaml src=./conf/ha-known_devices.yaml owner=homeassistant
+      register: devices_file
+
+    - name: Enable service and start it
+      systemd: name=home-assistant daemon_reload=yes state=restarted enabled=yes
+      when: (unit_file is defined and unit_file.changed) or (conf_file is defined and conf_file.changed) or (devices_file is defined and devices_file.changed)

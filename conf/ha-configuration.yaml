@@ -1,0 +1,413 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 60.2167
+  longitude: 24.6667
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 40
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Helsinki
+
+  customize:
+    binary_sensor.*_detector:
+      hidden: true
+    automation.*:
+      hidden: true
+    sensor.*:
+      icon: mdi:thermometer
+    sensor.humidity_bedroom:
+      friendly_name: Bedroom
+      icon: mdi:water
+    sensor.humidity_nexus:
+      friendly_name: Outside Nexus
+      icon: mdi:water
+    sensor.wt450:
+      friendly_name: Bedroom WT450
+    sensor.humidity_wt450:
+      friendly_name: Bedroom WT450
+      icon: mdi:water
+    sensor.air_pressure:
+      icon: mdi:gauge
+    sensor.home_assistant_restarted:
+      hidden: true
+    sensor.time_since_last_home_assistant_restart:
+      hidden: true
+
+# Show links to resources in log and frontend
+#introduction:
+
+mqtt:
+  broker: localhost
+  client_id: home-assistant
+
+# Enables the frontend
+frontend:
+
+http:
+  # Uncomment this to add a password (recommended!)
+  # api_password: PASSWORD
+  # Uncomment this if you are using SSL or running in Docker etc
+  # base_url: example.duckdns.org:8123
+
+# Checks for available updates
+updater:
+
+# Discover some devices automatically
+#discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time.
+history:
+
+# View all events in a logbook
+logbook:
+
+# Track the sun
+sun:
+
+sensor:
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/2/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Outside
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/5/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Kids room
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/8/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Bedroom
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/9/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Living room
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/8/h
+    value_template: '{{ value_json.humidity | round(1) }}'
+    name: 'humidity_bedroom'
+    unit_of_measurement: "%H"
+  - platform: rest
+    resource: http://10.90.70.6:8080/sensor/8/p
+    value_template: '{{ value_json.pressure | round(1) }}'
+    name: Air Pressure
+    unit_of_measurement: "mbar"
+  - platform: rest
+    resource: http://10.90.70.10:3000/sensor/50/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: WT450
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.10:3000/sensor/50/h
+    value_template: '{{ value_json.humidity | round(1) }}'
+    name: humidity_WT450
+    unit_of_measurement: "%H"
+  - platform: rest
+    resource: http://10.90.70.10:3000/sensor/51/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Outside Nexus
+    unit_of_measurement: "°C"
+  - platform: rest
+    resource: http://10.90.70.10:3000/sensor/51/h
+    value_template: '{{ value_json.humidity | round(1) }}'
+    name: humidity_Nexus
+    unit_of_measurement: "%H"
+  - platform: rest
+    resource: http://10.90.70.10:3000/sensor/52/t
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Storage room
+    unit_of_measurement: "°C"
+  - platform: command_line
+    name: Time Since Last Home Assistant Restart
+    command: 'echo "$(($(/bin/date +%s) - $(/bin/date --date="`/bin/systemctl show home-assistant.service --property ActiveEnterTimestamp | /usr/bin/cut -d''='' -f2`" "+%s")))"'
+    unit_of_measurement: 'seconds'
+  - platform: template
+    sensors:
+      home_assistant_restarted:
+        value_template: '{% if states(''sensor.time_since_last_home_assistant_restart'') | float < 120 %}true{% else %}false{% endif %}'
+  - platform: command_line
+    name: SoC Temperature
+    command: 'echo "scale=1; `/bin/cat /etc/armbianmonitor/datasources/soctemp` / 1000" | /usr/bin/bc'
+    unit_of_measurement: '°C'
+
+# Text to speech
+tts:
+  platform: google
+
+light:
+  - platform: mqtt
+    name: Big Ceiling
+    command_topic: "/switch/intertechno/a/1/1/command"
+    state_topic: "/switch/intertechno/a/1/1/state"
+    qos: 1
+  - platform: mqtt
+    name: Small Ceiling
+    command_topic: "/switch/intertechno/a/1/2/command"
+    state_topic: "/switch/intertechno/a/1/2/state"
+    qos: 1
+  - platform: mqtt
+    name: Desk
+    command_topic: "/switch/intertechno/a/1/3/command"
+    state_topic: "/switch/intertechno/a/1/3/state"
+    qos: 1
+  - platform: mqtt
+    name: Bar Table
+    command_topic: "/switch/intertechno/b/1/2/command"
+    state_topic: "/switch/intertechno/b/1/2/state"
+    qos: 1
+  - platform: mqtt
+    name: Cooking
+    command_topic: "/switch/intertechno/b/1/3/command"
+    state_topic: "/switch/intertechno/b/1/3/state"
+    qos: 1
+  - platform: mqtt
+    name: Kitchen
+    command_topic: "/switch/intertechno/b/1/1/command"
+    state_topic: "/switch/intertechno/b/1/1/state"
+    qos: 1
+  - platform: mqtt
+    name: Bedroom
+    command_topic: "/switch/intertechno/b/1/4/command"
+    state_topic: "/switch/intertechno/b/1/4/state"
+    qos: 1
+  - platform: mqtt
+    name: Christmas
+    command_topic: "/switch/intertechno/c/1/2/command"
+    state_topic: "/switch/intertechno/c/1/2/state"
+    qos: 1
+  - platform: mqtt
+    name: Kids Room
+    command_topic: "/switch/intertechno/c/1/1/command"
+    state_topic: "/switch/intertechno/c/1/1/state"
+    qos: 1
+
+device_tracker:
+
+automation:
+  - alias: 'Jouni Away'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.jouni_bt_detector
+        to: 'off'
+        for:
+          minutes: 1
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.jouni_wifi_detector
+        to: 'off'
+        for:
+          minutes: 1
+          seconds: 0
+    action:
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: 'binary_sensor.jouni_bt_detector'
+            state: 'off'
+            for:
+              minutes: 1
+              seconds: 0
+          - condition: state
+            entity_id: 'binary_sensor.jouni_wifi_detector'
+            state: 'off'
+            for:
+              minutes: 1
+              seconds: 0
+      - service: device_tracker.see
+        data:
+          dev_id: jouni
+          location_name: 'not_home'
+
+  - alias: 'Jouni Home'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.jouni_bt_detector
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.jouni_wifi_detector
+        to: 'on'
+    action:
+      service: device_tracker.see
+      data:
+        dev_id: jouni
+        location_name: 'home'
+
+  - alias: 'Jouni Presence On Start'
+    trigger:
+      - platform: event
+        event_type: homeassistant_start
+    action:
+      service: device_tracker.see
+      data_template:
+        dev_id: jouni
+        location_name: >
+          {% if is_state('binary_sensor.jouni_bt_detector', 'on') or is_state('binary_sensor.jouni_wifi_detector', 'on') %}
+            home
+          {% else %}
+            not_home
+          {% endif %}
+
+  - alias: 'Laura Away'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.laura_bt_detector
+        to: 'off'
+        for:
+          minutes: 2
+          seconds: 40
+      - platform: state
+        entity_id: binary_sensor.laura_wifi_detector
+        to: 'off'
+        for:
+          minutes: 2
+          seconds: 40
+    action:
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: 'binary_sensor.laura_bt_detector'
+            state: 'off'
+            for:
+              minutes: 2
+              seconds: 40
+          - condition: state
+            entity_id: 'binary_sensor.laura_wifi_detector'
+            state: 'off'
+            for:
+              minutes: 2
+              seconds: 40
+      - service: device_tracker.see
+        data:
+          dev_id: laura
+          location_name: 'not_home'
+
+  - alias: 'Laura Home'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.laura_bt_detector
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.laura_wifi_detector
+        to: 'on'
+    action:
+      service: device_tracker.see
+      data:
+        dev_id: laura
+        location_name: 'home'
+
+  - alias: 'Laura Presence On Start'
+    trigger:
+      - platform: event
+        event_type: homeassistant_start
+    action:
+      service: device_tracker.see
+      data_template:
+        dev_id: laura
+        location_name: >
+          {% if is_state('binary_sensor.laura_bt_detector', 'on') or is_state('binary_sensor.laura_wifi_detector', 'on') %}
+            home
+          {% else %}
+            not_home
+          {% endif %}
+  - alias: 'Lights on when coming home in dark'
+    trigger:
+      - platform: state
+        entity_id: group.all_devices
+        from: 'not_home'
+        to: 'home'
+    condition:
+      condition: and
+      conditions:
+        - condition: sun
+          after: sunset
+          after_offset: "-0:30:00"
+        - condition: template
+          value_template: '{{ is_state("sensor.home_assistant_restarted", "false") }}'
+    action:
+      - service: switch.turn_on
+        entity_id:
+          - switch.christmas_light
+          - switch.cooking_light
+          - switch.desk_light
+          - switch.bar_table_light
+
+binary_sensor:
+  - platform: rest
+    resource: http://10.90.70.6:4000/bt/60:F4:45:80:2F:A8
+    name: jouni_bt_detector
+    value_template: '{{ value_json.deviceDetected }}'
+    scan_interval: 10
+  - platform: rest
+    resource: http://10.90.70.6:4000/wifi/60:F4:45:80:2F:A7
+    name: jouni_wifi_detector
+    value_template: '{{ value_json.deviceDetected }}'
+    scan_interval: 10
+  - platform: rest
+    resource: http://10.90.70.6:4000/bt/9C:35:EB:C0:F7:F4
+    name: laura_bt_detector
+    value_template: '{{ value_json.deviceDetected }}'
+    scan_interval: 50
+  - platform: rest
+    resource: http://10.90.70.6:4000/wifi/9C:35:EB:C0:F7:F3
+    name: laura_wifi_detector
+    value_template: '{{ value_json.deviceDetected }}'
+    scan_interval: 50
+
+group:
+  outside:
+    name: Outside
+    control: hidden
+    entities:
+      - sensor.outside
+      - sensor.outside_nexus
+      - sensor.humidity_nexus
+      - sensor.air_pressure
+  livingroom:
+    name: Living Room
+    control: hidden
+    entities:
+      - light.christmas
+      - light.desk
+      - light.big_ceiling
+      - light.small_ceiling
+      - sensor.living_room
+  kitchen:
+    name: Kitchen
+    control: hidden
+    entities:
+      - light.bar_table
+      - light.cooking
+      - light.kitchen
+  bedrooms:
+    name: Bedroom
+    control: hidden
+    entities:
+      - light.bedroom
+      - sensor.bedroom
+      - sensor.humidity_bedroom
+      - sensor.wt450
+      - sensor.humidity_wt450
+  kidsroom:
+    name: Kids Room
+    control: hidden
+    entities:
+      - light.kids_room
+      - sensor.kids_room
+  storageroom:
+    name: Storage Room
+    control: hidden
+    entities:
+      - sensor.storage_room
+  system:
+    name: System
+    entities:
+      - sensor.soc_temperature

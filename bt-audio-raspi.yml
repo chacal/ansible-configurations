@@ -1,0 +1,91 @@
+---
+- hosts: all
+  remote_user: pi
+  gather_facts: yes
+  become: yes
+
+  handlers:
+    - include: ../../handlers/handlers.yml
+    - name: restart_bt
+      systemd: name=bluetooth state=restarted
+
+  vars:
+    - hostname: bt-audio-raspi
+    - apt_upgrade: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+    - role: wificlient
+      wificlient_interface: wlan0
+      wificlient_power_management: 'off'
+      wificlient_networks:
+        - ssid: "{{ chacal.known_wlans.home.ssid }}"
+          psk: "{{ chacal.known_wlans.home.psk }}"
+
+  tasks:
+    - name: Allow https access to apt
+      apt: name=apt-transport-https state=latest allow_unauthenticated=yes
+
+    - name: Add BlueZ apt repo
+      lineinfile: dest=/etc/apt/sources.list regexp='rpiBluez' line='deb [trusted=yes] https://dl.bintray.com/wolfspyre/rpiBluez jessie main'
+      register: apt_sources
+
+    - name: Update apt cache
+      apt: update_cache=yes
+      when: apt_sources.changed
+
+    - name: Install dependencies
+      apt: name={{ item }} state=latest update_cache=yes cache_valid_time=3600
+      with_items:
+        - wireless-tools
+        - bluez
+        - bluez-tools
+        - pulseaudio-module-bluetooth
+        - pulseaudio
+
+    - name: Copy audio.conf
+      copy:
+        dest: /etc/bluetooth/audio.conf
+        content: |
+          [General]
+          Disable=Socket
+          Enable=Media,Source,Sink,Gateway
+      notify: restart_bt
+
+    - name: Change BT device class
+      lineinfile: dest=/etc/bluetooth/main.conf regexp='^#?Class = ' line='Class = 0x24043C'
+      notify: restart_bt
+
+    - name: Set BT adapter discoverable
+      command: "bt-adapter --set {{item}}"
+      with_items:
+        - Powered 1
+        - DiscoverableTimeout 0
+        - Discoverable 1
+        - PairableTimeout 0
+        - Pairable 1
+
+    - name: Copy Pulseaudio unit file
+      copy:
+        dest: /etc/systemd/system/pulseaudio.service
+        content: |
+          [Unit]
+          Description=PulseAudio Daemon
+          [Install]
+          WantedBy=multi-user.target
+          [Service]
+          User=root
+          Group=root
+          Type=simple
+          PrivateTmp=true
+          ExecStart=/usr/bin/pulseaudio --realtime --disallow-exit --no-cpu-limit
+          Restart=always
+          RestartSec=5
+      register: unit_file
+
+    - name: Enable service and start it
+      systemd: name=pulseaudio daemon_reload=yes state=restarted enabled=yes
+      when: unit_file.changed
