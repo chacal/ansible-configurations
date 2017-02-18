@@ -101,29 +101,29 @@ sensor:
     value_template: '{{ value_json.pressure | round(1) }}'
     name: Air Pressure
     unit_of_measurement: "mbar"
-  - platform: rest
-    resource: http://10.90.70.10:3000/sensor/50/t
-    value_template: '{{ value_json.temperature | round(1) }}'
+  - platform: mqtt
+    state_topic: "/sensor/50/t/state"
+    value_template: '{{ value_json.value | round(1) }}'
     name: WT450
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.10:3000/sensor/50/h
-    value_template: '{{ value_json.humidity | round(1) }}'
+  - platform: mqtt
+    state_topic: "/sensor/50/h/state"
+    value_template: '{{ value_json.value | round(1) }}'
     name: humidity_WT450
     unit_of_measurement: "%H"
-  - platform: rest
-    resource: http://10.90.70.10:3000/sensor/51/t
-    value_template: '{{ value_json.temperature | round(1) }}'
+  - platform: mqtt
+    state_topic: "/sensor/51/t/state"
+    value_template: '{{ value_json.value | round(1) }}'
     name: Outside Nexus
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.10:3000/sensor/51/h
-    value_template: '{{ value_json.humidity | round(1) }}'
+  - platform: mqtt
+    state_topic: "/sensor/51/h/state"
+    value_template: '{{ value_json.value | round(1) }}'
     name: humidity_Nexus
     unit_of_measurement: "%H"
-  - platform: rest
-    resource: http://10.90.70.10:3000/sensor/52/t
-    value_template: '{{ value_json.temperature | round(1) }}'
+  - platform: mqtt
+    state_topic: "/sensor/52/t/state"
+    value_template: '{{ value_json.value | round(1) }}'
     name: Storage room
     unit_of_measurement: "°C"
   - platform: command_line
