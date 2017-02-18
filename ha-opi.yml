@@ -15,7 +15,6 @@
     - secrets.yml
 
   roles:
-    - common
 
   tasks:
     - name: Add default user to sudo group
