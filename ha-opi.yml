@@ -70,7 +70,7 @@
       register: unit_file
 
     - name: Copy configuration file
-      copy: dest=/home/homeassistant/.homeassistant/configuration.yaml src=./ha-configuration.yaml owner=homeassistant
+      copy: dest=/home/homeassistant/.homeassistant/configuration.yaml src=./conf/ha-configuration.yaml owner=homeassistant
       register: conf_file
 
     - name: Copy devicesfile
