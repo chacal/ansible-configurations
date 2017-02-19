@@ -71,33 +71,33 @@ logbook:
 sun:
 
 sensor:
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/2/t
+  - platform: mqtt
+    state_topic: "/sensor/2/t/state"
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Outside
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/5/t
+  - platform: mqtt
+    state_topic: "/sensor/5/t/state"
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Kids room
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/8/t
+  - platform: mqtt
+    state_topic: "/sensor/8/t/state"
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Bedroom
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/9/t
+  - platform: mqtt
+    state_topic: "/sensor/9/t/state"
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Living room
     unit_of_measurement: "°C"
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/8/h
+  - platform: mqtt
+    state_topic: "/sensor/8/h/state"
     value_template: '{{ value_json.humidity | round(1) }}'
     name: 'humidity_bedroom'
     unit_of_measurement: "%H"
-  - platform: rest
-    resource: http://10.90.70.6:8080/sensor/8/p
+  - platform: mqtt
+    state_topic: "/sensor/8/p/state"
     value_template: '{{ value_json.pressure | round(1) }}'
     name: Air Pressure
     unit_of_measurement: "mbar"
