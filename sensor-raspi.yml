@@ -25,19 +25,6 @@
         - ssid: "{{ chacal.known_wlans.home.ssid }}"
           psk: "{{ chacal.known_wlans.home.psk }}"
     - node
-    - role: node-app
-      node_app_name: "nrf-receiver"
-      node_app_git_repo: "https://github.com/chacal/nrf-sensor-receiver.git"
-      node_app_main: "server/index.js"
-      node_app_use_socket: false
-      node_app_env:
-        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
-        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
-        - NRF24_SPI_DEVICE=/dev/spidev0.0
-        - USE_AUTOPILOT_SIMULATOR=true
-        - INFLUXDB_USERNAME={{ chacal.influxdb.user }}
-        - INFLUXDB_PASSWORD={{ chacal.influxdb.password }}
-        - INFLUXDB_DB=sensors
     - wiringpi
     - role: node-app
       node_app_name: "alexa-rf-control"
@@ -53,6 +40,24 @@
         - SSH_HOST=10.90.70.2
         - SSH_USERNAME={{ chacal.presence_detector.ssh_username }}
         - SSH_PASSWORD={{ chacal.presence_detector.ssh_password }}
+    - role: node-app
+      node_app_name: "node-nrf-gw"
+      node_app_git_repo: "https://github.com/chacal/node-nrf-gw.git"
+      node_app_main: "index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
+        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
+        - NRF24_SPI_DEVICE=/dev/spidev0.0
+    - role: node-app
+      node_app_name: "mqtt-to-influxdb-sender"
+      node_app_git_repo: "https://github.com/chacal/mqtt-to-influxdb-sender.git"
+      node_app_main: "index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - INFLUXDB_USERNAME={{ chacal.influxdb.user }}
+        - INFLUXDB_PASSWORD={{ chacal.influxdb.password }}
+        - INFLUXDB_DB=sensors
 
   tasks:
     - name: Copy AWS IoT device private key
