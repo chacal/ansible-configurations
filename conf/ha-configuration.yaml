@@ -103,27 +103,27 @@ sensor:
     unit_of_measurement: "mbar"
   - platform: mqtt
     state_topic: "/sensor/50/t/state"
-    value_template: '{{ value_json.value | round(1) }}'
+    value_template: '{{ value_json.temperature | round(1) }}'
     name: WT450
     unit_of_measurement: "°C"
   - platform: mqtt
     state_topic: "/sensor/50/h/state"
-    value_template: '{{ value_json.value | round(1) }}'
+    value_template: '{{ value_json.humidity | round(1) }}'
     name: humidity_WT450
     unit_of_measurement: "%H"
   - platform: mqtt
     state_topic: "/sensor/51/t/state"
-    value_template: '{{ value_json.value | round(1) }}'
+    value_template: '{{ value_json.temperature | round(1) }}'
     name: Outside Nexus
     unit_of_measurement: "°C"
   - platform: mqtt
     state_topic: "/sensor/51/h/state"
-    value_template: '{{ value_json.value | round(1) }}'
+    value_template: '{{ value_json.humidity | round(1) }}'
     name: humidity_Nexus
     unit_of_measurement: "%H"
   - platform: mqtt
     state_topic: "/sensor/52/t/state"
-    value_template: '{{ value_json.value | round(1) }}'
+    value_template: '{{ value_json.temperature | round(1) }}'
     name: Storage room
     unit_of_measurement: "°C"
   - platform: command_line
