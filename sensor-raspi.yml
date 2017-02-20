@@ -18,10 +18,10 @@
 
   roles:
     - common
-     - role: wificlient
-       wificlient_interface: wlan0
-       wificlient_power_management: "off"
-       wificlient_networks:
+    - role: wificlient
+      wificlient_interface: wlan0
+      wificlient_power_management: "off"
+      wificlient_networks:
         - ssid: "{{ chacal.known_wlans.home.ssid }}"
           psk: "{{ chacal.known_wlans.home.psk }}"
     - node
