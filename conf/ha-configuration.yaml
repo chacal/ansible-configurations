@@ -40,7 +40,7 @@ homeassistant:
 #introduction:
 
 mqtt:
-  broker: localhost
+  broker: mqtt-home.chacal.online
   client_id: home-assistant
 
 # Enables the frontend
