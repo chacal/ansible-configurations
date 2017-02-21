@@ -63,6 +63,7 @@ conversation:
 
 recorder:
   purge_days: 2
+  db_url: postgresql://ha:homeassistant@localhost/ha
 
 # Enables support for tracking state changes over time.
 history:

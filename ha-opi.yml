@@ -28,6 +28,17 @@
         - python-setuptools
         - mosquitto
         - mosquitto-clients
+        - postgresql-9.5
+        - postgresql-server-dev-9.5
+        - python-psycopg2
+
+    - name: Provision the PostgreSQL user
+      postgresql_user: name=ha password=homeassistant
+      become_user: postgres
+
+    - name: Provision the HA database
+      postgresql_db: name=ha owner=ha
+      become_user: postgres
 
     - name: Install virtualenv
       pip: name=virtualenv state=latest
@@ -37,6 +48,11 @@
 
     - name: Create HA installation directory
       file: path=/srv/homeassistant state=directory mode=0755 owner=homeassistant
+
+    - name: Install psycopg2
+      pip: name=psycopg2 state=latest virtualenv=/srv/homeassistant virtualenv_python=python3
+      become: true
+      become_user: homeassistant
 
     - name: Install Home Assistant
       pip: name=homeassistant state=latest virtualenv=/srv/homeassistant virtualenv_python=python3
