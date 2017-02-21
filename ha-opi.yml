@@ -90,6 +90,25 @@
           protocol websockets
       register: mosquitto_conf_file
 
+    - name: Create own Mosquitto unit file
+      copy:
+        dest: /etc/systemd/system/mosquitto.service
+        content: |
+          [Unit]
+          Description=Mosquitto MQTT broker
+
+          [Service]
+          User=mosquitto
+          Group=mosquitto
+          Type=simple
+          ExecStart=/usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+      register: mosquitto_unit_file
+
     - name: Enable mosquitto and start it
       systemd: name=mosquitto daemon_reload=yes state=restarted enabled=yes
-      when: mosquitto_conf_file is defined and mosquitto_conf_file.changed
+      when: (mosquitto_unit_file is defined and mosquitto_unit_file.changed) or (mosquitto_conf_file is defined and mosquitto_conf_file.changed)
