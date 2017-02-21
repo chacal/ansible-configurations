@@ -64,6 +64,9 @@
           WantedBy=multi-user.target
       register: unit_file
 
+    - name: Create HA configuration directory
+      file: path=/home/homeassistant/.homeassistant state=directory mode=0755 owner=homeassistant
+
     - name: Copy configuration file
       copy: dest=/home/homeassistant/.homeassistant/configuration.yaml src=./conf/ha-configuration.yaml owner=homeassistant
       register: conf_file
