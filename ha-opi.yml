@@ -79,3 +79,17 @@
     - name: Enable service and start it
       systemd: name=home-assistant daemon_reload=yes state=restarted enabled=yes
       when: (unit_file is defined and unit_file.changed) or (conf_file is defined and conf_file.changed) or (devices_file is defined and devices_file.changed)
+
+    - name: Mosquitto config file
+      copy:
+        dest: /etc/mosquitto/conf.d/custom.conf
+        content: |
+          listener 1883
+
+          listener 8883
+          protocol websockets
+      register: mosquitto_conf_file
+
+    - name: Enable mosquitto and start it
+      systemd: name=mosquitto daemon_reload=yes state=restarted enabled=yes
+      when: mosquitto_conf_file is defined and mosquitto_conf_file.changed
