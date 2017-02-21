@@ -7,10 +7,6 @@
   handlers:
     - include: ../../handlers/handlers.yml
 
-  vars:
-    - hostname: ha-opi
-    - apt_upgrade: false
-
   vars_files:
     - secrets.yml
 
