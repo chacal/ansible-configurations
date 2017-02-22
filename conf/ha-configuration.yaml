@@ -70,6 +70,10 @@ history:
 
 # View all events in a logbook
 logbook:
+  exclude:
+    domains:
+      - sensor
+      - group
 
 # Track the sun
 sun:
