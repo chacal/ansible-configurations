@@ -128,6 +128,12 @@
       systemd: name=mosquitto daemon_reload=yes state=restarted enabled=yes
       when: (mosquitto_unit_file is defined and mosquitto_unit_file.changed) or (mosquitto_conf_file is defined and mosquitto_conf_file.changed)
 
+    - name: Clear MQTT events from HA DB periodically
+      cron:
+        name: Clear MQTT events periodically
+        job: psql ha -c "delete from events where event_type = 'mqtt_message_received' and time_fired < now() - interval '5 minutes';"
+        user: postgres
+
 
 # Diff to original dtb file in order to enable 1,2GHz CPU frequency
 # 51c51
