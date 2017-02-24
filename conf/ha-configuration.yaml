@@ -134,6 +134,11 @@ sensor:
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Storage room
     unit_of_measurement: "°C"
+  - platform: mqtt
+    state_topic: "/sensor/53/t/state"
+    value_template: '{{ value_json.temperature | round(1) }}'
+    name: Sauna
+    unit_of_measurement: "°C"
   - platform: command_line
     name: Time Since Last Home Assistant Restart
     command: 'echo "$(($(/bin/date +%s) - $(/bin/date --date="`/bin/systemctl show home-assistant.service --property ActiveEnterTimestamp | /usr/bin/cut -d''='' -f2`" "+%s")))"'
@@ -415,6 +420,11 @@ group:
     control: hidden
     entities:
       - sensor.storage_room
+  sauna:
+    name: Sauna
+    control: hidden
+    entities:
+      - sensor.sauna
   system:
     name: System
     entities:
