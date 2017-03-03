@@ -30,7 +30,8 @@
       l2tp_vpn_psk: "{{ chacal.l2tp_vpn_psk }}"
       l2tp_vpn_local_ip: 10.90.70.1
       l2tp_vpn_local_ip_range: 10.90.70.200-10.90.70.250
-    - role: inadyn_ddns
-      inadyn_ddns_username: "{{ chacal.inadyn_ddns_username }}"
-      inadyn_ddns_password: "{{ chacal.inadyn_ddns_password }}"
-      inadyn_ddns_hostname: "{{ chacal.inadyn_ddns_hostname.raspigw }}"
+    - role: route53-ddns
+      aws_access_key_id: "{{ chacal.aws.route53_updater.access_key }}"
+      aws_secret_access_key: "{{ chacal.aws.route53_updater.secret_key }}"
+      route53_zoneid: "{{ chacal.route53.raspigw.zoneid }}"
+      route53_cname: "{{ chacal.route53.raspigw.cname }}"
