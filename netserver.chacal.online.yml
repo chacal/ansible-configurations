@@ -13,14 +13,34 @@
   roles:
 
   tasks:
+    - name: Add Jessie backports repo
+      apt_repository:
+        repo: deb http://ftp.debian.org/debian jessie-backports main
+        state: present
+
     - name: Install/update dependencies
-      apt: pkg={{ item }} state=latest
+      apt: pkg={{ item }} state=latest update_cache=yes
       with_items:
         - nginx
+
+    - name: Install/update dependencies from backports
+      apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
+      with_items:
+        - certbot
+
+#
+#  Run 'certbot certonly --standalone -d grafana.netserver.chacal.online -d influxdb.netserver.chacal.online' to get certificates
+#  Also run 'openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048' to create strong Diffie-Hellman group
+#
+
 
     - name: Remove default Nginx site
       file: path=/etc/nginx/sites-enabled/default state=absent
       register: nginx_default_site
+
+    - name: Add custom Nginx SSL snippet
+      copy: src=./conf/netserver_nginx_ssl_snippet.conf dest=/etc/nginx/snippets/ssl-netserver.conf
+      register: nginx_custom_ssl_conf
 
     - name: Add custom Nginx configuration
       copy: src=./conf/netserver_nginx.conf dest=/etc/nginx/conf.d/netserver_nginx.conf
@@ -28,7 +48,7 @@
 
     - name: Enable & start Nginx
       systemd: name=nginx state=restarted enabled=yes daemon_reload=yes
-      when: nginx_default_site.changed or nginx_custom_site.changed
+      when: nginx_default_site.changed or nginx_custom_ssl_conf.changed or nginx_custom_site.changed
 
 
     - name: Install InfluxDB
