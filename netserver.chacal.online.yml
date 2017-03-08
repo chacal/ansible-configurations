@@ -13,15 +13,27 @@
   roles:
 
   tasks:
+    - name: Install HTTPS support for Apt
+      apt: pkg=apt-transport-https state=latest update_cache=yes
+
     - name: Add Jessie backports repo
       apt_repository:
         repo: deb http://ftp.debian.org/debian jessie-backports main
         state: present
 
+    - name: Add Grafana repo
+      apt_repository:
+        repo: deb https://packagecloud.io/grafana/stable/debian/ jessie main
+        state: present
+
+    - name: Add Package Cloud Apt key
+      apt_key: url="https://packagecloud.io/gpg.key" state=present
+
     - name: Install/update dependencies
       apt: pkg={{ item }} state=latest update_cache=yes
       with_items:
         - nginx
+        - grafana
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
@@ -118,3 +130,20 @@
     - name: Grant DB access to regular user
       command: influx -execute "GRANT ALL ON sensors TO {{ chacal.influxdb.regular_user.username }}" {{ influx_cli_auth_params }}
       when: influx_user_check.changed
+
+
+    - name: Set Grafana root URL
+      lineinfile: dest=/etc/grafana/grafana.ini regexp='^root_url = ' insertafter='^;root_url = ' line='root_url = https://grafana.netserver.chacal.online' state=present
+      register: grafana_root_url
+
+    - name: Set Grafana bind address
+      lineinfile: dest=/etc/grafana/grafana.ini regexp='^http_addr =' insertafter='^;http_addr =' line='http_addr = localhost' state=present
+      register: grafana_bind_address
+
+    - name: Disable Grafana signups
+      lineinfile: dest=/etc/grafana/grafana.ini regexp='^allow_sign_up = ' insertafter='^\[users\]' line='allow_sign_up = false' state=present
+      register: grafana_allow_signup
+
+    - name: Enable & start Grafana
+      systemd: name=grafana-server state=restarted enabled=yes daemon_reload=yes
+      when: grafana_root_url.changed or grafana_bind_address.changed or grafana_allow_signup.changed
