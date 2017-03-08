@@ -1,0 +1,100 @@
+---
+- hosts: all
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - influx_db_version: "1.2.0"
+    - influx_cli_auth_params: '-username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}'
+
+  roles:
+
+  tasks:
+    - name: Install/update dependencies
+      apt: pkg={{ item }} state=latest
+      with_items:
+        - nginx
+
+    - name: Remove default Nginx site
+      file: path=/etc/nginx/sites-enabled/default state=absent
+      register: nginx_default_site
+
+    - name: Add custom Nginx configuration
+      copy: src=./conf/netserver_nginx.conf dest=/etc/nginx/conf.d/netserver_nginx.conf
+      register: nginx_custom_site
+
+    - name: Enable & start Nginx
+      systemd: name=nginx state=restarted enabled=yes daemon_reload=yes
+      when: nginx_default_site.changed or nginx_custom_site.changed
+
+
+    - name: Install InfluxDB
+      apt:
+        deb: "https://dl.influxdata.com/influxdb/releases/influxdb_{{ influx_db_version }}_amd64.deb"
+      register: influxdb
+
+    - name: Configure InfluxDB HTTP service to listen only on localhost
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  bind-address = '
+        insertafter: '^  # bind-address = ":8086"'
+        line: '  bind-address = "localhost:8086"'
+      register: influxdb_http_conf
+
+    - name: Configure InfluxDB backup service to listen only on localhost
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^bind-address = '
+        insertafter: '^# hostname = "localhost"'
+        line: 'bind-address = "localhost:8088"'
+      register: influxdb_backup_conf
+
+    - name: Configure InfluxDB to use authentication
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  auth-enabled = '
+        insertafter: '^  # auth-enabled = false'
+        line: '  auth-enabled = true'
+      register: influxdb_auth_conf
+
+    - name: Enable & start InfluxDB
+      systemd: name=influxdb state=restarted enabled=yes daemon_reload=yes
+      when: influxdb.changed or influxdb_http_conf.changed or influxdb_backup_conf.changed or influxdb_auth_conf.changed
+
+    - name: Check if InfluxDB admin user has been created
+      command: influx -execute "SHOW USERS" -username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}
+      register: influx_admin_check
+      ignore_errors: yes
+      changed_when: "influx_admin_check.rc > 0"
+
+    - name: Create InfluxDB admin user
+      command: influx -execute "CREATE USER {{ chacal.influxdb.admin_user.username }} WITH PASSWORD '{{ chacal.influxdb.admin_user.password }}' WITH ALL PRIVILEGES"
+      when: influx_admin_check.changed
+
+    - name: Check if sensors database has been created
+      command: influx -execute "SHOW DATABASES" {{ influx_cli_auth_params }}
+      register: influx_db_check
+      changed_when: "'sensors' not in influx_db_check.stdout"
+
+    - name: Create InfluxDB database
+      command: influx -execute "CREATE DATABASE sensors" {{ influx_cli_auth_params }}
+      when: influx_db_check.changed
+
+    - name: Check if InfluxDB regular user has been created
+      command: influx -execute "SHOW USERS" {{ influx_cli_auth_params }}
+      register: influx_user_check
+      changed_when: "'{{ chacal.influxdb.regular_user.username }}' not in influx_user_check.stdout"
+
+    - name: Create InfluxDB regular user
+      command: influx -execute "CREATE USER {{ chacal.influxdb.regular_user.username }} WITH PASSWORD '{{ chacal.influxdb.regular_user.password }}'" {{ influx_cli_auth_params }}
+      when: influx_user_check.changed
+
+    - name: Grant DB access to regular user
+      command: influx -execute "GRANT ALL ON sensors TO {{ chacal.influxdb.regular_user.username }}" {{ influx_cli_auth_params }}
+      when: influx_user_check.changed
