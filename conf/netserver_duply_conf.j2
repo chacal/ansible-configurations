@@ -1,11 +1,11 @@
 GPG_PW='{{ chacal.netserver.duply.influxdb_pgp_key }}'
 
-TARGET='s3://s3-eu-west-1.amazonaws.com/chacal-backups/netserver/influxdb'
+TARGET='s3://s3-eu-west-1.amazonaws.com/chacal-backups/netserver'
 TARGET_USER='{{ chacal.aws.netserver_backup.access_key }}'
 TARGET_PASS='{{ chacal.aws.netserver_backup.secret_key }}'
 
-SOURCE='/var/lib/influxdb'
+SOURCE='/'
 
-MAX_FULLBKP_AGE=1M
+MAX_FULLBKP_AGE=1W
 DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
 DUPL_PARAMS="$DUPL_PARAMS --s3-european-buckets --s3-use-new-style --s3-use-ia "
