@@ -95,9 +95,18 @@
         line: '  auth-enabled = true'
       register: influxdb_auth_conf
 
+    - name: Configure InfluxDB to not log HTTP requests
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  log-enabled = '
+        insertafter: '^\[http\]'
+        line: '  log-enabled = false'
+      register: influxdb_http_log_conf
+
     - name: Enable & start InfluxDB
       systemd: name=influxdb state=restarted enabled=yes daemon_reload=yes
-      when: influxdb.changed or influxdb_http_conf.changed or influxdb_backup_conf.changed or influxdb_auth_conf.changed
+      when: influxdb.changed or influxdb_http_conf.changed or influxdb_backup_conf.changed or influxdb_auth_conf.changed or influxdb_http_log_conf.changed
 
     - name: Check if InfluxDB admin user has been created
       command: influx -execute "SHOW USERS" -username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}
