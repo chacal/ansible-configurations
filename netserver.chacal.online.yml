@@ -34,11 +34,14 @@
       with_items:
         - nginx
         - grafana
+        - duply
+        - python-boto
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
       with_items:
         - certbot
+        - duplicity
 
 #
 #  Run 'certbot certonly --standalone -d grafana.netserver.chacal.online -d influxdb.netserver.chacal.online' to get certificates
@@ -156,3 +159,12 @@
     - name: Enable & start Grafana
       systemd: name=grafana-server state=restarted enabled=yes daemon_reload=yes
       when: grafana_root_url.changed or grafana_bind_address.changed or grafana_allow_signup.changed
+
+    - name: Create conf dir for duply backup of InfluxDB
+      file: path=/root/.duply/influxdb state=directory
+
+    - name: Setup duply backup for InfluxDB
+      template: src=./conf/netserver_influxdb_duply.conf.j2 dest=/root/.duply/influxdb/conf
+
+    - name: Backup InfluxDB periodically
+      cron: name="Backup InfluxDB" minute="0" hour="*/12" job="duply influxdb backup 2>&1 | /usr/bin/logger -t duply-influxdb"
