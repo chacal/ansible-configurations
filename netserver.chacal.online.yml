@@ -13,6 +13,10 @@
   roles:
 
   tasks:
+
+  #
+  #  Install required packages
+  #
     - name: Install HTTPS support for Apt
       apt: pkg=apt-transport-https state=latest update_cache=yes
 
@@ -43,12 +47,15 @@
         - certbot
         - duplicity
 
-#
-#  Run 'certbot certonly --standalone -d grafana.netserver.chacal.online -d influxdb.netserver.chacal.online' to get certificates
-#  Also run 'openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048' to create strong Diffie-Hellman group
-#
+    #
+    #  Run 'certbot certonly --standalone -d grafana.netserver.chacal.online -d influxdb.netserver.chacal.online' to get certificates
+    #  Also run 'openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048' to create strong Diffie-Hellman group
+    #
 
 
+  #
+  #  Configure Nginx
+  #
     - name: Remove default Nginx site
       file: path=/etc/nginx/sites-enabled/default state=absent
       register: nginx_default_site
@@ -66,6 +73,9 @@
       when: nginx_default_site.changed or nginx_custom_ssl_conf.changed or nginx_custom_site.changed
 
 
+  #
+  #  Install & configure InfluxDB
+  #
     - name: Install InfluxDB
       apt:
         deb: "https://dl.influxdata.com/influxdb/releases/influxdb_{{ influx_db_version }}_amd64.deb"
@@ -144,6 +154,9 @@
       when: influx_user_check.changed
 
 
+  #
+  #  Configure Grafana
+  #
     - name: Set Grafana root URL
       lineinfile: dest=/etc/grafana/grafana.ini regexp='^root_url = ' insertafter='^;root_url = ' line='root_url = https://grafana.netserver.chacal.online' state=present
       register: grafana_root_url
@@ -161,6 +174,9 @@
       when: grafana_root_url.changed or grafana_bind_address.changed or grafana_allow_signup.changed
 
 
+  #
+  #  Configure duply backups
+  #
     - name: Create conf dir for duply backups
       file: path=/root/.duply/netserver state=directory
 
