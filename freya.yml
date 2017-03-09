@@ -57,8 +57,8 @@
       node_app_main: "server/index.js"
       node_app_env:
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
-        - INFLUXDB_USERNAME={{ chacal.influxdb.user }}
-        - INFLUXDB_PASSWORD={{ chacal.influxdb.password }}
+        - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
+        - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
         - INFLUXDB_DB=sensors
     - role: node-app
       node_app_name: "marinetraffic-reporter"
