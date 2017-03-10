@@ -41,6 +41,7 @@
         - duply
         - python-boto
         - ufw
+        - sshguard
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
