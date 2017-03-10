@@ -40,6 +40,7 @@
         - grafana
         - duply
         - python-boto
+        - ufw
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
@@ -188,3 +189,16 @@
 
     - name: Backup periodically
       cron: name="Duply backup" minute="0" hour="*/12" job="duply netserver backup 2>&1 | /usr/bin/logger -t duply-netserver"
+
+
+  #
+  #  Configure firewall
+  #
+    - name: Allow SSH traffic in
+      ufw: rule=allow name=ssh
+
+    - name: Allow HTTPS traffic in
+      ufw: rule=allow name='WWW Secure'
+
+    - name: Enable firewall
+      ufw: state=enabled policy=deny
