@@ -418,7 +418,7 @@ group:
       - light.bar_table
       - light.cooking
       - light.kitchen
-  bedrooms:
+  bedroom:
     name: Bedroom
     control: hidden
     entities:
