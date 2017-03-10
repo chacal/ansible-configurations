@@ -37,6 +37,8 @@ homeassistant:
       hidden: true
     sensor.*:
       icon: mdi:thermometer
+    binary_sensor.*_door:
+      icon: mdi:glassdoor
 
 # Show links to resources in log and frontend
 #introduction:
@@ -378,6 +380,18 @@ binary_sensor:
     name: laura_wifi_detector
     value_template: '{{ value_json.deviceDetected }}'
     scan_interval: 50
+  - platform: mqtt
+    name: "Front door"
+    state_topic: '/433gw/1/value'
+    value_template: '{{ value_json.value }}'
+    payload_on: "11609774"
+    payload_off: "11609767"
+  - platform: mqtt
+    name: "Bathroom door"
+    state_topic: '/433gw/1/value'
+    value_template: '{{ value_json.value }}'
+    payload_on: "2708142"
+    payload_off: "2708135"
 
 group:
   outside:
@@ -419,6 +433,16 @@ group:
     entities:
       - light.kids_room
       - sensor.kids_room
+  corridor:
+    name: Corridor
+    control: hidden
+    entities:
+      - binary_sensor.front_door
+  bathroom:
+    name: Bathroom
+    control: hidden
+    entities:
+      - binary_sensor.bathroom_door
   storageroom:
     name: Storage Room
     control: hidden
