@@ -42,6 +42,7 @@
         - python-boto
         - ufw
         - sshguard
+        - unattended-upgrades
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
@@ -203,3 +204,22 @@
 
     - name: Enable firewall & disable logging
       ufw: state=enabled policy=deny logging=off
+
+
+  #
+  #  Automatic upgrades
+  #
+    - name: Enable automatic updates
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+
+    - name: Let server reboot if update requires it
+      lineinfile:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        state: present
+        regexp: '^Unattended-Upgrade::Automatic-Reboot '
+        insertafter: '^//Unattended-Upgrade::Automatic-Reboot '
+        line: 'Unattended-Upgrade::Automatic-Reboot = "true";'
