@@ -201,5 +201,5 @@
     - name: Allow HTTPS traffic in
       ufw: rule=allow name='WWW Secure'
 
-    - name: Enable firewall
-      ufw: state=enabled policy=deny
+    - name: Enable firewall & disable logging
+      ufw: state=enabled policy=deny logging=off
