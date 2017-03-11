@@ -75,6 +75,9 @@
       systemd: name=nginx state=restarted enabled=yes daemon_reload=yes
       when: nginx_default_site.changed or nginx_custom_ssl_conf.changed or nginx_custom_site.changed
 
+    - name: Reload Nginx periodically to get new SSL certs in use (certbot might have updated them)
+      cron: name="Reload nginx" minute="0" hour="2" job="systemctl reload nginx"
+
 
   #
   #  Install & configure InfluxDB
