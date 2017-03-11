@@ -202,6 +202,9 @@
     - name: Allow SSH traffic in
       ufw: rule=allow name=ssh
 
+    - name: Allow HTTP traffic in
+      ufw: rule=allow name='WWW'
+
     - name: Allow HTTPS traffic in
       ufw: rule=allow name='WWW Secure'
 
