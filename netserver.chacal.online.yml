@@ -43,6 +43,8 @@
         - ufw
         - sshguard
         - unattended-upgrades
+        - libgrib-api-tools
+        - git
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
@@ -229,3 +231,26 @@
         regexp: '^Unattended-Upgrade::Automatic-Reboot '
         insertafter: '^//Unattended-Upgrade::Automatic-Reboot '
         line: 'Unattended-Upgrade::Automatic-Reboot "true";'
+
+
+  #
+  #  Install Node apps
+  #
+    - name: Add user for Node apps
+      user: name=nodeapp system=yes
+
+    - name: Install FMI Proxy
+      include_role:
+        name: node-app
+      vars:
+        node_app_user: "nodeapp"
+        node_app_group: "nodeapp"
+        node_app_name: "fmiproxy"
+        node_app_git_repo: "https://github.com/chacal/fmiproxy"
+        node_app_use_socket: false
+        node_app_main: "app.js"
+        node_app_env:
+          - PORT=8000
+          - FMI_API_KEY={{ chacal.fmiproxy.fmi_api_key }}
+          - MOUNT_PREFIX=/fmiproxy
+
