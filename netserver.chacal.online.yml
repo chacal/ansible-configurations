@@ -222,4 +222,4 @@
         state: present
         regexp: '^Unattended-Upgrade::Automatic-Reboot '
         insertafter: '^//Unattended-Upgrade::Automatic-Reboot '
-        line: 'Unattended-Upgrade::Automatic-Reboot = "true";'
+        line: 'Unattended-Upgrade::Automatic-Reboot "true";'
