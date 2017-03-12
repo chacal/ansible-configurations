@@ -60,11 +60,6 @@
         - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
         - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
         - INFLUXDB_DB=sensors
-    - role: node-app
-      node_app_name: "live-sensor-ui"
-      node_app_git_repo: "https://github.com/chacal/live-sensor-ui.git"
-      node_app_use_socket: false
-      node_app_main: "server.js"
 
   tasks:
     - name: Copy AWS IoT device private key
