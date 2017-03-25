@@ -84,6 +84,13 @@ logbook:
 # Track the sun
 sun:
 
+notify:
+  - name: Slack
+    platform: slack
+    # The API key is set by a separate task as one can't template .yaml files easily with Ansible <2.3
+    api_key: 'API_KEY'  # Slack API key
+    default_channel: '#homeassistant'
+
 sensor:
   - platform: mqtt
     state_topic: "/sensor/2/t/state"

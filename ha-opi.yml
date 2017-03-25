@@ -85,6 +85,13 @@
 
     - name: Copy configuration file
       copy: dest=/home/homeassistant/.homeassistant/configuration.yaml src=./conf/ha-configuration.yaml owner=homeassistant
+
+    - name: Set Slack API key to configuration file
+      lineinfile:
+        name: /home/homeassistant/.homeassistant/configuration.yaml
+        state: present
+        regexp: '# Slack API key'
+        line: "    api_key: '{{ chacal.ha.slack.homebot.api_key }}'  # Slack API key"
       register: conf_file
 
     - name: Copy devicesfile
