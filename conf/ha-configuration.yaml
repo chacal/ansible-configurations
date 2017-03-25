@@ -372,6 +372,21 @@ automation:
           - light.desk
           - light.bar_table
 
+  - alias: 'Notify about motion detected at backdoor'
+    initial_state: 'off'
+    trigger:
+      platform: mqtt
+      topic: '/433gw/1/value'
+    condition:
+      condition: template
+      value_template: '{{ trigger.payload_json.value == 4707466 }}'
+    action:
+      service: notify.slack
+      data_template:
+        title: ""
+        message: '{{ as_timestamp(now()) | timestamp_custom("%H:%M:%S", true) }} - Motion detected!'
+
+
 binary_sensor:
   - platform: rest
     resource: http://10.90.70.6:4000/bt/60:F4:45:80:2F:A8
