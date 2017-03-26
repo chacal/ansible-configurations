@@ -12,6 +12,7 @@
   vars:
     - hostname: bt-audio-raspi
     - apt_upgrade: true
+    - timezone: Europe/Helsinki
 
   vars_files:
     - secrets.yml

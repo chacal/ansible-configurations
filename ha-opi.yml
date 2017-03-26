@@ -7,6 +7,9 @@
   handlers:
     - include: ../../handlers/handlers.yml
 
+  vars:
+    - timezone: Europe/Helsinki
+
   vars_files:
     - secrets.yml
 

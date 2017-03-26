@@ -12,6 +12,7 @@
   vars:
     - hostname: sensor-raspi
     - apt_upgrade: false
+    - timezone: Europe/Helsinki
 
   vars_files:
     - secrets.yml
