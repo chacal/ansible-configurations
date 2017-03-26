@@ -17,6 +17,7 @@
 
   roles:
     - common
+    - role: unattended_upgrades
     - role: huawei_e3372h
     - role: upnpc
       upnpc_interface: eth1
