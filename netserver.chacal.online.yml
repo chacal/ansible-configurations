@@ -169,7 +169,7 @@
   #  Configure Grafana
   #
     - name: Set Grafana root URL
-      lineinfile: dest=/etc/grafana/grafana.ini regexp='^root_url = ' insertafter='^;root_url = ' line='root_url = https://grafana.netserver.chacal.online' state=present
+      lineinfile: dest=/etc/grafana/grafana.ini regexp='^root_url = ' insertafter='^;root_url = ' line='root_url = https://grafana.netserver.chacal.fi' state=present
       register: grafana_root_url
 
     - name: Set Grafana bind address
