@@ -56,7 +56,7 @@
       node_app_main: "built/index.js"
       node_app_use_socket: false
       node_app_env:
-        - INFLUXDB_HOST=influxdb.netserver.chacal.online
+        - INFLUXDB_HOST=influxdb.netserver.chacal.fi
         - INFLUXDB_PORT=443
         - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
         - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
