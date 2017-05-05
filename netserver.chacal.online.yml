@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  become: true
   remote_user: root
   gather_facts: yes
 
@@ -273,3 +274,23 @@
         node_app_main: "server/app.js"
         node_app_env:
           - PORT=8005
+
+    - name: Install mqtt-to-influxdb-sender
+      include_role:
+        name: node-app
+      vars:
+        node_app_user: "nodeapp"
+        node_app_group: "nodeapp"
+        node_app_name: "mqtt-to-influxdb-sender"
+        node_app_git_repo: "https://github.com/chacal/mqtt-to-influxdb-sender.git"
+        node_app_main: "built/index.js"
+        node_app_use_socket: false
+        node_app_env:
+          - INFLUXDB_HOST=influxdb.netserver.chacal.fi
+          - INFLUXDB_PORT=443
+          - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
+          - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
+          - INFLUXDB_DB=sensors
+          - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
+          - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
+          - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
