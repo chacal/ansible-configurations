@@ -42,11 +42,12 @@
         - SSH_USERNAME={{ chacal.presence_detector.ssh_username }}
         - SSH_PASSWORD={{ chacal.presence_detector.ssh_password }}
     - role: node-app
-      node_app_name: "node-nrf-gw"
-      node_app_git_repo: "https://github.com/chacal/node-nrf-gw.git"
+      node_app_name: "nrf24-to-mqtt-gateway"
+      node_app_git_repo: "https://github.com/chacal/nrf24-to-mqtt-gateway.git"
       node_app_main: "index.js"
       node_app_use_socket: false
       node_app_env:
+        - MQTT_BROKER=mqtt://mqtt-home.chacal.fi
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
         - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
         - NRF24_SPI_DEVICE=/dev/spidev0.0
