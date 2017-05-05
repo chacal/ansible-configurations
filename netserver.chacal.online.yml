@@ -221,6 +221,26 @@
 
 
   #
+  #  Install MQTT server
+  #
+    - name: Install MQTT server
+      include_role:
+        name: mqtt-server
+      vars:
+        mqtt_server_config: |
+          password_file {{ mqtt_server_password_file }}
+          allow_anonymous false
+
+          listener 1883 localhost
+
+          listener 8883
+          cafile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/chain.pem
+          certfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/cert.pem
+          keyfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/privkey.pem
+          tls_version tlsv1.2
+        mqtt_server_users: "{{ chacal.netserver.mqtt_users }}"
+
+  #
   #  Install Node apps
   #
     - name: Add user for Node apps
@@ -253,21 +273,3 @@
         node_app_main: "server/app.js"
         node_app_env:
           - PORT=8005
-
-
-    - name: Install MQTT server
-      include_role:
-        name: mqtt-server
-      vars:
-        mqtt_server_config: |
-          password_file {{ mqtt_server_password_file }}
-          allow_anonymous false
-
-          listener 1883 localhost
-
-          listener 8883
-          cafile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/chain.pem
-          certfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/cert.pem
-          keyfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/privkey.pem
-          tls_version tlsv1.2
-        mqtt_server_users: "{{ chacal.netserver.mqtt_users }}"
