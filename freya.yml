@@ -59,15 +59,17 @@
       node_app_user: "root"
       node_app_group: "root"
       node_app_use_socket: false
-#    - role: node-app
-#      node_app_name: "nrf-receiver"
-#      node_app_git_repo: "https://github.com/chacal/nrf-sensor-receiver.git"
-#      node_app_main: "server/index.js"
-#      node_app_env:
-#        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
-#        - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
-#        - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
-#        - INFLUXDB_DB=sensors
+    - role: node-app
+      node_app_name: "nrf24-to-mqtt-gateway"
+      node_app_git_repo: "https://github.com/chacal/nrf24-to-mqtt-gateway.git"
+      node_app_main: "index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
+        - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
+        - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
+        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
+        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
 #    - role: node-app
 #      node_app_name: "marinetraffic-reporter"
 #      node_app_git_repo: "https://github.com/chacal/marinetraffic-reporter.git"
