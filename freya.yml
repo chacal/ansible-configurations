@@ -23,10 +23,6 @@
       wificlient_networks:
         - ssid: "{{ chacal.known_wlans.freya4g.ssid }}"
           psk: "{{ chacal.known_wlans.freya4g.psk }}"
-    - role: hotspot
-      hotspot_ssid: "{{ chacal.known_wlans.freya.ssid }}"
-      hotspot_passphrase: "{{ chacal.known_wlans.freya.psk }}"
-      hotspot_bridge_interface: br0
     - role: upnpc
       upnpc_interface: wlan1
       upnpc_port_forwards: "500 UDP 4500 UDP 1701 UDP"
@@ -37,9 +33,8 @@
       aws_access_key_id: "{{ chacal.aws.freyalogs.access_key }}"
       aws_secret_access_key: "{{ chacal.aws.freyalogs.secret_key }}"
     - role: nat_router
-      nat_router_local_interface: br0
+      nat_router_local_interface: eth0
       nat_router_inet_interface: wlan1
-      nat_router_bridge_interfaces: eth0 wlan0
       nat_router_ip: 10.90.100.1
       nat_router_dhcp_range: "10.90.100.50,10.90.100.150,24h"
       nat_router_static_ips: "{{ chacal.freya.nat_router_static_ips }}"
