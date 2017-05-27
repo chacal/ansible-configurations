@@ -72,10 +72,16 @@
     - role: node-app
       node_app_name: "freya-server"
       node_app_git_repo: "https://github.com/chacal/freya-server.git"
-      node_app_main: "freya-server.js /dev/ngw-1 /dev/tacktick /opt/freya-nmealogs"
+      node_app_main: "built/Main.js"
       node_app_user: "root"
       node_app_group: "root"
+      node_app_npm_unsafe_perm: true
       node_app_use_socket: false
+      node_app_env:
+        - NMEA_DEVICE_1=/dev/ngw-1
+        - NMEA_DEVICE_2=/dev/tacktick
+        - NMEA_LOG_DIR=/opt/freya-nmealogs
+        - MQTT_BROKER=mqtt://localhost
     - role: node-app
       node_app_name: "nrf24-to-mqtt-gateway"
       node_app_git_repo: "https://github.com/chacal/nrf24-to-mqtt-gateway.git"
