@@ -117,5 +117,5 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line="ACTION==\"add\", KERNEL==\"sd[a-h]1\", SUBSYSTEM==\"block\", ENV{ID_BUS}==\"usb\", ATTRS{idVendor}!=\"12d1\", RUN+=\"/bin/mkdir -p /mnt/usb\", RUN+=\"/bin/bash -c '/bin/mountpoint -q /mnt/usb || /bin/mount /dev/%k /mnt/usb'\""
-#    - name: Periodically backup NMEA logs to S3
-#      cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
+    - name: Periodically backup NMEA logs to S3
+      cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs/2017; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
