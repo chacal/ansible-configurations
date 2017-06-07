@@ -11,6 +11,8 @@
     - hostname: freya
     - apt_upgrade: false
     - timezone: Europe/Helsinki
+    - aws_access_key_id: "{{ chacal.aws.freya.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.freya.secret_key }}"
 
   vars_files:
     - secrets.yml
@@ -30,8 +32,6 @@
     - mcp2515-can
     - crda_domain
     - role: aws-cli
-      aws_access_key_id: "{{ chacal.aws.freyalogs.access_key }}"
-      aws_secret_access_key: "{{ chacal.aws.freyalogs.secret_key }}"
     - role: nat_router
       nat_router_local_interface: eth0
       nat_router_inet_interface: wlan1
@@ -43,8 +43,6 @@
       l2tp_vpn_local_ip: 10.90.100.1
       l2tp_vpn_local_ip_range: 10.90.100.200-10.90.100.250
     - role: route53-ddns
-      aws_access_key_id: "{{ chacal.aws.route53_updater.access_key }}"
-      aws_secret_access_key: "{{ chacal.aws.route53_updater.secret_key }}"
       route53_zoneid: "{{ chacal.route53.freya.zoneid }}"
       route53_cname: "{{ chacal.route53.freya.cname }}"
 #    - role: signalk
