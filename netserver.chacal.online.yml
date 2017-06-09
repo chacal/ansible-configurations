@@ -34,6 +34,14 @@
     - name: Add Package Cloud Apt key
       apt_key: url="https://packagecloud.io/gpg.key" state=present
 
+    - name: Add PostgreSQL repository Apt key
+      apt_key: url="https://www.postgresql.org/media/keys/ACCC4CF8.asc" state=present
+
+    - name: Add PostgreSQL repo
+      apt_repository:
+        repo: deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+        state: present
+
     - name: Install/update dependencies
       apt: pkg={{ item }} state=latest update_cache=yes
       with_items:
@@ -45,6 +53,7 @@
         - sshguard
         - libgrib-api-tools
         - git
+        - postgresql-9.6-postgis-2.3
 
     - name: Install/update dependencies from backports
       apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
@@ -294,3 +303,21 @@
           - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
           - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
+
+    - name: Install mqtt-to-postgis-writer
+      include_role:
+        name: node-app
+      vars:
+        node_app_user: "nodeapp"
+        node_app_group: "nodeapp"
+        node_app_name: "mqtt-to-postgis-writer"
+        node_app_git_repo: "https://github.com/chacal/mqtt-to-postgis-writer.git"
+        node_app_main: "built/Index.js"
+        node_app_use_socket: false
+        node_app_env:
+          - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
+          - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
+          - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
+          - DB_NAME=marinedata
+          - DB_USER={{ chacal.netserver.postgis.username }}
+          - DB_PASSWD={{ chacal.netserver.postgis.password }}
