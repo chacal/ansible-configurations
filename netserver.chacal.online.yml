@@ -337,3 +337,4 @@
           - DB_USER={{ chacal.netserver.postgis.username }}
           - DB_PASSWD={{ chacal.netserver.postgis.password }}
           - MOUNT_PREFIX=/postgis-track-server
+          - BASIC_AUTH_PASSWD={{ chacal.netserver.track_server.basic_auth_password }}
