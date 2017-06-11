@@ -321,3 +321,19 @@
           - DB_NAME=marinedata
           - DB_USER={{ chacal.netserver.postgis.username }}
           - DB_PASSWD={{ chacal.netserver.postgis.password }}
+
+    - name: Install postgis-track-server
+      include_role:
+        name: node-app
+      vars:
+        node_app_user: "nodeapp"
+        node_app_group: "nodeapp"
+        node_app_name: "postgis-track-server"
+        node_app_git_repo: "https://github.com/chacal/postgis-track-server.git"
+        node_app_main: "built/Index.js"
+        node_app_use_socket: false
+        node_app_env:
+          - DB_NAME=marinedata
+          - DB_USER={{ chacal.netserver.postgis.username }}
+          - DB_PASSWD={{ chacal.netserver.postgis.password }}
+          - MOUNT_PREFIX=/postgis-track-server
