@@ -65,6 +65,7 @@
         connection netserver
         address mqtt.netserver.chacal.fi:8883
         topic /sensor/# out 1 "" ""
+        topic /signalk/delta out 1 "" ""
         remote_username {{ chacal.netserver.mqtt_users[0].username }}
         remote_password {{ chacal.netserver.mqtt_users[0].password }}
         bridge_tls_version tlsv1.2
@@ -91,15 +92,6 @@
         - MQTT_BROKER=mqtt://localhost
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
         - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
-#    - role: node-app
-#      node_app_name: "marinetraffic-reporter"
-#      node_app_git_repo: "https://github.com/chacal/marinetraffic-reporter.git"
-#      node_app_main: "index.js"
-#      node_app_env:
-#        - MMSI={{chacal.marinetraffic.mmsi}}
-#        - MARINETRAFFIC_IP={{chacal.marinetraffic.ip}}
-#        - MARINETRAFFIC_PORT={{chacal.marinetraffic.port}}
-#        - SIGNALK_API_URL=http://10.90.100.1:8080/signalk/v1/api
 
   tasks:
     - name: Create device link for NGW-1 serial port
