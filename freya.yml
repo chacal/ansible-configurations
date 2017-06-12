@@ -45,11 +45,13 @@
     - role: route53-ddns
       route53_zoneid: "{{ chacal.route53.freya.zoneid }}"
       route53_cname: "{{ chacal.route53.freya.cname }}"
-#    - role: signalk
-#      signalk_settings_file: conf/signalk-settings-freya.json
-#      node_app_env:
-#        - "NODE_ENV=production"
-#        - "SIGNALK_NODE_SETTINGS=/etc/signalk-settings.json"
+    - role: signalk
+      signalk_settings_file: conf/signalk-settings-freya.json
+      signalk_plugins:
+        - https://github.com/tkurki/signalk-mqtt-gw
+      node_app_env:
+        - "NODE_ENV=production"
+        - "SIGNALK_NODE_SETTINGS=/etc/signalk-settings.json"
     - role: mqtt-server
       mqtt_server_config: |
         autosave_interval 60
