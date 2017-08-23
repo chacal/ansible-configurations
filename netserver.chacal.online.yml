@@ -210,6 +210,9 @@
     - name: Backup periodically
       cron: name="Duply backup" minute="0" hour="*/12" job="duply netserver backup 2>&1 | /usr/bin/logger -t duply-netserver"
 
+    - name: Purge too old backups
+      cron: name="Purge old duply backups" minute="0" hour="13" weekday="mon" job="duply netserver purge 6M --force 2>&1 | /usr/bin/logger -t duply-netserver"
+
 
   #
   #  Configure firewall
