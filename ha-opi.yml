@@ -15,6 +15,17 @@
 
   roles:
 
+  # Initialization:
+  #
+  # 1) Download & install latest mainline Armbian Ubuntu image
+  # 2) Login using USB UART adapter (username root, password 1234)
+  # 3) Setup hard coded MAC address for wifi: echo "options 8189fs rtw_initmac=00:e0:4c:f5:16:d8" > /etc/modprobe.d/8189fs.conf
+  # 4) Reboot
+  # 5) Connect to WiFi: nmcli device wifi connect '<SSID>' password '<PASSWORD>' ifname wlan0
+  # 6) Copy SSH key: ssh-copy-id -i .ssh/id_rsa ha.chacal.fi
+  # 7) Login & update packages
+  # 8) Provision this configuration giving sudo passwd: ansible-playbook -i ha.chacal.fi, playbooks/chacal/ha-opi.yml -K
+
   tasks:
     - name: Add default user to sudo group
       lineinfile:
