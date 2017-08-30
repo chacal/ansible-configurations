@@ -112,11 +112,15 @@
       copy: dest=/home/homeassistant/.homeassistant/known_devices.yaml src=./conf/ha-known_devices.yaml owner=homeassistant
       register: devices_file
 
+    - name: Copy automations file
+      copy: dest=/home/homeassistant/.homeassistant/automations.yaml src=./conf/ha-automations.yaml owner=homeassistant
+      register: automations_file
+
     - name: Enable service and start it
       systemd: name=home-assistant daemon_reload=yes state=restarted enabled=yes
-      when: (unit_file is defined and unit_file.changed) or (conf_file is defined and conf_file.changed) or (devices_file is defined and devices_file.changed)
+      when: (unit_file is defined and unit_file.changed) or (conf_file is defined and conf_file.changed) or (devices_file is defined and devices_file.changed) or (automations_file is defined and automations_file.changed)
 
-    # Need to install Mosquitto manually (not by role) as ha-opi is Ubuntu, not Debian
+    # Need to configure Mosquitto manually (not by role) as ha-opi is Ubuntu, not Debian
     - name: Mosquitto config file
       copy:
         dest: /etc/mosquitto/conf.d/custom.conf

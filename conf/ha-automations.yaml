@@ -1,0 +1,176 @@
+- id: 'jouni_away'
+  alias: 'Jouni Away'
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.jouni_bt_detector
+      to: 'off'
+      for:
+        minutes: 1
+        seconds: 0
+    - platform: state
+      entity_id: binary_sensor.jouni_wifi_detector
+      to: 'off'
+      for:
+        minutes: 1
+        seconds: 0
+  action:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: 'binary_sensor.jouni_bt_detector'
+          state: 'off'
+          for:
+            minutes: 1
+            seconds: 0
+        - condition: state
+          entity_id: 'binary_sensor.jouni_wifi_detector'
+          state: 'off'
+          for:
+            minutes: 1
+            seconds: 0
+    - service: device_tracker.see
+      data:
+        dev_id: jouni
+        location_name: 'not_home'
+
+- id: 'jouni_home'
+  alias: 'Jouni Home'
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.jouni_bt_detector
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.jouni_wifi_detector
+      to: 'on'
+  action:
+    service: device_tracker.see
+    data:
+      dev_id: jouni
+      location_name: 'home'
+
+- id: 'jouni_presence_on_start'
+  alias: 'Jouni Presence On Start'
+  hide_entity: True
+  trigger:
+    - platform: event
+      event_type: homeassistant_start
+  action:
+    service: device_tracker.see
+    data_template:
+      dev_id: jouni
+      location_name: >
+        {% if is_state('binary_sensor.jouni_bt_detector', 'on') or is_state('binary_sensor.jouni_wifi_detector', 'on') %}
+          home
+        {% else %}
+          not_home
+        {% endif %}
+
+- id: 'laura_away'
+  alias: 'Laura Away'
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.laura_bt_detector
+      to: 'off'
+      for:
+        minutes: 2
+        seconds: 40
+    - platform: state
+      entity_id: binary_sensor.laura_wifi_detector
+      to: 'off'
+      for:
+        minutes: 2
+        seconds: 40
+  action:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: 'binary_sensor.laura_bt_detector'
+          state: 'off'
+          for:
+            minutes: 2
+            seconds: 40
+        - condition: state
+          entity_id: 'binary_sensor.laura_wifi_detector'
+          state: 'off'
+          for:
+            minutes: 2
+            seconds: 40
+    - service: device_tracker.see
+      data:
+        dev_id: laura
+        location_name: 'not_home'
+
+- id: 'laura_home'
+  alias: 'Laura Home'
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.laura_bt_detector
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.laura_wifi_detector
+      to: 'on'
+  action:
+    service: device_tracker.see
+    data:
+      dev_id: laura
+      location_name: 'home'
+
+- id: 'laura_presence_on_start'
+  alias: 'Laura Presence On Start'
+  hide_entity: True
+  trigger:
+    - platform: event
+      event_type: homeassistant_start
+  action:
+    service: device_tracker.see
+    data_template:
+      dev_id: laura
+      location_name: >
+        {% if is_state('binary_sensor.laura_bt_detector', 'on') or is_state('binary_sensor.laura_wifi_detector', 'on') %}
+          home
+        {% else %}
+          not_home
+        {% endif %}
+
+- id: 'lights_on_when_coming_home_in_dark'
+  alias: 'Lights on when coming home in dark'
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: group.all_devices
+      from: 'not_home'
+      to: 'home'
+  condition:
+    condition: and
+    conditions:
+      - condition: sun
+        after: sunset
+        after_offset: "-0:30:00"
+      - condition: template
+        value_template: '{{ is_state("sensor.home_assistant_restarted", "false") }}'
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.christmas
+        - light.cooking
+        - light.desk
+        - light.bar_table
+
+- id: 'notify_about_motion_detected_at_backdoor'
+  alias: 'Notify about motion detected at backdoor'
+  initial_state: 'off'
+  trigger:
+    platform: mqtt
+    topic: '/433gw/1/value'
+  condition:
+    condition: template
+    value_template: '{{ trigger.payload_json.value == 4707466 }}'
+  action:
+    service: notify.slack
+    data_template:
+      title: ""
+      message: '{{ as_timestamp(now()) | timestamp_custom("%H:%M:%S", true) }} - Motion detected!'
