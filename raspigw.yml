@@ -11,29 +11,34 @@
     - hostname: raspigw
     - apt_upgrade: false
     - timezone: Europe/Helsinki
+    - aws_access_key_id: "{{ chacal.aws.raspigw.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.raspigw.secret_key }}"
 
   vars_files:
     - secrets.yml
 
+  #
+  # In addition to these roles, DNAT needs to be set on 4G gateway. Ports 500,1701,4500 UDP need to be forwarded to raspigw.
+  #
   roles:
     - common
     - role: unattended_upgrades
-    - role: huawei_e3372h
-    - role: upnpc
-      upnpc_interface: eth1
-      upnpc_port_forwards: "500 UDP 4500 UDP 1701 UDP"
     - role: nat_router
       nat_router_local_interface: eth0
-      nat_router_inet_interface: eth1
-      nat_router_ip: 10.90.70.1
+      nat_router_inet_interface: eth0
+      nat_router_ip: 10.90.70.2
+      nat_router_gateway: 10.90.70.1
       nat_router_dhcp_range: "10.90.70.50,10.90.70.150,24h"
+      nat_router_dhcp_options:
+        - "option:router,10.90.70.1"
       nat_router_static_ips: "{{ chacal.nat_router_static_ips }}"
+      nat_router_dns_servers:
+        - "62.241.198.245"   # DNA DNS1
+        - "62.241.198.246"   # DNA DNS2
     - role: l2tp_vpn_server
       l2tp_vpn_psk: "{{ chacal.l2tp_vpn_psk }}"
-      l2tp_vpn_local_ip: 10.90.70.1
+      l2tp_vpn_local_ip: 10.90.70.2
       l2tp_vpn_local_ip_range: 10.90.70.200-10.90.70.250
     - role: route53-ddns
-      aws_access_key_id: "{{ chacal.aws.route53_updater.access_key }}"
-      aws_secret_access_key: "{{ chacal.aws.route53_updater.secret_key }}"
       route53_zoneid: "{{ chacal.route53.raspigw.zoneid }}"
       route53_cname: "{{ chacal.route53.raspigw.cname }}"
