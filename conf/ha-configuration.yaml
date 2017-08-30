@@ -12,9 +12,6 @@ homeassistant:
   time_zone: Europe/Helsinki
 
   customize:
-    sensor.humidity_bedroom:
-      friendly_name: Bedroom
-      icon: mdi:water
     sensor.humidity_nexus:
       friendly_name: Outside Nexus
       icon: mdi:water
@@ -101,22 +98,12 @@ sensor:
     name: Kids room
     unit_of_measurement: "°C"
   - platform: mqtt
-    state_topic: "/sensor/8/t/state"
+    state_topic: "/sensor/3/t/state"
     value_template: '{{ value_json.temperature | round(1) }}'
     name: Bedroom
     unit_of_measurement: "°C"
   - platform: mqtt
-    state_topic: "/sensor/9/t/state"
-    value_template: '{{ value_json.temperature | round(1) }}'
-    name: Living room
-    unit_of_measurement: "°C"
-  - platform: mqtt
-    state_topic: "/sensor/8/h/state"
-    value_template: '{{ value_json.humidity | round(1) }}'
-    name: 'humidity_bedroom'
-    unit_of_measurement: "%H"
-  - platform: mqtt
-    state_topic: "/sensor/8/p/state"
+    state_topic: "/sensor/5/p/state"
     value_template: '{{ value_json.pressure | round(1) }}'
     name: Air Pressure
     unit_of_measurement: "mbar"
@@ -438,7 +425,6 @@ group:
       - light.desk
       - light.big_ceiling
       - light.small_ceiling
-      - sensor.living_room
   kitchen:
     name: Kitchen
     control: hidden
@@ -452,7 +438,6 @@ group:
     entities:
       - light.bedroom
       - sensor.bedroom
-      - sensor.humidity_bedroom
       - sensor.wt450
       - sensor.humidity_wt450
   kidsroom:
