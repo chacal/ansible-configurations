@@ -109,7 +109,7 @@
       register: conf_file
 
     - name: Copy devicesfile
-      copy: dest=/home/homeassistant/.homeassistant/known_devices.yaml.yaml src=./conf/ha-known_devices.yaml owner=homeassistant
+      copy: dest=/home/homeassistant/.homeassistant/known_devices.yaml src=./conf/ha-known_devices.yaml owner=homeassistant
       register: devices_file
 
     - name: Enable service and start it
