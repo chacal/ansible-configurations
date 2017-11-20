@@ -48,20 +48,7 @@
       node_app_use_socket: false
       node_app_env:
         - MQTT_BROKER=mqtt://mqtt-home.chacal.fi
-        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
-        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
-        - NRF24_SPI_DEVICE=/dev/spidev0.0
-    - role: node-app
-      node_app_name: "mqtt-to-influxdb-sender"
-      node_app_git_repo: "https://github.com/chacal/mqtt-to-influxdb-sender.git"
-      node_app_main: "built/index.js"
-      node_app_use_socket: false
-      node_app_env:
-        - INFLUXDB_HOST=influxdb.netserver.chacal.fi
-        - INFLUXDB_PORT=443
-        - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
-        - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
-        - INFLUXDB_DB=sensors
+        - UART_DEVICE=/dev/ttyAMA0
 
   tasks:
     - name: Copy AWS IoT device private key
