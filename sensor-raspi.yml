@@ -49,6 +49,13 @@
       node_app_env:
         - MQTT_BROKER=mqtt://mqtt-home.chacal.fi
         - UART_DEVICE=/dev/ttyAMA0
+    - role: node-app
+      node_app_name: "bt-sensor-mqtt-decoder"
+      node_app_git_repo: "https://github.com/chacal/bt-sensor-mqtt-decoder.git"
+      node_app_main: "built/index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - MQTT_BROKER=mqtt://mqtt-home.chacal.fi
 
   tasks:
     - name: Copy AWS IoT device private key
