@@ -38,9 +38,9 @@
       node_app_use_socket: false
       node_app_main: "index.js"
       node_app_env:
-        - HOST=10.90.70.1
-        - USERNAME={{ chacal.presence_detector.username }}
-        - PASSWORD={{ chacal.presence_detector.password }}
+        - UNIFI_HOST=unifi.chacal.fi
+        - UNIFI_USERNAME={{ chacal.presence_detector.unifi_username }}
+        - UNIFI_PASSWORD={{ chacal.presence_detector.unifi_password }}
     - role: node-app
       node_app_name: "nrf24-to-mqtt-gateway"
       node_app_git_repo: "https://github.com/chacal/nrf24-to-mqtt-gateway.git"
