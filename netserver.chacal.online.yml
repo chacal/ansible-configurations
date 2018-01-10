@@ -8,8 +8,11 @@
     - secrets.yml
 
   vars:
-    - influx_db_version: "1.2.0"
     - influx_cli_auth_params: '-username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}'
+
+  pre_tasks:
+    - name: 'Install python2'
+      raw: apt-get -y install python-simplejson
 
   roles:
 
@@ -21,25 +24,28 @@
     - name: Install HTTPS support for Apt
       apt: pkg=apt-transport-https state=latest update_cache=yes
 
-    - name: Add Jessie backports repo
-      apt_repository:
-        repo: deb http://ftp.debian.org/debian jessie-backports main
-        state: present
+    - name: Add Package Cloud Apt key
+      apt_key: url="https://packagecloud.io/gpg.key" state=present
 
     - name: Add Grafana repo
       apt_repository:
-        repo: deb https://packagecloud.io/grafana/stable/debian/ jessie main
+        repo: deb https://packagecloud.io/grafana/stable/debian/ stretch main
         state: present
-
-    - name: Add Package Cloud Apt key
-      apt_key: url="https://packagecloud.io/gpg.key" state=present
 
     - name: Add PostgreSQL repository Apt key
       apt_key: url="https://www.postgresql.org/media/keys/ACCC4CF8.asc" state=present
 
     - name: Add PostgreSQL repo
       apt_repository:
-        repo: deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+        repo: deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main
+        state: present
+
+    - name: Add InfluxDB repository Apt key
+      apt_key: url="https://repos.influxdata.com/influxdb.key" state=present
+
+    - name: Add InfluxDB repo
+      apt_repository:
+        repo: deb https://repos.influxdata.com/debian stretch stable
         state: present
 
     - name: Install/update dependencies
@@ -54,19 +60,21 @@
         - libgrib-api-tools
         - git
         - postgresql-9.6-postgis-2.3
-
-    - name: Install/update dependencies from backports
-      apt: pkg={{ item }} state=latest update_cache=yes default_release=jessie-backports
-      with_items:
+        - influxdb
         - certbot
         - duplicity
+        - sudo
+        - dma
 
     - name: Enable automatic upgrades
       include_role:
         name: unattended_upgrades
+      vars:
+        unattended_upgrades_email: "{{ chacal.netserver.unattended_upgrades.email }}"
+        unattended_upgrades_origins: '"n=${distro_codename}"; "n=stretch-pgdg"; "n=stretch-updates";'
 
     #
-    #  Run 'certbot certonly --standalone -d grafana.netserver.chacal.online -d influxdb.netserver.chacal.online' to get certificates
+    #  Run 'certbot certonly --standalone -d grafana.netserver.chacal.fi -d mqtt.netserver.chacal.fi -d tuuleeko.fi -d influxdb.netserver.chacal.fi -d www.tuuleeko.fi' to get certificates
     #  Also run 'openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048' to create strong Diffie-Hellman group
     #
 
@@ -97,11 +105,6 @@
   #
   #  Install & configure InfluxDB
   #
-    - name: Install InfluxDB
-      apt:
-        deb: "https://dl.influxdata.com/influxdb/releases/influxdb_{{ influx_db_version }}_amd64.deb"
-      register: influxdb
-
     - name: Configure InfluxDB HTTP service to listen only on localhost
       lineinfile:
         dest: /etc/influxdb/influxdb.conf
@@ -140,7 +143,7 @@
 
     - name: Enable & start InfluxDB
       systemd: name=influxdb state=restarted enabled=yes daemon_reload=yes
-      when: influxdb.changed or influxdb_http_conf.changed or influxdb_backup_conf.changed or influxdb_auth_conf.changed or influxdb_http_log_conf.changed
+      when: influxdb_http_conf.changed or influxdb_backup_conf.changed or influxdb_auth_conf.changed or influxdb_http_log_conf.changed
 
     - name: Check if InfluxDB admin user has been created
       command: influx -execute "SHOW USERS" -username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}
@@ -164,7 +167,7 @@
     - name: Check if InfluxDB regular user has been created
       command: influx -execute "SHOW USERS" {{ influx_cli_auth_params }}
       register: influx_user_check
-      changed_when: "'{{ chacal.influxdb.regular_user.username }}' not in influx_user_check.stdout"
+      changed_when: "chacal.influxdb.regular_user.username not in influx_user_check.stdout"
 
     - name: Create InfluxDB regular user
       command: influx -execute "CREATE USER {{ chacal.influxdb.regular_user.username }} WITH PASSWORD '{{ chacal.influxdb.regular_user.password }}'" {{ influx_cli_auth_params }}
@@ -207,11 +210,28 @@
     - name: Setup duply backup excludes
       copy: src=./conf/netserver_duply_exclude dest=/root/.duply/netserver/exclude
 
+    - name: Setup Dupply S3 credentials
+      copy:
+        dest: /root/.duply/netserver/aws_credentials
+        mode: 0600
+        content: |
+          export AWS_ACCESS_KEY_ID='{{ chacal.aws.netserver_backup.access_key }}'
+          export AWS_SECRET_ACCESS_KEY='{{ chacal.aws.netserver_backup.secret_key }}'
+
     - name: Backup periodically
-      cron: name="Duply backup" minute="0" hour="*/12" job="duply netserver backup 2>&1 | /usr/bin/logger -t duply-netserver"
+      cron:
+        name: "Duply backup"
+        minute: "0"
+        hour: "*/12"
+        job: ". /root/.duply/netserver/aws_credentials; duply netserver backup 2>&1 | /usr/bin/logger -t duply-netserver"
 
     - name: Purge too old backups
-      cron: name="Purge old duply backups" minute="0" hour="13" weekday="mon" job="duply netserver purge 6M --force 2>&1 | /usr/bin/logger -t duply-netserver"
+      cron:
+        name: "Purge old duply backups"
+        minute: "0"
+        hour: "13"
+        weekday: "mon"
+        job: ". /root/.duply/netserver/aws_credentials; duply netserver purge 6M --force 2>&1 | /usr/bin/logger -t duply-netserver"
 
 
   #
@@ -234,6 +254,57 @@
 
 
   #
+  #  Configure email
+  #
+    - name: Set DMA SMTP authentication
+      lineinfile:
+        dest: /etc/dma/auth.conf
+        state: present
+        regexp: "^apikey|smtp.sendgrid.net"
+        line: "apikey|smtp.sendgrid.net:{{ chacal.sendgrid.netserver }}"
+
+    - name: Set DMA authpath
+      lineinfile:
+        dest: /etc/dma/dma.conf
+        state: present
+        regexp: '^AUTHPATH '
+        insertafter: '^#AUTHPATH'
+        line: 'AUTHPATH /etc/dma/auth.conf'
+
+    - name: Set DMA smarthost
+      lineinfile:
+        dest: /etc/dma/dma.conf
+        state: present
+        regexp: '^SMARTHOST '
+        insertafter: '^#SMARTHOST'
+        line: 'SMARTHOST smtp.sendgrid.net'
+
+    - name: Set DMA port
+      lineinfile:
+        dest: /etc/dma/dma.conf
+        state: present
+        regexp: '^PORT '
+        insertafter: '^#PORT'
+        line: 'PORT 587'
+
+    - name: Set DMA secure transfer
+      lineinfile:
+        dest: /etc/dma/dma.conf
+        state: present
+        regexp: '^SECURETRANSFER'
+        insertafter: '^#SECURETRANSFER'
+        line: 'SECURETRANSFER'
+
+    - name: Set DMA start tls
+      lineinfile:
+        dest: /etc/dma/dma.conf
+        state: present
+        regexp: '^STARTTLS'
+        insertafter: '^#STARTTLS'
+        line: 'STARTTLS'
+
+
+  #
   #  Install MQTT server
   #
     - name: Install MQTT server
@@ -248,9 +319,9 @@
           listener 1883 localhost
 
           listener 8883
-          cafile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/chain.pem
-          certfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/cert.pem
-          keyfile /etc/letsencrypt/live/mqtt.netserver.chacal.fi/privkey.pem
+          cafile /etc/letsencrypt/live/grafana.netserver.chacal.fi/chain.pem
+          certfile /etc/letsencrypt/live/grafana.netserver.chacal.fi/cert.pem
+          keyfile /etc/letsencrypt/live/grafana.netserver.chacal.fi/privkey.pem
           tls_version tlsv1.2
         mqtt_server_users: "{{ chacal.netserver.mqtt_users }}"
         mqtt_server_acl_config: |
