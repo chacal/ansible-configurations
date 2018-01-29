@@ -7,6 +7,6 @@ jouni:
 
 laura:
   name: Laura
-  mac: B4:9C:DF:10:10:3F
+  mac: 58:E2:8F:C3:39:18
   track: yes
   hide_if_away: no

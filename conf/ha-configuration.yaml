@@ -217,12 +217,12 @@ binary_sensor:
     value_template: '{{ value_json.deviceDetected }}'
     scan_interval: 10
   - platform: rest
-    resource: http://10.90.70.6:4000/bt/B4:9C:DF:10:10:3F
+    resource: http://10.90.70.6:4000/bt/58:E2:8F:C3:39:18
     name: laura_bt_detector
     value_template: '{{ value_json.deviceDetected }}'
     scan_interval: 50
   - platform: rest
-    resource: http://10.90.70.6:4000/wifi/B4:9C:DF:10:10:3E
+    resource: http://10.90.70.6:4000/wifi/58:E2:8F:C3:39:17
     name: laura_wifi_detector
     value_template: '{{ value_json.deviceDetected }}'
     scan_interval: 50
