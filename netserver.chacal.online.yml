@@ -119,7 +119,7 @@
         dest: /etc/influxdb/influxdb.conf
         state: present
         regexp: '^bind-address = '
-        insertafter: '^# hostname = "localhost"'
+        insertafter: '^# bind-address = "127.0.0.1:8088"'
         line: 'bind-address = "localhost:8088"'
       register: influxdb_backup_conf
 
@@ -139,6 +139,15 @@
         regexp: '^  log-enabled = '
         insertafter: '^\[http\]'
         line: '  log-enabled = false'
+      register: influxdb_http_log_conf
+
+    - name: Configure InfluxDB log level to warn
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  level = '
+        insertafter: '^  # level = "info"'
+        line: '  level = "warn"'
       register: influxdb_http_log_conf
 
     - name: Enable & start InfluxDB
