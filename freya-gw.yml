@@ -1,0 +1,60 @@
+---
+- hosts: all
+  remote_user: root
+  gather_facts: yes
+
+  vars:
+    - lan_interface: eth0
+    - lan_ip: 10.90.70.11
+    - wan_interface: enx0c5b8f279a64
+
+  pre_tasks:
+    - name: Install required packages
+      apt: pkg={{ item }} state=latest update_cache=yes
+      with_items:
+        - dhcpcd5
+        - usb-modeswitch
+        - usb-modeswitch-data
+
+  roles:
+    - role: upnpc
+      upnpc_interface: "{{ wan_interface }}"
+      upnpc_port_forwards: "500 UDP 4500 UDP 1701 UDP"
+
+  tasks:
+    - name: Disable DHCP client on local interface
+      lineinfile: dest=/etc/dhcpcd.conf regexp='^denyinterfaces .*' line='denyinterfaces {{ lan_interface }}'
+
+    - name: Set /etc/network/interfaces for static local address
+      copy:
+        dest: /etc/network/interfaces
+        mode: 0644
+        content: |
+          source-directory /etc/network/interfaces.d
+
+          auto {{ lan_interface }}
+          iface {{ lan_interface }} inet static
+            address {{ lan_ip }}
+            netmask 255.255.255.0
+            post-up if [ -f /etc/iptables.ipv4.nat ]; then iptables-restore < /etc/iptables.ipv4.nat; fi
+
+    - name: Enable IPv4 forwarding
+      lineinfile: dest=/etc/sysctl.conf regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward=1'
+
+    - name: Set firewall & NAT
+      copy:
+        dest: /etc/iptables.ipv4.nat
+        mode: 0644
+        content: |
+          *nat
+          :PREROUTING ACCEPT [27:1988]
+          :INPUT ACCEPT [27:1988]
+          :OUTPUT ACCEPT [0:0]
+          :POSTROUTING ACCEPT [0:0]
+          -A POSTROUTING -o {{ wan_interface }} -j MASQUERADE
+          COMMIT
+          *filter
+          :INPUT ACCEPT [64:3883]
+          :FORWARD ACCEPT [0:0]
+          :OUTPUT ACCEPT [44:4432]
+          COMMIT
