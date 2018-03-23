@@ -19,7 +19,6 @@
 
   roles:
     - common
-    - canboat
     - mcp2515-can
     - crda_domain
     - role: aws-cli
