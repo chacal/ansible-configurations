@@ -92,6 +92,7 @@
         - MQTT_BROKER=mqtt://localhost
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
         - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
+        - USE_RADIO_HW=true
 
   tasks:
     - name: Create device link for NGW-1 serial port
