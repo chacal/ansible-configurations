@@ -44,7 +44,6 @@
       l2tp_vpn_psk: "{{ chacal.l2tp_vpn_psk }}"
       l2tp_vpn_local_ip: "{{ lan_ip_address }}"
       l2tp_vpn_local_ip_range: 10.90.100.200-10.90.100.250
-
     - role: signalk
       signalk_settings_file: conf/signalk-settings-freya.json
     - role: mqtt-server
@@ -107,3 +106,8 @@
         line="ACTION==\"add\", KERNEL==\"sd[a-h]1\", SUBSYSTEM==\"block\", ENV{ID_BUS}==\"usb\", ATTRS{idVendor}!=\"12d1\", RUN+=\"/bin/mkdir -p /mnt/usb\", RUN+=\"/bin/bash -c '/bin/mountpoint -q /mnt/usb || /bin/mount /dev/%k /mnt/usb'\""
     - name: Periodically backup NMEA logs to S3
       cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs/2018; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
+    - name: Fix SignalK configuration file ownership
+      file:
+        path=/etc/signalk-settings.json
+        owner=pi
+
