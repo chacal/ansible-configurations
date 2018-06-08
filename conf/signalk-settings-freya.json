@@ -1,27 +1,22 @@
 {
-  "vessel": {
-    "name": "Freya",
-    "mmsi": "230061450"
-  },
-
-  "pipedProviders": [{
-    "id": "can0",
-    "pipeElements": [{
-      "type": "providers/execute",
-      "options": {
-        "command": "candump can0 | candump2analyzer | analyzer -json -si"
-      }
-    }, {
-      "type": "providers/liner"
-    }, {
-      "type": "providers/from_json"
-    }, {
-      "type": "providers/n2k-signalk"
-    }]
-  }],
-  "interfaces": {
-    "bower": true,
-    "rest": true,
-    "ws": true
-  }
+  "pipedProviders": [
+    {
+      "id": "canboatjs-can0",
+      "enabled": true,
+      "pipeElements": [
+        {
+          "type": "providers/canbus",
+          "options": {
+            "canDevice": "can0"
+          }
+        },
+        {
+          "type": "providers/canboatjs"
+        },
+        {
+          "type": "providers/n2k-signalk"
+        }
+      ]
+    }
+  ]
 }
