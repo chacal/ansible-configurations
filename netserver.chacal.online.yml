@@ -65,6 +65,8 @@
         - duplicity
         - sudo
         - dma
+        - mutt
+        - iftop
 
     - name: Enable automatic upgrades
       include_role:
