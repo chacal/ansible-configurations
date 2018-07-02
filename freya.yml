@@ -51,7 +51,7 @@
         autosave_interval 60
         max_queued_messages 500000
 
-        listener 1883 localhost
+        listener 1883
 
         listener 8883
         protocol websockets
@@ -87,6 +87,13 @@
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
         - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
         - USE_RADIO_HW=true
+    - role: node-app
+      node_app_name: "bt-sensor-mqtt-decoder"
+      node_app_git_repo: "https://github.com/chacal/bt-sensor-mqtt-decoder.git"
+      node_app_main: "built/index.js"
+      node_app_use_socket: false
+      node_app_env:
+        - MQTT_BROKER=mqtt://localhost
 
   tasks:
     - name: Create device link for NGW-1 serial port
