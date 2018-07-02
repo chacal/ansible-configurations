@@ -17,6 +17,26 @@
           "type": "providers/n2k-signalk"
         }
       ]
+    },
+    {
+      "id": "u-blox",
+      "pipeElements": [
+        {
+          "type": "providers/simple",
+          "options": {
+            "logging": false,
+            "type": "NMEA0183",
+            "subOptions": {
+              "validateChecksum": true,
+              "type": "serial",
+              "device": "/dev/ttyACM0",
+              "baudrate": 9600
+            }
+          }
+        }
+      ],
+      "enabled": true
     }
-  ]
+  ],
+  "interfaces": {}
 }
