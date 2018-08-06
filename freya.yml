@@ -94,6 +94,9 @@
       node_app_use_socket: false
       node_app_env:
         - MQTT_BROKER=mqtt://localhost
+    - role: zerotier
+      zerotier_network_id: "{{chacal.zerotier.network_id}}"
+      zerotier_moon_id: "{{chacal.zerotier.moon_id}}"
 
   tasks:
     - name: Create device link for NGW-1 serial port
