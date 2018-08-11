@@ -13,8 +13,8 @@
     - timezone: Europe/Helsinki
     - aws_access_key_id: "{{ chacal.aws.freya.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.freya.secret_key }}"
-    - router_ip_address: 10.90.100.1
-    - lan_ip_address: 10.90.100.2
+    - router_ip_address: 10.90.70.201
+    - lan_ip_address: 10.90.70.202
 
   vars_files:
     - secrets.yml
@@ -25,11 +25,14 @@
     - crda_domain
     - role: aws-cli
     - role: nat_router
-      nat_router_local_interface: eth0
-      nat_router_inet_interface: eth0
+      nat_router_local_interface: br0
+      nat_router_inet_interface: br0
+      nat_router_bridge_interfaces:
+        - eth0
+        - ztbpacrs4c
       nat_router_ip: "{{lan_ip_address}}"
       nat_router_gateway: "{{router_ip_address}}"
-      nat_router_dhcp_range: "10.90.100.50,10.90.100.150,24h"
+      nat_router_dhcp_range: "10.90.70.220,10.90.70.249,24h"
       nat_router_dhcp_options:
         - "option:router,{{router_ip_address}}"
       nat_router_static_ips: "{{ chacal.freya.nat_router_static_ips }}"
@@ -94,7 +97,7 @@
       node_app_use_socket: false
       node_app_env:
         - MQTT_BROKER=mqtt://localhost
-    - role: zerotier
+    - role: zerotier    # NOTE: Manually set allowManaged=0 in /var/lib/zerotier-one/networks.d/XXXXXXXXXXXX.local.conf after provisioning!
       zerotier_network_id: "{{chacal.zerotier.network_id}}"
       zerotier_moon_id: "{{chacal.zerotier.moon_id}}"
 
