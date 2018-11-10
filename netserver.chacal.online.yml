@@ -67,6 +67,7 @@
         - dma
         - mutt
         - iftop
+        - psmisc
 
     - name: Enable automatic upgrades
       include_role:
