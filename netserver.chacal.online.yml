@@ -53,23 +53,34 @@
         repo: deb http://deb.debian.org/debian stretch-backports main contrib non-free state=present update_cache=yes
 
     - name: Install/update dependencies
-      apt: pkg={{ item }} state=latest update_cache=yes
-      with_items:
-        - nginx
-        - grafana
-        - python-boto
-        - ufw
-        - sshguard
-        - libgrib-api-tools
-        - git
-        - postgresql-9.6-postgis-2.3
-        - influxdb
-        - certbot
-        - sudo
-        - dma
-        - mutt
-        - iftop
-        - psmisc
+      apt:
+        state: latest
+        update_cache: yes
+        pkg:
+          - nginx
+          - grafana
+          - python-boto
+          - ufw
+          - sshguard
+          - libgrib-api-tools
+          - git
+          - postgresql-9.6-postgis-2.3
+          - influxdb
+          - certbot
+          - sudo
+          - dma
+          - mutt
+          - iftop
+          - psmisc
+
+    - name: Install/update dependencies from backports
+      apt:
+        state: latest
+        update_cache: yes
+        default_release: "{{ansible_distribution_release}}-backports"
+        pkg:
+          - duply
+          - duplicity
 
     - name: Enable automatic upgrades
       include_role:
@@ -465,10 +476,4 @@
     - name: Restart zerotier
       systemd: name=zerotier-one state=restarted enabled=yes
       when: zerotier_moon.changed
-
-    - name: Install/update dependencies from backports
-      apt: pkg={{ item }} state=latest update_cache=yes default_release={{ansible_distribution_release}}-backports
-      with_items:
-        - duply
-        - duplicity
 
