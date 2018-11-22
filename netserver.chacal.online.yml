@@ -48,12 +48,15 @@
         repo: deb https://repos.influxdata.com/debian stretch stable
         state: present
 
+    - name: Add Debian backports repo
+      apt_repository:
+        repo: deb http://deb.debian.org/debian stretch-backports main contrib non-free state=present update_cache=yes
+
     - name: Install/update dependencies
       apt: pkg={{ item }} state=latest update_cache=yes
       with_items:
         - nginx
         - grafana
-        - duply
         - python-boto
         - ufw
         - sshguard
@@ -62,7 +65,6 @@
         - postgresql-9.6-postgis-2.3
         - influxdb
         - certbot
-        - duplicity
         - sudo
         - dma
         - mutt
@@ -463,4 +465,10 @@
     - name: Restart zerotier
       systemd: name=zerotier-one state=restarted enabled=yes
       when: zerotier_moon.changed
+
+    - name: Install/update dependencies from backports
+      apt: pkg={{ item }} state=latest update_cache=yes default_release={{ansible_distribution_release}}-backports
+      with_items:
+        - duply
+        - duplicity
 
