@@ -454,7 +454,7 @@
   #  Install Zerotier Moon
   #
     - name: Install Zerotier
-      apt: deb=https://download.zerotier.com/RELEASES/1.2.10/dist/debian/stretch/pool/main/z/zerotier-one/zerotier-one_1.2.10_amd64.deb state=present
+      apt: deb=https://download.zerotier.com/RELEASES/1.2.12/dist/debian/stretch/pool/main/z/zerotier-one/zerotier-one_1.2.12_amd64.deb state=present
 
     - name: Initialize moon.json
       shell: zerotier-idtool initmoon /var/lib/zerotier-one/identity.public > /var/lib/zerotier-one/moon.json creates=/var/lib/zerotier-one/moon.json
