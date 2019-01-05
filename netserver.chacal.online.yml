@@ -81,6 +81,7 @@
         pkg:
           - duply
           - duplicity
+          - prometheus-node-exporter
 
     - name: Enable automatic upgrades
       include_role:
