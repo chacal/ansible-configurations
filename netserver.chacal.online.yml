@@ -12,7 +12,7 @@
 
   pre_tasks:
     - name: 'Install python2'
-      raw: apt-get -y install python-simplejson
+      raw: apt-get -y install python-simplejson python-passlib
 
   roles:
 
@@ -102,21 +102,36 @@
     - name: Remove default Nginx site
       file: path=/etc/nginx/sites-enabled/default state=absent
       register: nginx_default_site
+      tags: nginx
 
     - name: Add custom Nginx SSL snippet
       copy: src=./conf/netserver_nginx_ssl_snippet.conf dest=/etc/nginx/snippets/ssl-netserver.conf
       register: nginx_custom_ssl_conf
+      tags: nginx
 
     - name: Add custom Nginx configuration
       copy: src=./conf/netserver_nginx.conf dest=/etc/nginx/conf.d/netserver_nginx.conf
       register: nginx_custom_site
+      tags: nginx
+
+    - name: Set credentials for basic auth access
+      htpasswd:
+        path: /etc/nginx/passwdfile
+        name: "{{ chacal.netserver.basic_auth.prometheus_metrics.username }}"
+        password: "{{ chacal.netserver.basic_auth.prometheus_metrics.password }}"
+        owner: root
+        group: www-data
+        mode: 0640
+      tags: nginx
 
     - name: Enable & start Nginx
       systemd: name=nginx state=restarted enabled=yes daemon_reload=yes
       when: nginx_default_site.changed or nginx_custom_ssl_conf.changed or nginx_custom_site.changed
+      tags: nginx
 
     - name: Reload Nginx periodically to get new SSL certs in use (certbot might have updated them)
       cron: name="Reload nginx" minute="0" hour="2" job="systemctl reload nginx"
+      tags: nginx
 
 
   #
