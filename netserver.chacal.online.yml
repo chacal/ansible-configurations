@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: true
-  remote_user: root
+  remote_user: jihartik
   gather_facts: yes
 
   vars_files:
