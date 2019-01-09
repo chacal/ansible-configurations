@@ -21,9 +21,6 @@
   #
   #  Install required packages
   #
-    - name: Install HTTPS support for Apt
-      apt: pkg=apt-transport-https state=latest update_cache=yes
-
     - name: Add Grafana repo Apt key
       apt_key: url="https://packages.grafana.com/gpg.key" state=present
 
