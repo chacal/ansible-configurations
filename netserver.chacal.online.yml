@@ -183,6 +183,15 @@
         line: '  query-log-enabled = false'
       notify: Restart InfluxDB
 
+    - name: Configure InfluxDB WAL fsync delay
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  wal-fsync-delay ='
+        insertafter: '^  # wal-fsync-delay = "0s"'
+        line: '  wal-fsync-delay = "1s"'
+      notify: Restart InfluxDB
+
     - name: Enable & start InfluxDB
       systemd: name=influxdb state=started enabled=yes daemon_reload=yes
 
