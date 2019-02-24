@@ -367,6 +367,7 @@
           password_file {{ mqtt_server_password_file }}
           allow_anonymous false
           acl_file {{ mqtt_server_acl_file }}
+          persistent_client_expiration 14d
 
           listener 1883 localhost
 
