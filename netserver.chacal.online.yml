@@ -174,13 +174,13 @@
         line: '  log-enabled = false'
       notify: Restart InfluxDB
 
-    - name: Configure InfluxDB log level to warn
+    - name: Configure InfluxDB to not log queries
       lineinfile:
         dest: /etc/influxdb/influxdb.conf
         state: present
-        regexp: '^  level = '
-        insertafter: '^  # level = "info"'
-        line: '  level = "warn"'
+        regexp: '^  query-log-enabled ='
+        insertafter: '^  # query-log-enabled = true'
+        line: '  query-log-enabled = false'
       notify: Restart InfluxDB
 
     - name: Enable & start InfluxDB
