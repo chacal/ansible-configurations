@@ -287,9 +287,6 @@
     - name: Allow MQTTS traffic in
       ufw: rule=allow port=8883 proto=tcp
 
-    - name: Allow Zerotier Moon traffic in
-      ufw: rule=allow port=9993 proto=udp
-
     - name: Enable firewall & disable logging
       ufw: state=enabled policy=deny logging=off
 
@@ -462,31 +459,3 @@
           - DB_PASSWD={{ chacal.netserver.postgis.password }}
           - MOUNT_PREFIX=/postgis-track-server
           - BASIC_AUTH_PASSWD={{ chacal.netserver.track_server.basic_auth_password }}
-
-  #
-  #  Install Zerotier Moon
-  #
-    - name: Install Zerotier
-      apt: deb=https://download.zerotier.com/RELEASES/1.2.12/dist/debian/stretch/pool/main/z/zerotier-one/zerotier-one_1.2.12_amd64.deb state=present
-
-    - name: Initialize moon.json
-      shell: zerotier-idtool initmoon /var/lib/zerotier-one/identity.public > /var/lib/zerotier-one/moon.json creates=/var/lib/zerotier-one/moon.json
-
-    - name: Configure moon IP
-      lineinfile:
-        dest: /var/lib/zerotier-one/moon.json
-        state: present
-        regexp: 'stableEndpoints'
-        line: "   \"stableEndpoints\": [\"{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/9993\", \"{{ hostvars[inventory_hostname]['ansible_default_ipv6']['address'] }}/9993\"]"
-
-    - name: Create moons.d directory
-      file: path=/var/lib/zerotier-one/moons.d state=directory
-
-    - name: Generate moon
-      shell: zerotier-idtool genmoon /var/lib/zerotier-one/moon.json creates=/var/lib/zerotier-one/moons.d/*.moon chdir=/var/lib/zerotier-one/moons.d
-      register: zerotier_moon
-
-    - name: Restart zerotier
-      systemd: name=zerotier-one state=restarted enabled=yes
-      when: zerotier_moon.changed
-
