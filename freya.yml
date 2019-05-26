@@ -38,13 +38,6 @@
         - "62.241.198.245"   # DNA DNS1
         - "62.241.198.246"   # DNA DNS2
       nat_router_disable: true  # Disable firewall & packet forwarding
-    - role: route53-ddns
-      route53_zoneid: "{{ chacal.route53.freya.zoneid }}"
-      route53_cname: "{{ chacal.route53.freya.cname }}"
-    - role: l2tp_vpn_server
-      l2tp_vpn_psk: "{{ chacal.l2tp_vpn_psk }}"
-      l2tp_vpn_local_ip: "{{ lan_ip_address }}"
-      l2tp_vpn_local_ip_range: 10.90.100.200-10.90.100.250
     - role: signalk
       signalk_settings_file: conf/signalk-settings-freya.json
     - role: mqtt-server
