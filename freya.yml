@@ -21,7 +21,8 @@
 
   roles:
     - common
-    - mcp2515-can
+    - role: mcp2515-can
+      mcp2515_int_pin: 25
     - crda_domain
     - role: aws-cli
     - role: nat_router
