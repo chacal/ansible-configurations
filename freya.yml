@@ -45,6 +45,9 @@
       mqtt_server_config: |
         autosave_interval 60
         max_queued_messages 500000
+        persistent_client_expiration 3m
+        log_timestamp true
+        connection_messages true
 
         listener 1883
 
