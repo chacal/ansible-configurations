@@ -26,11 +26,8 @@
     - crda_domain
     - role: aws-cli
     - role: nat_router
-      nat_router_local_interface: br0
-      nat_router_inet_interface: br0
-      nat_router_bridge_interfaces:
-        - eth0
-        - ztbpacrs4c
+      nat_router_local_interface: eth0
+      nat_router_inet_interface: eth0
       nat_router_ip: "{{lan_ip_address}}"
       nat_router_gateway: "{{router_ip_address}}"
       nat_router_dhcp_range: "10.90.70.220,10.90.70.249,24h"
@@ -91,9 +88,6 @@
         - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
         - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
         - USE_RADIO_HW=true
-    - role: zerotier    # NOTE: Manually set allowManaged=0 in /var/lib/zerotier-one/networks.d/XXXXXXXXXXXX.local.conf after provisioning!
-      zerotier_network_id: "{{chacal.zerotier.network_id}}"
-      zerotier_moon_id: "{{chacal.zerotier.moon_id}}"
     - role: docker-app
       docker_app_name: "bt-sensor-mqtt-decoder"
       docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
