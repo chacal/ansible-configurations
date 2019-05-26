@@ -35,8 +35,9 @@
         - "option:router,{{router_ip_address}}"
       nat_router_static_ips: "{{ chacal.freya.nat_router_static_ips }}"
       nat_router_dns_servers:
-        - "62.241.198.245"   # DNA DNS1
-        - "62.241.198.246"   # DNA DNS2
+        - "193.210.19.19"     # Telia DNS1
+        - "193.210.18.18"     # Telia DNS2
+        - "193.210.19.190"    # Telia DNS3
       nat_router_disable: true  # Disable firewall & packet forwarding
     - role: signalk
       signalk_settings_file: conf/signalk-settings-freya.json
