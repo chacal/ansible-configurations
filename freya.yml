@@ -72,21 +72,22 @@
         - NMEA_DEVICE_2=/dev/tacktick
         - NMEA_LOG_DIR=/opt/freya-nmealogs
         - MQTT_BROKER=mqtt://localhost
-    - role: node-app
-      node_app_name: "nrf24-to-mqtt-gateway"
-      node_app_git_repo: "https://github.com/chacal/nrf24-to-mqtt-gateway.git"
-      node_app_main: "index.js"
-      node_app_use_socket: false
-      node_app_env:
-        - MQTT_BROKER=mqtt://localhost
-        - NRF24_RX_ADDRESS={{ chacal.nrf.address }}
-        - NRF24_TX_ADDRESS={{ chacal.nrf.rfm69gwaddress }}
-        - USE_RADIO_HW=true
     - role: docker-app
       docker_app_name: "bt-sensor-mqtt-decoder"
       docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
       docker_app_env:
         - MQTT_BROKER=mqtt://{{lan_ip_address}}
+    - role: docker-app
+      docker_app_name: "rfm69-sensor-mqtt-decoder"
+      docker_app_container_name: "jihartik/rfm69-sensor-mqtt-decoder"
+      docker_app_env:
+        - MQTT_BROKER=mqtt://{{lan_ip_address}}
+    - role: docker-app
+      docker_app_name: "rfm69-mqtt-gateway"
+      docker_app_container_name: "jihartik/rfm69-mqtt-gateway"
+      docker_app_extra_params: "--privileged"
+      docker_app_env:
+        - MQTT_BROKER={{lan_ip_address}}
 
   tasks:
     - name: Create device link for NGW-1 serial port
