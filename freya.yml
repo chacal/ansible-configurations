@@ -40,7 +40,12 @@
         - "193.210.19.190"    # Telia DNS3
       nat_router_disable: true  # Disable firewall & packet forwarding
     - role: signalk
+      signalk_defaults_file: conf/signalk-defaults-freya.json
       signalk_settings_file: conf/signalk-settings-freya.json
+      signalk_plugins:
+        - plugin_name: "@signalk/aisreporter"
+          plugin_config_src: conf/signalk-aisreporter-conf.json
+          plugin_config_dst: aisreporter.json
     - role: mqtt-server
       mqtt_server_config: |
         autosave_interval 60

@@ -1,42 +1,41 @@
 {
   "pipedProviders": [
     {
-      "id": "canboatjs-can0",
-      "enabled": true,
-      "pipeElements": [
-        {
-          "type": "providers/canbus",
-          "options": {
-            "canDevice": "can0"
-          }
-        },
-        {
-          "type": "providers/canboatjs"
-        },
-        {
-          "type": "providers/n2k-signalk"
-        }
-      ]
-    },
-    {
-      "id": "u-blox",
       "pipeElements": [
         {
           "type": "providers/simple",
           "options": {
-            "logging": false,
+            "logging": true,
+            "type": "NMEA2000",
+            "subOptions": {
+              "type": "canbus-canboatjs",
+              "interface": "can0"
+            }
+          }
+        }
+      ],
+      "id": "canboatjs-can0",
+      "enabled": true
+    },
+    {
+      "pipeElements": [
+        {
+          "type": "providers/simple",
+          "options": {
+            "logging": true,
             "type": "NMEA0183",
             "subOptions": {
               "validateChecksum": true,
               "type": "serial",
               "device": "/dev/ttyACM0",
-              "baudrate": 9600
+              "baudrate": 9600,
+              "sentenceEvent": "ubloxdata"
             }
           }
         }
       ],
+      "id": "u-blox",
       "enabled": true
     }
-  ],
-  "interfaces": {}
+  ]
 }

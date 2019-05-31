@@ -1,0 +1,44 @@
+{
+  "interfaces": {},
+  "vessels": {
+    "self": {
+      "uuid": "urn:mrn:signalk:uuid:57e5b88b-be07-409d-8093-09e12bbd8aaf",
+      "name": "Freya",
+      "mmsi": "230061450",
+      "design": {
+        "draft": {
+          "value": {
+            "maximum": 1.95
+          }
+        },
+        "length": {
+          "value": {
+            "overall": 9.8
+          }
+        },
+        "beam": {
+          "value": 3.25
+        },
+        "airHeight": {
+          "value": 15.5
+        },
+        "aisShipType": {
+          "value": {
+            "name": "Sailing",
+            "id": 36
+          }
+        }
+      },
+      "sensors": {
+        "gps": {
+          "fromBow": {
+            "value": 6
+          },
+          "fromCenter": {
+            "value": 0.9
+          }
+        }
+      }
+    }
+  }
+}

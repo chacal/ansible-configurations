@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "enableLogging": false,
+  "configuration": {
+    "endpoints": [
+      {
+        "ipaddress": "5.9.207.224",
+        "port": 6687
+      }
+    ],
+    "updaterate": 15,
+    "staticupdaterate": 60
+  }
+}
