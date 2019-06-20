@@ -27,7 +27,7 @@
             "subOptions": {
               "validateChecksum": true,
               "type": "serial",
-              "device": "/dev/ttyACM0",
+              "device": "/dev/ublox",
               "baudrate": 9600,
               "sentenceEvent": "ubloxdata"
             }

@@ -109,6 +109,11 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{serial}=="A900DPSJ", SYMLINK+="tacktick"'
+    - name: Create device link for U-Blox GPS
+      lineinfile:
+        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
+        create=yes
+        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="01a8", ATTRS{idVendor}=="1546", SYMLINK+="ublox"'
     - name: Mount first USB block device automatically to /mnt/usb (ignore Huawei)
       lineinfile:
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
