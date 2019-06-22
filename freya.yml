@@ -114,6 +114,11 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="01a8", ATTRS{idVendor}=="1546", SYMLINK+="ublox"'
+    - name: Create device link for nRF52840 dongle
+      lineinfile:
+        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
+        create=yes
+        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="cafe", ATTRS{idVendor}=="1915", SYMLINK+="nrf52840"'
     - name: Mount first USB block device automatically to /mnt/usb (ignore Huawei)
       lineinfile:
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
