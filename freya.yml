@@ -103,6 +103,12 @@
       docker_app_env:
         - OPENTHREAD_DEVICE_PORT=/dev/nrf52840
     - role: rtc
+    - role: s3-upload
+      s3_upload_name: "signalk-raw-logs"
+      s3_upload_src_dir: "/home/pi/.signalk"
+      s3_upload_dst: "s3://freyalogs/signalk_2019/"
+      s3_upload_include_pattern: "skserver-raw*.log"
+      s3_upload_period: "120min"
 
   tasks:
     - name: Create device link for NGW-1 serial port
