@@ -1,0 +1,38 @@
+- id: '1574542757629'
+  alias: Turn on Christmas lights at sunset
+  description: ''
+  trigger:
+    - event: sunset
+      platform: sun
+  condition: []
+  action:
+    - data:
+        entity_id: scene.christmas_lights_on
+      service: scene.turn_on
+- id: '1574543054219'
+  alias: Turn off Christmas lights at sunrise
+  description: ''
+  trigger:
+    - event: sunrise
+      platform: sun
+  condition: []
+  action:
+    - data:
+        entity_id: scene.christmas_lights_off
+      service: scene.turn_on
+- id: '1575634968776'
+  alias: Motion detection test
+  description: ''
+  trigger:
+    - entity_id: binary_sensor.p302
+      from: 'off'
+      platform: state
+      to: 'on'
+  condition: []
+  action:
+    - data:
+        message: '{{ as_timestamp(now()) | timestamp_custom("%H:%M:%S", true) }} - Motion detected!'
+      service: notify.slack
+    - data:
+        message: Test test
+      service: notify.mobile_app_iphone
