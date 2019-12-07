@@ -106,12 +106,12 @@
       tags: nginx
 
     - name: Add custom Nginx SSL snippet
-      copy: src=./conf/netserver_nginx_ssl_snippet.conf dest=/etc/nginx/snippets/ssl-netserver.conf
+      copy: src=./conf/nginx_ssl_snippet.conf dest=/etc/nginx/snippets/ssl.conf
       register: nginx_custom_ssl_conf
       tags: nginx
 
     - name: Add custom Nginx configuration
-      copy: src=./conf/netserver_nginx.conf dest=/etc/nginx/conf.d/netserver_nginx.conf
+      copy: src=./conf/netserver.chacal.fi/nginx.conf dest=/etc/nginx/conf.d/netserver_nginx.conf
       register: nginx_custom_site
       tags: nginx
 
@@ -255,10 +255,10 @@
       file: path=/root/.duply/netserver state=directory
 
     - name: Setup duply backup configuration
-      template: src=./conf/netserver_duply_conf.j2 dest=/root/.duply/netserver/conf
+      template: src=./conf/netserver.chacal.fi/duply_conf.j2 dest=/root/.duply/netserver/conf
 
     - name: Setup duply backup excludes
-      copy: src=./conf/netserver_duply_exclude dest=/root/.duply/netserver/exclude
+      copy: src=./conf/netserver.chacal.fi/duply_exclude dest=/root/.duply/netserver/exclude
 
     - name: Setup Dupply S3 credentials
       copy:
