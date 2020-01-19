@@ -248,4 +248,4 @@
         docker_app_container_name: "homeassistant/home-assistant:stable"
         docker_app_extra_params: "--net=host -v /srv/home-assistant:/config --init"
         docker_app_env:
-          - TX=Europe/Helsinki
+          - TZ=Europe/Helsinki
