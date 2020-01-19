@@ -18,10 +18,6 @@
   #
   #  Install required packages
   #
-    - name: Add Debian backports repo
-      apt_repository:
-        repo: deb http://deb.debian.org/debian stretch-backports main contrib non-free state=present update_cache=yes
-
     - name: Install/update dependencies
       apt:
         state: latest
@@ -35,13 +31,6 @@
           - sudo
           - iftop
           - dma
-
-    - name: Install/update dependencies from backports
-      apt:
-        state: latest
-        update_cache: yes
-        default_release: "{{ansible_distribution_release}}-backports"
-        pkg:
           - duply
           - duplicity
           - prometheus-node-exporter
@@ -51,7 +40,7 @@
         name: unattended_upgrades
       vars:
         unattended_upgrades_email: "{{ chacal.ha.unattended_upgrades.email }}"
-        unattended_upgrades_origins: '"n=${distro_codename}"; "n=stretch-updates";'
+        unattended_upgrades_origins: '"n=${distro_codename}"; "n=buster-updates";'
 
   #
   #  Run 'certbot certonly --standalone -d ha.chacal.fi' to get certificates
