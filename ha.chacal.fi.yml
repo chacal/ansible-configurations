@@ -239,6 +239,13 @@
       copy: src=./conf/ha.chacal.fi/ha-scenes.yaml dest=/srv/home-assistant/scenes.yaml
       tags: ha
 
+    - name: Create empty group and script configs
+      file: path=/srv/home-assistant/{{ item }} state=touch
+      loop:
+        - groups.yaml
+        - scripts.yaml
+      tags: ha
+
     - name: Install Home Assistant
       include_role:
         name: docker-app
