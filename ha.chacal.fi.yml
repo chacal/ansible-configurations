@@ -246,6 +246,19 @@
         - scripts.yaml
       tags: ha
 
+    - name: Create Home Assistant custom_components directory
+      file: path=/srv/home-assistant/custom_components state=directory
+      tags: ha
+
+    - name: Install Mount Kelvin integration
+      git:
+        repo: https://github.com/chacal/ha_mount_kelvin_integration.git
+        dest: /srv/home-assistant/custom_components/mount_kelvin
+        force: yes
+        version: master
+      register: mount_kelvin_git_pull
+      tags: ha
+
     - name: Install Home Assistant
       include_role:
         name: docker-app
@@ -257,6 +270,9 @@
         docker_app_env:
           - TZ=Europe/Helsinki
 
+    - name: Restart Home Assistant
+      service: name=home-assistant state=restarted enabled=yes
+      when: mount_kelvin_git_pull.changed
 
 
     #

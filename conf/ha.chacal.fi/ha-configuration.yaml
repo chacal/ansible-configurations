@@ -86,6 +86,8 @@ light:
   - platform: switch
     name: Guest Room Table Light
     entity_id: switch.guest_room_table_light
+  - platform: mount_kelvin
+    api_key: !secret houm_api_key
 
 binary_sensor:
   - platform: mqtt
