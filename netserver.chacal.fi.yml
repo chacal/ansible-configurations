@@ -392,17 +392,13 @@
 
     - name: Install FMI Proxy
       include_role:
-        name: node-app
+        name: docker-app
       vars:
-        node_app_user: "nodeapp"
-        node_app_group: "nodeapp"
-        node_app_name: "fmiproxy"
-        node_app_git_repo: "https://github.com/chacal/fmiproxy"
-        node_app_use_socket: false
-        node_app_main: "built/App.js"
-        node_app_env:
-          - PORT=8000
-          - FMI_API_KEY={{ chacal.fmiproxy.fmi_api_key }}
+        docker_regular_user: "root"
+        docker_app_name: "fmiproxy"
+        docker_app_container_name: "jihartik/fmiproxy"
+        docker_app_extra_params: "--init -p 8000:8000"
+        docker_app_env:
           - MOUNT_PREFIX=/fmiproxy
 
     - name: Install Weather App
