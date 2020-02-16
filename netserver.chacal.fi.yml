@@ -402,6 +402,19 @@
         docker_app_env:
           - MOUNT_PREFIX=/fmiproxy
 
+    - name: Install Ouroboros
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "root"
+        docker_app_name: "ouroboros"
+        docker_app_container_name: "pyouroboros/ouroboros"
+        docker_app_extra_params: "-v /var/run/docker.sock:/var/run/docker.sock"
+        docker_app_env:
+          - "NOTIFIERS=sendgrid://{{ chacal.sendgrid.netserver }}:root@netserver.chacal.fi/jouni.hartikainen@iki.fi"
+          - TZ=Europe/Helsinki
+          - SELF_UPDATE=true
+
     - name: Install mqtt-to-influxdb-sender
       include_role:
         name: node-app

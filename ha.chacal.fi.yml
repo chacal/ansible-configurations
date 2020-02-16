@@ -256,3 +256,22 @@
         docker_app_extra_params: "--net=host -v /srv/home-assistant:/config --init"
         docker_app_env:
           - TZ=Europe/Helsinki
+
+
+
+    #
+    #  Install Ouroboros
+    #
+    - name: Install Ouroboros
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "root"
+        docker_app_name: "ouroboros"
+        docker_app_container_name: "pyouroboros/ouroboros"
+        docker_app_extra_params: "-v /var/run/docker.sock:/var/run/docker.sock"
+        docker_app_env:
+          - "NOTIFIERS=sendgrid://{{ chacal.sendgrid.netserver }}:root@ha.chacal.fi/jouni.hartikainen@iki.fi"
+          - TZ=Europe/Helsinki
+          - SELF_UPDATE=true
+
