@@ -393,16 +393,14 @@
 
     - name: Install Weather App
       include_role:
-        name: node-app
+        name: docker-app
       vars:
-        node_app_user: "nodeapp"
-        node_app_group: "nodeapp"
-        node_app_name: "weather_app"
-        node_app_git_repo: "https://github.com/chacal/weatherapp.git"
-        node_app_use_socket: false
-        node_app_main: "server/app.js"
-        node_app_env:
-          - PORT=8005
+        docker_regular_user: "root"
+        docker_app_name: "weatherapp"
+        docker_app_container_name: "jihartik/weatherapp"
+        docker_app_extra_params: "--init -p 8005:8005"
+        docker_app_env:
+          - MOUNT_PREFIX=/fmiproxy
 
     - name: Install mqtt-to-influxdb-sender
       include_role:
