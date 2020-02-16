@@ -33,14 +33,6 @@
         repo: deb https://packages.grafana.com/oss/deb stable main
         state: present
 
-    - name: Add PostgreSQL repository Apt key
-      apt_key: url="https://www.postgresql.org/media/keys/ACCC4CF8.asc" state=present
-
-    - name: Add PostgreSQL repo
-      apt_repository:
-        repo: deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main
-        state: present
-
     - name: Add InfluxDB repository Apt key
       apt_key: url="https://repos.influxdata.com/influxdb.key" state=present
 
@@ -63,9 +55,7 @@
           - python-boto
           - ufw
           - sshguard
-          - libgrib-api-tools
           - git
-          - postgresql-9.6-postgis-2.3
           - influxdb
           - certbot
           - sudo
@@ -433,38 +423,3 @@
           - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
           - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
-
-    - name: Install mqtt-to-postgis-writer
-      include_role:
-        name: node-app
-      vars:
-        node_app_user: "nodeapp"
-        node_app_group: "nodeapp"
-        node_app_name: "mqtt-to-postgis-writer"
-        node_app_git_repo: "https://github.com/chacal/mqtt-to-postgis-writer.git"
-        node_app_main: "built/Index.js"
-        node_app_use_socket: false
-        node_app_env:
-          - MQTT_BROKER=mqtts://mqtt.netserver.chacal.fi
-          - MQTT_USERNAME={{ chacal.netserver.mqtt_users[0].username }}
-          - MQTT_PASSWORD={{ chacal.netserver.mqtt_users[0].password }}
-          - DB_NAME=marinedata
-          - DB_USER={{ chacal.netserver.postgis.username }}
-          - DB_PASSWD={{ chacal.netserver.postgis.password }}
-
-    - name: Install postgis-track-server
-      include_role:
-        name: node-app
-      vars:
-        node_app_user: "nodeapp"
-        node_app_group: "nodeapp"
-        node_app_name: "postgis-track-server"
-        node_app_git_repo: "https://github.com/chacal/postgis-track-server.git"
-        node_app_main: "built/Index.js"
-        node_app_use_socket: false
-        node_app_env:
-          - DB_NAME=marinedata
-          - DB_USER={{ chacal.netserver.postgis.username }}
-          - DB_PASSWD={{ chacal.netserver.postgis.password }}
-          - MOUNT_PREFIX=/postgis-track-server
-          - BASIC_AUTH_PASSWD={{ chacal.netserver.track_server.basic_auth_password }}
