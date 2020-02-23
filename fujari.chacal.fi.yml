@@ -1,0 +1,59 @@
+---
+#
+# This playbook is used to provision Fujari after it has been provisioned using fujari-base.chacal.fi.yml
+# Assumptions:
+#  - Passwordless SSH connection with "jihartik"
+#  - Passwordless sudo for "jihartik"
+#
+
+- hosts: all
+  become: true
+  remote_user: jihartik
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - disks:
+        - /dev/disk/by-id/scsi-36003005701ef594025e3130b929326b3  # /dev/sda
+        - /dev/disk/by-id/scsi-36003005701ef594025e3130b9293bb07  # /dev/sdb
+
+  roles:
+
+  tasks:
+
+    - name: Check efi partitions
+      shell: efibootmgr | grep debian
+      register: efibootmgr
+
+    - name: Install GRUB on mirror devices
+      block:
+        - name: Unmount /boot/efi
+          mount:
+            path: /boot/efi
+            state: unmounted
+        - name: Copy GRUB to mirror disk
+          shell: |
+            dd if={{ disks[0] }}-part2 of={{ item }}-part2
+            efibootmgr -c -g -d {{ item }} -p 2 -L 'debian-{{ idx + 2 }}' -l '\EFI\debian\grubx64.efi'
+          loop: "{{ disks[1:] }}"
+          loop_control:
+            index_var: idx
+        - name: Mount /boot/efi
+          command: mount /boot/efi
+      when: efibootmgr.stdout_lines | length < disks | length
+
+    - name: Check log compression
+      shell: grep -rE '(^|[^#y])compress' /etc/logrotate.d
+      register: log_compression
+      failed_when: log_compression.rc > 1
+
+    - name: Disable log compression (zfs already compresses them)
+      shell: |
+        for file in /etc/logrotate.d/* ; do
+            if grep -Eq "(^|[^#y])compress" "$file" ; then
+                sed -i -r "s/(^|[^#y])(compress)/\1#\2/" "$file"
+            fi
+        done
+      when: log_compression.rc == 0
