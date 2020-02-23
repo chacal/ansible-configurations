@@ -1,0 +1,21 @@
+---
+- name: Check for required variables
+  assert:
+    that:
+      - github_token is defined
+
+- name: Install required packages
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - stow
+      - git
+      - zsh
+      - tmux
+
+- name: Update dotfiles for jihartik and root
+  include_tasks: setup_dotfiles_for_user.yml
+  loop:
+    - { username: jihartik, dst_dir: /home/jihartik/.dotfiles }
+    - { username: root, dst_dir: /root/.dotfiles }

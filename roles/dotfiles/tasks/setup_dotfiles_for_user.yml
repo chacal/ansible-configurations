@@ -1,0 +1,32 @@
+---
+- name: Update dotfiles repository
+  git:
+    repo: https://{{ github_username | urlencode }}:{{ github_token | urlencode }}@{{ github_repo }}
+    dest: "{{ item.dst_dir }}"
+  register: dotfiles_repo
+  changed_when: dotfiles_repo.after != dotfiles_repo.before
+  become_user: "{{ item.username }}"
+
+- name: Ensure remote Git URL does not contain credentials
+  git_config:
+    name: remote.origin.url
+    value: https://{{ github_repo }}
+    scope: local
+    repo: "{{ item.dst_dir }}"
+  changed_when: false
+  become_user: "{{ item.username }}"
+
+- name: Update dotfile links using stow
+  command: "stow -d {{ item.dst_dir }} git tmux zsh"
+  when: dotfiles_repo.changed
+  become_user: "{{ item.username }}"
+
+- name: Check current shell
+  shell: "grep -rE '^{{ item.username }}.*zsh' /etc/passwd"
+  register: zsh_shell
+  failed_when: zsh_shell.rc > 1
+  changed_when: false
+
+- name: Change shell to zsh
+  command: "chsh -s /usr/bin/zsh {{ item.username }}"
+  when: zsh_shell.rc == 1

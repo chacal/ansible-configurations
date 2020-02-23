@@ -1,0 +1,13 @@
+---
+#
+# Playbook that sets up Buster base image after it has been built with Packer using preseed.cfg
+#
+- hosts: all
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: dotfiles
+      github_token: "{{ chacal.github.access_tokens.https_cloning }}"
