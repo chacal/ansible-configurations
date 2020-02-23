@@ -1,0 +1,26 @@
+---
+- name: Install base packages
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - net-tools
+      - sysstat
+      - htop
+      - tmux
+      - git
+      - wget
+      - curl
+      - less
+      - libnss-mdns
+      - tcpdump
+      - man
+      - iftop
+      - dnsutils
+      - ndisc6
+      - avahi-daemon
+      - open-vm-tools
+      - zsh
+      - stow
+      - prometheus-node-exporter
+      - psmisc

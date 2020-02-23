@@ -1,0 +1,62 @@
+---
+#
+#  Configure DMA mail server with Sendgrid
+#
+- name: Check for required variables
+  assert:
+    that:
+      - sendgrid_api_key is defined
+
+- name: Install required packages
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - dma
+
+- name: Set DMA SMTP authentication
+  lineinfile:
+    dest: /etc/dma/auth.conf
+    state: present
+    regexp: "^apikey|smtp.sendgrid.net"
+    line: "apikey|smtp.sendgrid.net:{{ sendgrid_api_key }}"
+
+- name: Set DMA authpath
+  lineinfile:
+    dest: /etc/dma/dma.conf
+    state: present
+    regexp: '^AUTHPATH '
+    insertafter: '^#AUTHPATH'
+    line: 'AUTHPATH /etc/dma/auth.conf'
+
+- name: Set DMA smarthost
+  lineinfile:
+    dest: /etc/dma/dma.conf
+    state: present
+    regexp: '^SMARTHOST '
+    insertafter: '^#SMARTHOST'
+    line: 'SMARTHOST smtp.sendgrid.net'
+
+- name: Set DMA port
+  lineinfile:
+    dest: /etc/dma/dma.conf
+    state: present
+    regexp: '^PORT '
+    insertafter: '^#PORT'
+    line: 'PORT 587'
+
+- name: Set DMA secure transfer
+  lineinfile:
+    dest: /etc/dma/dma.conf
+    state: present
+    regexp: '^SECURETRANSFER'
+    insertafter: '^#SECURETRANSFER'
+    line: 'SECURETRANSFER'
+
+- name: Set DMA start tls
+  lineinfile:
+    dest: /etc/dma/dma.conf
+    state: present
+    regexp: '^STARTTLS'
+    insertafter: '^#STARTTLS'
+    line: 'STARTTLS'
