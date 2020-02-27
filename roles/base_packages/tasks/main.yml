@@ -24,3 +24,5 @@
       - stow
       - prometheus-node-exporter
       - psmisc
+      - cloud-init
+      - cloud-initramfs-growroot
