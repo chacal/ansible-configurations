@@ -1,4 +1,9 @@
 ---
+- name: Upgrade existing packages
+  apt:
+    upgrade: dist
+    cache_valid_time: 3600
+
 - name: Install base packages
   apt:
     state: latest
