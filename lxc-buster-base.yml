@@ -1,0 +1,9 @@
+---
+#
+# Playbook that sets up LXC Buster base image built using build-lxc-base-image.yml playbook
+#
+- hosts: all
+  become: true
+
+  roles:
+    - base_packages

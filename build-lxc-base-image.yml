@@ -1,0 +1,187 @@
+---
+#
+# 1) Sets up a VM (lxc-builder.chacal.fi) for building LXC containers using Packer and Ansible
+# 2) Builds a new LXC Buster base image using Packer in the VM using lxc-buster-base.yml playbook
+# 3) Fixes paths in the built .tar.gz package by decompressing and compressing it again
+# 4) Downloads the fixed archive to localhost and from there to Proxmox host as a new LXC template
+#
+- hosts: lxc-builder.chacal.fi
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    packer_version: 1.5.4
+
+  handlers:
+    - name: Restart networking
+      service: name=networking state=restarted
+
+
+#
+# Set up the destination VM for building LXC containers with Packer & Ansible
+#
+  tasks:
+    - name: Remove cloud-init generated network config
+      file:
+        path: /etc/network/interfaces.d/50-cloud-init.cfg
+        state: absent
+      notify: Restart networking
+
+    - name: Setup bridged networking
+      copy:
+        dest: /etc/network/interfaces.d/custom-bridge.cfg
+        content: |
+          auto lo
+          iface lo inet loopback
+              dns-nameservers {{ ansible_dns.nameservers[0] }}
+              dns-search {{ ansible_domain }}
+
+          auto eth0
+          iface eth0 inet manual
+
+          auto br0
+          iface br0 inet static
+              bridge_ports eth0
+                  address {{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}
+                  gateway {{ ansible_default_ipv4.gateway }}
+      notify: Restart networking
+
+    # Enforce network changes
+    - meta: flush_handlers
+
+    - name: Install Ansible repository
+      apt_repository:
+        repo: "ppa:ansible/ansible"
+        codename: bionic
+
+    - name: Ensure dependencies are installed.
+      apt:
+        state: latest
+        cache_valid_time: 3600
+        pkg:
+          - unzip
+          - lxc
+          - ansible
+          - python-lxc
+          - pigz
+
+    - name: Download and unarchive Packer.
+      unarchive:
+        src: https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: true
+        creates: /usr/local/bin/packer
+
+
+#
+# Build the LXC container
+#
+    - name: Synchronize playbooks to remote host
+      synchronize:
+        src: "{{ playbook_dir }}/../.."
+        dest: /root/marinepi-provisioning
+
+    - name: Upload Packer build template
+      copy:
+        dest: /root/packer-lxc.json
+        content: |
+          {
+            "builders": [
+              {
+                "type": "lxc",
+                "name": "lxc-buster",
+                "config_file": "/root/lxc.conf",
+                "template_name": "download",
+                "target_runlevel": 5,
+                "template_parameters": [
+                  "--dist", "debian",
+                  "--arch", "amd64",
+                  "--release","buster"
+                ],
+                "create_options": [
+                  "-f", "/root/lxc.conf"
+                ]
+              }
+            ],
+            "provisioners": [
+              {
+                "type": "shell",
+                "inline": "while ! $(ip -4 a show dev eth0 | grep -q inet); do echo Waiting for IP..; sleep 1; done"
+              },
+              {
+                "type": "shell",
+                "inline": "apt-get install -y python3 python3-apt"
+              },
+              {
+                "type": "ansible",
+                "playbook_file": "/root/marinepi-provisioning/playbooks/chacal/lxc-buster-base.yml",
+                "inventory_file": "packer-lxc-buster,",
+                "extra_arguments": [
+                  "--connection=lxc"
+                ]
+              }
+            ]
+          }
+    - name: Upload LXC configuration file
+      copy:
+        dest: /root/lxc.conf
+        content: |
+          lxc.net.0.type = veth
+          lxc.net.0.flags = up
+          lxc.net.0.hwaddr = 12:EB:F7:17:01:05
+          lxc.net.0.name = eth0
+          lxc.net.0.link = br0
+          lxc.apparmor.profile = generated
+          lxc.apparmor.allow_nesting = 1
+
+    - name: Clean previously decompressed rootfs
+      file:
+        path: /tmp/rootfs
+        state: absent
+
+    - name: Clean previously compressed rootfs
+      file:
+        path: /root/lxc-buster-base.tar.gz
+        state: absent
+
+    - name: Run packer
+      command:
+        cmd: packer build /root/packer-lxc.json
+        chdir: /root
+
+
+#
+# Fix paths in the archive by decompressing & recompressing it (removes './rootfs' part from the filenames)
+#
+    - name: Extract created rootfs to /tmp/
+      unarchive:
+        src: /root/output-lxc-buster/rootfs.tar.gz
+        dest: /tmp
+        remote_src: yes
+
+    - name: Generate rootfs package name
+      set_fact:
+        rootfs_pkg: "lxc-buster-base-{{ ansible_date_time.date }}.tar.gz"
+      tags: test
+
+    - name: Compress rootfs again to remove ./rootfs prefix from files
+      shell:
+        cmd: "tar --use-compress-program pigz -cf /root/{{ rootfs_pkg }} *"
+        chdir: /tmp/rootfs
+        warn: false
+
+
+#
+# Copy rootfs archive to localhost and from there to Proxmox host
+#
+    - name: Copy compressed rootfs to local
+      synchronize:
+        src: "/root/{{ rootfs_pkg }}"
+        dest: "/Users/jihartik/nonbackupped/Disk Images/lxc/"
+        mode: pull
+
+    - name: Copy compressed rootfs to Proxmox
+      local_action: "command rsync '/Users/jihartik/nonbackupped/Disk Images/lxc/{{ rootfs_pkg }}' root@fujari.chacal.fi:/var/lib/vz/template/cache/{{ rootfs_pkg }}"
+      become: false
