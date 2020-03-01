@@ -26,3 +26,5 @@
       - psmisc
       - cloud-init
       - cloud-initramfs-growroot
+      - openssh-server
+      - bridge-utils
