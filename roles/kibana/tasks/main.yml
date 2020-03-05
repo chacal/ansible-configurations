@@ -1,0 +1,62 @@
+---
+- name: Add Elastic apt key
+  apt_key: url=https://artifacts.elastic.co/GPG-KEY-elasticsearch state=present
+  tags: kibana
+
+- name: Add Elastic apt repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    update_cache: yes
+  tags: kibana
+
+- name: Install Kibana
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - kibana
+  tags: kibana
+
+- name: Set Kibana bind address
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    state: present
+    regexp: "^server.host "
+    insertafter: "^#server.host"
+    line: "server.host: \"{{ ansible_default_ipv4.address }}\""
+  notify: Restart Kibana
+  tags: kibana
+
+- name: Set Kibana server name
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    state: present
+    regexp: "^server.name "
+    insertafter: "^#server.name"
+    line: "server.name: \"{{ inventory_hostname }}\""
+  notify: Restart Kibana
+  tags: kibana
+
+- name: Set Kibana logging to quiet
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    state: present
+    regexp: "^logging.quiet "
+    insertafter: "^#logging.quiet"
+    line: "logging.quiet: true"
+  notify: Restart Kibana
+  tags: kibana
+
+- name: Set Kibana Elasticsearch hosts
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    state: present
+    regexp: "^elasticsearch.hosts"
+    insertafter: "^#elasticsearch.hosts"
+    line: "elasticsearch.hosts: [\"{{ kibana_elasticsearch_url }}\"]"
+  notify: Restart Kibana
+  tags: kibana
+
+- name: Enable and start Kibana
+  service: name=kibana state=started enabled=yes
+  tags: kibana
