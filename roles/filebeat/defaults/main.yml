@@ -1,0 +1,5 @@
+---
+filebeat_elasticsearch_hosts:
+  - "localhost:9200"
+filebeat_input_paths:
+  - "/var/log/**/*"

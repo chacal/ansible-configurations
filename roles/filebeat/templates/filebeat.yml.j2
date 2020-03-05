@@ -1,0 +1,38 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+
+  paths:
+{% for path in filebeat_input_paths %}
+    - {{ path }}
+{% endfor %}
+
+# /var/log/messages, /var/log/syslog, /var/log/auth.log and /var/log/secure are handled by system module
+  exclude_files:
+    - /var/log/wtmp
+    - /var/log/lastlog
+    - /var/log/faillog
+    - /var/log/messages*
+    - /var/log/syslog*
+    - /var/log/auth.log*
+    - /var/log/secure*
+    - .gz$
+    - .xz$
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+
+setup.template.settings:
+  index.number_of_shards: 1
+
+name: {{ inventory_hostname }}
+
+output.elasticsearch:
+  hosts:
+{% for host in filebeat_elasticsearch_hosts %}
+    - {{ host }}
+{% endfor %}
+
+
+logging.level: warning
+logging.metrics.enabled: false

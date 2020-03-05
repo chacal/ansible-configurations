@@ -1,0 +1,3 @@
+---
+- name: Restart Filebeat
+  service: name=filebeat state=restarted

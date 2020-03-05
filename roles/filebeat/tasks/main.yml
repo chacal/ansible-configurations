@@ -1,0 +1,36 @@
+---
+- name: Add Elastic apt key
+  apt_key: url=https://artifacts.elastic.co/GPG-KEY-elasticsearch state=present
+  tags: filebeat
+
+- name: Add Elastic apt repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    update_cache: yes
+  tags: filebeat
+
+- name: Install Filebeat
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - filebeat
+  tags: filebeat
+
+- name: Enable Filebeat system module
+  command:
+    cmd: filebeat modules enable system
+    creates: /etc/filebeat/modules.d/system.yml
+  notify: Restart Filebeat
+  tags: filebeat
+
+- name: Install Filebeat configuration file
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+  notify: Restart Filebeat
+  tags: filebeat
+
+- name: Enable and start Filebeat
+  service: name=filebeat state=started enabled=yes
+  tags: filebeat
