@@ -1,0 +1,70 @@
+---
+#
+# This playbook is used to provision Fujari after fresh Proxmox installation
+# Assumptions:
+#  - Passwordless SSH connection with "root"
+#
+
+- hosts: all
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    arc_cache_size: 3221225472
+
+  handlers:
+    - name: Update boot parameters
+      command: pve-efiboot-tool refresh
+    - name: Update ARC cache size
+      shell: |
+        echo {{ arc_cache_size }} > /sys/module/zfs/parameters/zfs_arc_max
+        echo 3 > /proc/sys/vm/drop_caches
+
+  roles:
+
+  tasks:
+
+    - name: Check log compression
+      shell: grep -rE '(^|[^#y])compress' /etc/logrotate.d
+      register: log_compression
+      failed_when: log_compression.rc > 1
+
+    - name: Disable log compression (zfs already compresses them)
+      shell: |
+        for file in /etc/logrotate.d/* ; do
+            if grep -Eq "(^|[^#y])compress" "$file" ; then
+                sed -i -r "s/(^|[^#y])(compress)/\1#\2/" "$file"
+            fi
+        done
+      when: log_compression.rc == 0
+
+    - name: Enable IOMMU
+      copy:
+        dest: /etc/kernel/cmdline
+        content: root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on
+      notify: Update boot parameters
+
+    - name: Load required modules for IOMMU
+      lineinfile:
+        dest: /etc/modules
+        state: present
+        line: '{{ item }}'
+      loop:
+        - vfio
+        - vfio_iommu_type1
+        - vfio_pci
+        - vfio_virqfd
+
+    - name: Cap ZFS ARC cache
+      copy:
+        dest: /etc/modprobe.d/zfs.conf
+        content: 'options zfs zfs_arc_max={{ arc_cache_size }}'
+      notify: Update ARC cache size
+
+    - name: Create directory for cloud-init userdata files
+      file:
+        path: /var/lib/vz/snippets
+        state: directory
