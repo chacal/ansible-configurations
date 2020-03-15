@@ -17,3 +17,10 @@
       sendgrid_api_key: "{{ chacal.sendgrid.buster_base }}"
     - role: dotfiles
       github_token: "{{ chacal.github.access_tokens.https_cloning }}"
+
+  tasks:
+    - name: Remove installer logs
+      file:
+        path: /var/log/installer
+        state: absent
+
