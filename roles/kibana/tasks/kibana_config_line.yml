@@ -1,0 +1,9 @@
+- name: "Set Kibana config value: {{ key }}"
+  lineinfile:
+    dest: /etc/kibana/kibana.yml
+    state: present
+    regexp: "^{{ key }}"
+    insertafter: "^#{{ key }}"
+    line: "{{ key }}: {{ value }}"
+  notify: Restart Kibana
+  tags: kibana

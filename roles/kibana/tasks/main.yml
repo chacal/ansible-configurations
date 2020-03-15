@@ -17,44 +17,28 @@
       - kibana
   tags: kibana
 
-- name: Set Kibana bind address
-  lineinfile:
-    dest: /etc/kibana/kibana.yml
-    state: present
-    regexp: "^server.host "
-    insertafter: "^#server.host"
-    line: "server.host: \"{{ ansible_default_ipv4.address }}\""
-  notify: Restart Kibana
+- name: Set Kibana config values
+  include_tasks: kibana_config_line.yml
+  vars:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop:
+    - { key: server.host, value: "\"{{ ansible_default_ipv4.address }}\"" }
+    - { key: server.name, value: "\"{{ inventory_hostname }}\"" }
+    - { key: logging.quiet, value: "true" }
+    - { key: elasticsearch.hosts, value: "[\"{{ kibana_elasticsearch_url }}\"]" }
   tags: kibana
 
-- name: Set Kibana server name
-  lineinfile:
-    dest: /etc/kibana/kibana.yml
-    state: present
-    regexp: "^server.name "
-    insertafter: "^#server.name"
-    line: "server.name: \"{{ inventory_hostname }}\""
-  notify: Restart Kibana
-  tags: kibana
-
-- name: Set Kibana logging to quiet
-  lineinfile:
-    dest: /etc/kibana/kibana.yml
-    state: present
-    regexp: "^logging.quiet "
-    insertafter: "^#logging.quiet"
-    line: "logging.quiet: true"
-  notify: Restart Kibana
-  tags: kibana
-
-- name: Set Kibana Elasticsearch hosts
-  lineinfile:
-    dest: /etc/kibana/kibana.yml
-    state: present
-    regexp: "^elasticsearch.hosts"
-    insertafter: "^#elasticsearch.hosts"
-    line: "elasticsearch.hosts: [\"{{ kibana_elasticsearch_url }}\"]"
-  notify: Restart Kibana
+- name: Setup TLS for Kibana UI
+  include_tasks: kibana_config_line.yml
+  vars:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop:
+    - { key: server.ssl.certificate, value: "{{ kibana_ssl_cert_path }}" }
+    - { key: server.ssl.key, value: "{{ kibana_ssl_key_path }}" }
+    - { key: server.ssl.enabled, value: "true" }
+  when: kibana_ssl_cert_path != "" and kibana_ssl_key_path != ""
   tags: kibana
 
 - name: Enable and start Kibana
