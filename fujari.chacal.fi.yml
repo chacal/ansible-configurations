@@ -14,6 +14,9 @@
 
   vars:
     arc_cache_size: 3221225472
+    disks:
+      - /dev/disk/by-id/scsi-36003005701ef594025e3130b929326b3  # /dev/sdc, 1.8TB HDD
+      - /dev/disk/by-id/scsi-36003005701ef594025e3130b9293bb07  # /dev/sdc, 1.8TB HDD
 
   handlers:
     - name: Update boot parameters
@@ -79,3 +82,86 @@
       apt_repository:
         repo: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
         state: present
+
+
+
+    ######################################################
+    #
+    #  Setup ZFS hddpool and PVE storage pool in it
+    #
+    - name: Gather zpool facts
+      zpool_facts:
+      tags: hddpool
+
+    - set_fact:
+        hddpool_missing: "{{ 'hddpool' not in ansible_zfs_pools | map(attribute='name') }}"
+      tags: hddpool
+
+    - name: Confirm hddpool creation
+      pause:
+        prompt: |
+
+          ##################################################################################
+          ##
+          ##  WARNING!! WARNING!! WARNING!! WARNING!!
+          ##
+          ##  ZFS pool "hddpool" doesn't exist!
+          ##
+          ##  Do you want to create it? This will WIPE ALL DATA on /dev/sdc and /dev/sdd!
+          ##
+          ##  Create hddpool? (yes/no) (Answering "no" skips the pool creation)
+      register: create_hddpool
+      when: hddpool_missing | bool
+      tags: hddpool
+
+    - name: Create ZFS pool "hddpool"
+      block:
+        - name: Remove existing partitions
+          shell: |
+            sgdisk --zap-all {{ item }}
+          loop: "{{ vars.disks }}"
+        - name: Remove potentially existing ZFS labels
+          shell: |
+            zpool labelclear -f {{ item }}
+            sleep 2
+          loop: "{{ vars.disks }}"
+          ignore_errors: yes
+        - name: Create hddpool pool
+          shell: |
+            zpool create -o ashift=12 \
+                -O acltype=posixacl -O canmount=off -O compression=lz4 \
+                -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa \
+                hddpool \
+                mirror {{ vars.disks | join(' ') }}
+      when: hddpool_missing and create_hddpool.user_input | default(false) | bool
+      tags: hddpool
+
+    - name: Gather zfs mounts
+      command: zfs mount
+      register: zfs_mounts
+      changed_when: False
+      tags: hddpool
+
+    - name: Create datasets
+      zfs:
+        name: "{{ item.name }}"
+        extra_zfs_properties:
+          canmount: "{{ item.canmount }}"
+          mountpoint: "{{ item.mountpoint }}"
+        state: present
+      when: "not hddpool_missing and zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
+      loop:
+        - { name: hddpool/data, mountpoint: /hddpool/data, canmount: on }
+      tags: hddpool
+
+    - name: Gather storage pools
+      shell: pvesm status | sed "1d" | awk '{print $1}'
+      register: storage_pools
+      changed_when: False
+      tags: hddpool
+
+    - name: Create hdd-zfs storage pool
+      command:
+        cmd: pvesm add zfspool hdd-zfs --pool hddpool/data --content rootdir,images --sparse 1
+      when: "'hdd-zfs' not in storage_pools.stdout_lines"
+      tags: hddpool
