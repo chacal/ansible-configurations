@@ -1,0 +1,55 @@
+---
+#
+# Playbook that sets up ELK stack on Buster base VM
+#
+- hosts: elastic.chacal.fi
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  roles:
+    - role: elastic.elasticsearch
+      es_version: 7.6.0
+      es_heap_size: 1g
+      es_config:
+        network.host: 0.0.0.0
+        discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
+        cluster.initial_master_nodes: "{{ ansible_default_ipv4.address }}"
+      es_jvm_custom_parameters:
+        - "-Xlog:disable"      # Disable JVM GC logging
+
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+
+    - role: certbot-dns-route53
+      certbot_email: "{{ chacal.certbot.email }}"
+
+    - role: kibana
+      kibana_ssl_cert_path: "/etc/kibana/fullchain.pem"
+      kibana_ssl_key_path: "/etc/kibana/privkey.pem"
+
+  tasks:
+    - name: Install certbot deploy-hook to copy generated certificates
+      copy:
+        dest: /etc/letsencrypt/renewal-hooks/deploy/10-kibana.sh
+        content: |
+          #!/bin/bash
+          echo "Updating Kibana certificates with certbot deploy-hook.."
+          cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/kibana/
+          cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/kibana/
+          chown kibana:kibana /etc/kibana/*.pem
+          systemctl restart kibana.service
+          echo "Kibana certificates updated and Kibana restarted"
+        mode: "755"
+
+    - name: Ensure Kibana certs are copied to /etc/kibana for the first time
+      command:
+        cmd: /etc/letsencrypt/renewal-hooks/deploy/10-kibana.sh
+        creates: /etc/kibana/fullchain.pem
