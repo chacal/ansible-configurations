@@ -24,3 +24,11 @@
         path: /var/log/installer
         state: absent
 
+    - name: Setup empty /etc/network/interfaces
+      copy:
+        dest: /etc/network/interfaces
+        content: |
+          # This file describes the network interfaces available on your system
+          # and how to activate them. For more information, see interfaces(5).
+
+          source /etc/network/interfaces.d/*
