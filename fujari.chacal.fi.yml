@@ -30,6 +30,7 @@
     - name: Check log compression
       shell: grep -rE '(^|[^#y])compress' /etc/logrotate.d
       register: log_compression
+      changed_when: False
       failed_when: log_compression.rc > 1
 
     - name: Disable log compression (zfs already compresses them)
