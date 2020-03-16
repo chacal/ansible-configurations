@@ -91,11 +91,11 @@
     #
     - name: Gather zpool facts
       zpool_facts:
-      tags: hddpool
+      tags: storagepools
 
     - set_fact:
         hddpool_missing: "{{ 'hddpool' not in ansible_zfs_pools | map(attribute='name') }}"
-      tags: hddpool
+      tags: storagepools
 
     - name: Confirm hddpool creation
       pause:
@@ -112,7 +112,7 @@
           ##  Create hddpool? (yes/no) (Answering "no" skips the pool creation)
       register: create_hddpool
       when: hddpool_missing | bool
-      tags: hddpool
+      tags: storagepools
 
     - name: Create ZFS pool "hddpool"
       block:
@@ -134,13 +134,13 @@
                 hddpool \
                 mirror {{ vars.disks | join(' ') }}
       when: hddpool_missing and create_hddpool.user_input | default(false) | bool
-      tags: hddpool
+      tags: storagepools
 
     - name: Gather zfs mounts
       command: zfs mount
       register: zfs_mounts
       changed_when: False
-      tags: hddpool
+      tags: storagepools
 
     - name: Create datasets
       zfs:
@@ -149,19 +149,23 @@
           canmount: "{{ item.canmount }}"
           mountpoint: "{{ item.mountpoint }}"
         state: present
-      when: "not hddpool_missing and zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
+      when: "zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
       loop:
-        - { name: hddpool/data, mountpoint: /hddpool/data, canmount: on }
-      tags: hddpool
+        - { name: hddpool/nonbackupped, mountpoint: /hddpool/nonbackupped, canmount: on }
+        - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+      tags: storagepools
 
     - name: Gather storage pools
       shell: pvesm status | sed "1d" | awk '{print $1}'
       register: storage_pools
       changed_when: False
-      tags: hddpool
+      tags: storagepools
 
-    - name: Create hdd-zfs storage pool
+    - name: Create PVE storage pools
       command:
-        cmd: pvesm add zfspool hdd-zfs --pool hddpool/data --content rootdir,images --sparse 1
-      when: "'hdd-zfs' not in storage_pools.stdout_lines"
-      tags: hddpool
+        cmd: "pvesm add zfspool {{ item.name }} --pool {{ item.dataset }} --content rootdir,images --sparse 1"
+      when: "item.name not in storage_pools.stdout_lines"
+      loop:
+        - { name: "hdd-zfs-nonbackupped", dataset: hddpool/nonbackupped }
+        - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
+      tags: storagepools
