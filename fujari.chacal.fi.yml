@@ -27,6 +27,8 @@
         echo 3 > /proc/sys/vm/drop_caches
 
   roles:
+    - role: sendgrid_with_dma
+      sendgrid_api_key: "{{ chacal.sendgrid.fujari }}"
 
   tasks:
 
