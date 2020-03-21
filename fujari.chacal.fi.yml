@@ -28,6 +28,7 @@
     - role: arc_size
       arc_cache_size: 3221225472
     - role: disable_log_compression
+    - role: pve_common
 
   tasks:
     - name: Enable IOMMU
@@ -35,41 +36,6 @@
         dest: /etc/kernel/cmdline
         content: root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on
       notify: Update boot parameters
-
-    - name: Load required modules for IOMMU
-      lineinfile:
-        dest: /etc/modules
-        state: present
-        line: '{{ item }}'
-      loop:
-        - vfio
-        - vfio_iommu_type1
-        - vfio_pci
-        - vfio_virqfd
-
-    - name: Create directory for cloud-init userdata files
-      file:
-        path: /var/lib/vz/snippets
-        state: directory
-
-    - name: Remove PVE Enterprise APT repository
-      file:
-        path: /etc/apt/sources.list.d/pve-enterprise.list
-        state: absent
-
-    - name: Add PVE no-subscription APT repository
-      apt_repository:
-        repo: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
-        state: present
-
-    # Stop storage replication systemd timer to prevent it from polluting logs
-    - name: Stop PVE storage replication timer
-      systemd:
-        name: "pvesr.timer"
-        daemon_reload: yes
-        enabled: no
-        state: stopped
-
 
 
     ######################################################
