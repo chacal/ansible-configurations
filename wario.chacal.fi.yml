@@ -1,0 +1,173 @@
+---
+#
+# This playbook is used to provision Wario after base installation using wario-install.chacal.fi
+# Assumptions:
+#  - Passwordless SSH connection with "jihartik"
+#  - Passwordless sudo with "jihartik"
+#
+
+- hosts: all
+  become: true
+  remote_user: jihartik
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: Restart vmbr0
+      shell: |
+        ifdown vmbr0 || true
+        ifup vmbr0 || true
+
+  roles:
+    - role: sendgrid_with_dma
+      sendgrid_api_key: "{{ chacal.sendgrid.wario }}"
+    - role: arc_size
+      arc_cache_size: 17179869184
+    - role: disable_log_compression
+    - role: zfs_datasets
+      zfs_datasets:
+        - { name: rpool/data, mountpoint: /rpool/data, canmount: on }
+        - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+    - role: sanoid
+      sanoid_config: |
+        [rpool]
+                use_template = pve_system
+                recursive = yes
+
+        [rpool/data]
+                use_template = vm_disks
+                recursive = yes
+
+        [rpool/nonbackupped]
+                use_template = ignore
+
+        [template_pve_system]
+                frequent_period = 30
+                # 6h worth of 30min snapshots
+                frequently = 12
+                hourly = 48
+                daily = 21
+                monthly = 3
+                yearly = 0
+                autosnap = yes
+                autoprune = yes
+
+        [template_vm_disks]
+                frequent_period = 30
+                # 24h worth of 30min snapshots
+                frequently = 48
+                hourly = 48
+                daily = 21
+                monthly = 12
+                yearly = 0
+                autosnap = yes
+                autoprune = yes
+
+        [template_ignore]
+                autoprune = no
+                autosnap = no
+                monitor = no
+
+  tasks:
+    - name: Add PVE apt key
+      apt_key:
+        url: http://download.proxmox.com/debian/proxmox-ve-release-6.x.gpg
+        state: present
+
+    - name: Add PVE no-subscription APT repository
+      apt_repository:
+        repo: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+        state: present
+
+    - name: Install Proxmox & tools
+      apt:
+        state: latest
+        cache_valid_time: 3600
+        pkg:
+          - proxmox-ve
+          - open-iscsi
+          - man
+          - sysstat
+
+    - name: Remove os-prober
+      apt:
+        state: absent
+        pkg: os-prober
+
+    - name: Setup PVE
+      include_role: name=pve_common
+
+    - name: Add PVE admin user
+      include_role:
+        name: pve_admin_user
+      vars:
+        pve_admin_username: pve_admin
+        pve_admin_pw_hash: "{{ chacal.wario.proxmox_user_pw_hash }}"
+      tags: pve_admin_user
+
+    - name: Setup PVE storage pools
+      include_role: name=pve_storagepools
+      vars:
+        pve_storagepools:
+          - { name: "local-zfs", dataset: rpool/data }
+          - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
+
+    - name: Install Zerotier for MGMT-ZT
+      include_role:
+        name: zerotier
+      vars:
+        zerotier_network_id: "{{ chacal.zerotier.mgmt.network_id }}"
+        zerotier_moon_id: "{{ chacal.zerotier.mgmt.moon_id }}"
+
+    - name: Install Zerotier for TRANSIT-ZT
+      include_role:
+        name: zerotier
+      vars:
+        zerotier_network_id: "{{ chacal.zerotier.transit.network_id }}"
+        zerotier_moon_id: "{{ chacal.zerotier.transit.moon_id }}"
+
+    - name: Setup networks
+      copy:
+        dest: /etc/network/interfaces
+        content: |
+          ### Hetzner Online GmbH installimage
+
+          auto lo
+          iface lo inet loopback
+          iface lo inet6 loopback
+
+          auto wanbr0
+          iface wanbr0 inet static
+            address 95.216.42.125
+            netmask 255.255.255.192
+            gateway 95.216.42.65
+            bridge_ports enp0s31f6
+            dns-nameservers 213.133.98.98 213.133.99.99 213.133.100.100
+
+          iface wanbr0 inet6 static
+            address 2a01:4f9:2a:2882::2
+            netmask 64
+            gateway fe80::1
+            dns-nameservers 2a01:4f8:0:a0a1::add:1010 2a01:4f8:0:a102::add:9999 2a01:4f8:0:a111::add:9898
+
+          auto vmbr0
+          iface vmbr0 inet manual
+            bridge_ports ztzlgndbao
+            bridge_stp off
+            bridge_fd 0
+            bridge-vlan-aware yes
+            bridge-vids 2-4094
+
+          source /etc/network/interfaces.d/*
+
+      notify: Restart vmbr0
+
+    - name: Add SSH key for root
+      lineinfile:
+        dest: /root/.ssh/authorized_keys
+        state: present
+        line: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApxT0ZP4MsFQ7PC43ugWcGNbHLfXN3kqx0rMMhfGsKCxvhLTGYwveDFfIrimCWWCWg248oNR0jzoH5mKz/stidF8fsVubBegAJ32N/f2jJ6hHlnmCbRBCNlm1BL5Yz+YkMVWTMXa38ICaJhOncDwtZvzUqicc6b7GQmRZ4X7tQTUD91ln7t+7VSqEYXeCmvAL4fY8i2PMlWZoaN6FHmquJYH09w0Hu20Nz5SyfqjYk1vhKnDk93CouTcCR4zONcZdyip7b5qQAHfkcyCqZLvFgadedqsFwe2lu9WgpWATTrJUWReykDzk/jHMaivboXxLaVxwvAmF1CejmWV74VNUFw== jihartik@localhost"
