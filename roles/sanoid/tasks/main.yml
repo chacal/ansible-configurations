@@ -1,0 +1,33 @@
+---
+- name: Install/update sanoid dependencies
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - libcapture-tiny-perl
+      - libconfig-inifiles-perl
+      - lzop
+      - mbuffer
+      - perl
+      - pv
+
+# Sanoid is installed from Sid .deb as it is not available for Buster
+- name: Install sanoid
+  apt:
+    deb: http://ftp.fi.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-2_all.deb
+
+# sanoid .deb also installs systemd timer -> use only that
+- name: Disable sanoid cron job
+  file:
+    path: /etc/cron.d/sanoid
+    state: absent
+
+- name: Create sanoid config dir
+  file:
+    path: /etc/sanoid
+    state: directory
+
+- name: Configure sanoid
+  copy:
+    dest: /etc/sanoid/sanoid.conf
+    content: "{{ sanoid_config }}"
