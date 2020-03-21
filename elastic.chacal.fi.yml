@@ -16,7 +16,7 @@
   roles:
     - role: elastic.elasticsearch
       es_version: 7.6.0
-      es_heap_size: 1g
+      es_heap_size: 3g
       es_config:
         network.host: 0.0.0.0
         discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
