@@ -32,6 +32,11 @@
       arc_cache_size: 3221225472
     - role: disable_log_compression
     - role: pve_common
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - "elastic.chacal.fi"
+      filebeat_exclude_files:
+        - "/var/log/pveproxy/*"
 
   tasks:
     - name: Enable IOMMU

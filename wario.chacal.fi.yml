@@ -32,6 +32,11 @@
       zfs_datasets:
         - { name: rpool/data, mountpoint: /rpool/data, canmount: on }
         - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - "elastic.chacal.fi"
+      filebeat_exclude_files:
+        - "/var/log/pveproxy/*"
     - role: sanoid
       sanoid_config: |
         [rpool]
