@@ -103,6 +103,14 @@
           - { name: "hdd-zfs-nonbackupped", dataset: hddpool/nonbackupped }
           - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
 
+    - name: Add PVE admin user
+      include_role:
+        name: pve_admin_user
+      vars:
+        pve_admin_username: pve_admin
+        pve_admin_pw_hash: "{{ chacal.fujari.proxmox_user_pw_hash }}"
+      tags: pve_admin_user
+
     - name: Setup Sanoid
       include_role: name=sanoid
       vars:
