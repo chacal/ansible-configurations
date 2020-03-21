@@ -1,0 +1,16 @@
+---
+- name: Gather zfs mounts
+  command: zfs mount
+  register: zfs_mounts
+  changed_when: False
+  check_mode: no
+
+- name: Create datasets
+  zfs:
+    name: "{{ item.name }}"
+    extra_zfs_properties:
+      canmount: "{{ item.canmount }}"
+      mountpoint: "{{ item.mountpoint }}"
+    state: present
+  when: "zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
+  loop: "{{ zfs_datasets }}"
