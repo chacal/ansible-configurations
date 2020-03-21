@@ -1,0 +1,6 @@
+---
+- name: Cap ZFS ARC cache
+  copy:
+    dest: /etc/modprobe.d/zfs.conf
+    content: 'options zfs zfs_arc_max={{ arc_cache_size }}'
+  notify: Update ARC cache size
