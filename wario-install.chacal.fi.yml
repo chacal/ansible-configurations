@@ -236,7 +236,7 @@
       sed -i -e 's/XKBLAYOUT.*/XKBLAYOUT="fi"/' /etc/default/keyboard
       ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
       dpkg-reconfigure -f noninteractive tzdata
-      apt install --yes dpkg-dev linux-headers-amd64 linux-image-amd64 openssh-server bridge-utils
+      apt install --yes dpkg-dev linux-headers-amd64 linux-image-amd64 openssh-server bridge-utils ifupdown2
       DEBIAN_FRONTEND=noninteractive apt install --yes zfs-initramfs grub-pc
       echo 'root:{{ root_password }}' | chpasswd
       "
