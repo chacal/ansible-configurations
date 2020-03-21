@@ -27,24 +27,9 @@
       sendgrid_api_key: "{{ chacal.sendgrid.fujari }}"
     - role: arc_size
       arc_cache_size: 3221225472
+    - role: disable_log_compression
 
   tasks:
-
-    - name: Check log compression
-      shell: grep -rE '(^|[^#y])compress' /etc/logrotate.d
-      register: log_compression
-      changed_when: False
-      failed_when: log_compression.rc > 1
-
-    - name: Disable log compression (zfs already compresses them)
-      shell: |
-        for file in /etc/logrotate.d/* ; do
-            if grep -Eq "(^|[^#y])compress" "$file" ; then
-                sed -i -r "s/(^|[^#y])(compress)/\1#\2/" "$file"
-            fi
-        done
-      when: log_compression.rc == 0
-
     - name: Enable IOMMU
       copy:
         dest: /etc/kernel/cmdline
