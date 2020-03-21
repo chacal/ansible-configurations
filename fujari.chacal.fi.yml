@@ -13,7 +13,6 @@
     - secrets.yml
 
   vars:
-    arc_cache_size: 3221225472
     disks:
       - /dev/disk/by-id/scsi-36003005701ef594025e3130b929326b3  # /dev/sdc, 1.8TB HDD
       - /dev/disk/by-id/scsi-36003005701ef594025e3130b9293bb07  # /dev/sdc, 1.8TB HDD
@@ -21,14 +20,13 @@
   handlers:
     - name: Update boot parameters
       command: pve-efiboot-tool refresh
-    - name: Update ARC cache size
       shell: |
-        echo {{ arc_cache_size }} > /sys/module/zfs/parameters/zfs_arc_max
-        echo 3 > /proc/sys/vm/drop_caches
 
   roles:
     - role: sendgrid_with_dma
       sendgrid_api_key: "{{ chacal.sendgrid.fujari }}"
+    - role: arc_size
+      arc_cache_size: 3221225472
 
   tasks:
 
@@ -63,12 +61,6 @@
         - vfio_iommu_type1
         - vfio_pci
         - vfio_virqfd
-
-    - name: Cap ZFS ARC cache
-      copy:
-        dest: /etc/modprobe.d/zfs.conf
-        content: 'options zfs zfs_arc_max={{ arc_cache_size }}'
-      notify: Update ARC cache size
 
     - name: Create directory for cloud-init userdata files
       file:
