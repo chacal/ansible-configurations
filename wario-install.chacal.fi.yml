@@ -1,0 +1,388 @@
+---
+#
+# This playbook is used to provision Wario booted from Hetzner rescue system
+# Assumptions:
+#  - Passwordless SSH connection with user "root"
+#
+
+- hosts: all
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    disks:
+        - /dev/disk/by-id/nvme-KXG50ZNV512G_TOSHIBA_287S10FYTYST  # /dev/sda, 500GB SSD
+        - /dev/disk/by-id/nvme-KXG50ZNV512G_TOSHIBA_287S10FJTYST  # /dev/sdb, 500GB SSD
+    root_password: "{{ chacal.wario.root_password }}"
+    regular_user:
+      username: jihartik
+      password: "{{ chacal.wario.regular_user_password }}"
+      public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApxT0ZP4MsFQ7PC43ugWcGNbHLfXN3kqx0rMMhfGsKCxvhLTGYwveDFfIrimCWWCWg248oNR0jzoH5mKz/stidF8fsVubBegAJ32N/f2jJ6hHlnmCbRBCNlm1BL5Yz+YkMVWTMXa38ICaJhOncDwtZvzUqicc6b7GQmRZ4X7tQTUD91ln7t+7VSqEYXeCmvAL4fY8i2PMlWZoaN6FHmquJYH09w0Hu20Nz5SyfqjYk1vhKnDk93CouTcCR4zONcZdyip7b5qQAHfkcyCqZLvFgadedqsFwe2lu9WgpWATTrJUWReykDzk/jHMaivboXxLaVxwvAmF1CejmWV74VNUFw== jihartik@localhost"
+    ip: 95.216.42.125
+
+  roles:
+
+  tasks:
+
+  - name: Install requirements
+    apt:
+      pkg:
+        - debootstrap
+        - gdisk
+        - dkms
+        - dpkg-dev
+        - "linux-headers-{{ ansible_kernel }}"
+      update_cache: yes
+
+  - name: Build zfs module
+    apt: pkg=zfs-dkms default_release=buster-backports update_cache=yes
+
+  # Needs to be before installing zfsutils-linux
+  - name: Load zfs module
+    modprobe: name=zfs state=present
+
+  - name: Install zfsutils
+    apt: pkg=zfsutils-linux default_release=buster-backports update_cache=yes
+
+  - name: Partition disks
+    shell: |
+      sgdisk --zap-all {{ item }}
+      sgdisk -a1 -n1:24K:+1000K -t1:EF02 {{ item }}
+      sgdisk     -n2:1M:+512M   -t2:EF00 {{ item }}
+      sgdisk     -n3:0:+1G      -t3:BF01 {{ item }}
+      sgdisk     -n4:0:0        -t4:BF01 {{ item }}
+    loop: "{{ vars.disks }}"
+
+  - name: Re-read partition table
+    command: partprobe
+
+  - name: Remove potentially existing ZFS labels
+    shell: |
+      zpool labelclear -f {{ item }}
+      sleep 2
+      zpool labelclear -f {{ item }}-part3
+      sleep 2
+      zpool labelclear -f {{ item }}-part4
+      sleep 2
+    loop: "{{ vars.disks }}"
+    ignore_errors: yes
+
+  - name: Gather zpool facts
+    zpool_facts:
+
+  - name: Create boot pool
+    shell: |
+      zpool create -f -o ashift=12 -d \
+          -o feature@async_destroy=enabled \
+          -o feature@bookmarks=enabled \
+          -o feature@embedded_data=enabled \
+          -o feature@empty_bpobj=enabled \
+          -o feature@enabled_txg=enabled \
+          -o feature@extensible_dataset=enabled \
+          -o feature@filesystem_limits=enabled \
+          -o feature@hole_birth=enabled \
+          -o feature@large_blocks=enabled \
+          -o feature@lz4_compress=enabled \
+          -o feature@spacemap_histogram=enabled \
+          -o feature@userobj_accounting=enabled \
+          -o feature@zpool_checkpoint=enabled \
+          -o feature@spacemap_v2=enabled \
+          -o feature@project_quota=enabled \
+          -o feature@resilver_defer=enabled \
+          -o feature@allocation_classes=enabled \
+          -O acltype=posixacl -O canmount=off -O compression=lz4 -O devices=off \
+          -O normalization=formD -O relatime=on -O xattr=sa \
+          -O mountpoint=/ -R /mnt bpool \
+          mirror {{ vars.disks | map('regex_replace', '^(.*)$', '\1-part3') | join(' ') }}
+    when: "'bpool' not in ansible_zfs_pools | map(attribute='name')"
+
+  - name: Create root pool
+    shell: |
+      zpool create -o ashift=12 \
+          -O acltype=posixacl -O canmount=off -O compression=lz4 \
+          -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa \
+          -O mountpoint=/ -R /mnt rpool \
+          mirror {{ vars.disks | map('regex_replace', '^(.*)$', '\1-part4') | join(' ') }}
+    when: "'rpool' not in ansible_zfs_pools | map(attribute='name')"
+
+  - name: Gather zfs mounts
+    command: zfs mount
+    register: zfs_mounts
+
+  - name: Create filesystem roots
+    zfs:
+      name: "{{ item.name }}"
+      extra_zfs_properties:
+        canmount: "{{ item.canmount }}"
+        mountpoint: "{{ item.mountpoint }}"
+      state: present
+    when: "zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
+    loop:
+      - { name: rpool/ROOT, mountpoint: none, canmount: off }
+      - { name: bpool/BOOT, mountpoint: none, canmount: off  }
+      - { name: bpool/BOOT/debian, mountpoint: /boot, canmount: noauto }
+      - { name: rpool/ROOT/debian, mountpoint: /, canmount: noauto }
+
+  - name: Mount filesystem roots
+    shell: "zfs mount {{ item }}"
+    when: "zfs_mounts.stdout_lines | select('search', item) | list | count == 0"
+    loop:
+      - rpool/ROOT/debian
+      - bpool/BOOT/debian
+
+  - name: Install base system
+    command:
+      cmd: debootstrap buster /mnt
+      creates: /mnt/etc/debian_version
+
+  - name: set devices=off
+    command: zfs set devices=off rpool
+
+  - name: Set hostname
+    copy:
+      dest: /mnt/etc/hostname
+      content: 'wario'
+
+  - name: Add hostname to /etc/hosts
+    lineinfile:
+      path: /mnt/etc/hosts
+      line: "{{ ip }}       wario.chacal.fi wario"
+
+  - name: Remove 127.0.1.1 from /etc/hosts
+    lineinfile:
+      path: /mnt/etc/hosts
+      regex: "^127.0.1.1"
+      state: absent
+
+  - name: Configure network
+    copy:
+      dest: /mnt/etc/network/interfaces
+      content: |
+        ### Hetzner Online GmbH installimage
+
+        auto lo
+        iface lo inet loopback
+        iface lo inet6 loopback
+
+        auto wanbr0
+        iface wanbr0 inet static
+          address {{ ip }}
+          netmask 255.255.255.192
+          gateway 95.216.42.65
+          bridge_ports enp0s31f6
+          dns-nameservers 213.133.98.98 213.133.99.99 213.133.100.100
+
+        iface wanbr0 inet6 static
+          address 2a01:4f9:2a:2882::2
+          netmask 64
+          gateway fe80::1
+          dns-nameservers 2a01:4f8:0:a0a1::add:1010 2a01:4f8:0:a102::add:9999 2a01:4f8:0:a111::add:9898
+
+        source /etc/network/interfaces.d/*
+
+
+  - name: Configure regular package sources
+    copy:
+      dest: /mnt/etc/apt/sources.list
+      content: |
+        # Packages from the Hetzner Debian Mirror
+        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster main contrib non-free
+        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster-updates main contrib non-free
+        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster-backports main contrib non-free
+        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/security buster/updates main contrib non-free
+
+        ### Debian official mirror
+        deb [arch=i386,amd64] http://deb.debian.org/debian buster main non-free contrib
+        deb-src [arch=i386,amd64] http://deb.debian.org/debian buster main non-free contrib
+        deb [arch=i386,amd64] http://deb.debian.org/debian buster-updates main non-free contrib
+        deb-src [arch=i386,amd64] http://deb.debian.org/debian buster-updates main non-free contrib
+        deb [arch=i386,amd64] http://deb.debian.org/debian buster-backports main non-free contrib
+        deb-src [arch=i386,amd64] http://deb.debian.org/debian buster-backports main non-free contrib
+        deb [arch=i386,amd64] http://security.debian.org buster/updates main contrib non-free
+        deb-src [arch=i386,amd64] http://security.debian.org buster/updates main contrib non-free
+
+  - name: Configure ZFS package sources
+    copy:
+      dest: /mnt/etc/apt/preferences.d/90_zfs
+      content: |
+        Package: libnvpair1linux libuutil1linux libzfs2linux libzfslinux-dev libzpool2linux python3-pyzfs pyzfs-doc spl spl-dkms zfs-dkms zfs-dracut zfs-initramfs zfs-test zfsutils-linux zfsutils-linux-dev zfs-zed
+        Pin: release n=buster-backports
+        Pin-Priority: 990
+
+  - name: Bind mount kernel file systems
+    mount:
+      path: "{{ '/mnt' + item }}"
+      src: "{{ item }}"
+      opts: rbind
+      state: mounted
+      fstype: none
+    loop:
+      - /dev
+      - /proc
+      - /sys
+
+  - name: Configure base system in chroot
+    shell: |
+      chroot /mnt bash -c "
+      ln -fs /proc/self/mounts /etc/mtab
+      apt update
+      apt install --yes locales
+      sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+      dpkg-reconfigure --frontend=noninteractive locales
+      update-locale LANG=en_US.UTF-8
+      sed -i -e 's/XKBLAYOUT.*/XKBLAYOUT="fi"/' /etc/default/keyboard
+      ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+      dpkg-reconfigure -f noninteractive tzdata
+      apt install --yes dpkg-dev linux-headers-amd64 linux-image-amd64 openssh-server bridge-utils
+      DEBIAN_FRONTEND=noninteractive apt install --yes zfs-initramfs grub-pc
+      echo 'root:{{ root_password }}' | chpasswd
+      "
+
+  - name: Copy bpool import systemd service file
+    copy:
+      dest: /mnt/etc/systemd/system/zfs-import-bpool.service
+      content: |
+        [Unit]
+        DefaultDependencies=no
+        Before=zfs-import-scan.service
+        Before=zfs-import-cache.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/sbin/zpool import -N -o cachefile=none bpool
+
+        [Install]
+        WantedBy=zfs-import.target
+
+  - name: Enable import bpool service
+    shell: |
+      chroot /mnt bash -c "
+      systemctl enable zfs-import-bpool.service
+      "
+
+  - name: Load required modules for IOMMU
+    lineinfile:
+      dest: /mnt/etc/modules
+      state: present
+      line: '{{ item }}'
+    loop:
+      - vfio
+      - vfio_iommu_type1
+      - vfio_pci
+      - vfio_virqfd
+
+  - name: Mount a tmpfs to /tmp
+    shell: |
+      chroot /mnt bash -c "
+      cp /usr/share/systemd/tmp.mount /etc/systemd/system/
+      systemctl enable tmp.mount
+      "
+
+  - name: Copy GRUB configuration
+    copy:
+      dest: /mnt/etc/default/grub
+      content: |
+        GRUB_DEFAULT=0
+        GRUB_TIMEOUT=5
+        GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+        GRUB_CMDLINE_LINUX_DEFAULT=""
+        GRUB_CMDLINE_LINUX="root=ZFS=rpool/ROOT/debian intel_iommu=on"
+        GRUB_TERMINAL=console
+
+  - name: Install GRUB
+    shell: |
+      chroot /mnt bash -c "
+      grub-probe /boot
+      update-initramfs -u -k all
+      update-grub
+      DEBIAN_FRONTEND=noninteractive apt install --yes console-setup
+      grub-install {{ disks[0] }}
+      grub-install {{ disks[1] }}
+      "
+
+  - name: Add /boot to fstab
+    lineinfile:
+      path: /mnt/etc/fstab
+      line: "bpool/BOOT/debian /boot zfs nodev,relatime,x-systemd.requires=zfs-import-bpool.service 0 0"
+
+  - name: Create /etc/zfs/zfs-list.cache
+    file:
+      path: /mnt/etc/zfs/zfs-list.cache
+      state: directory
+
+  #
+  # This needs to be updated if datasets are changed!
+  #
+  - name: Initialize /etc/zfs/zfs-list.cache/rpool
+    copy:
+      dest: /mnt/etc/zfs/zfs-list.cache/rpool
+      content: |
+        rpool   /       off     on      on      off     on      off     on      off     -       none
+        rpool/ROOT      none    off     on      on      off     on      off     on      off     -       none
+        rpool/ROOT/debian       /       noauto  on      on      off     on      off     on      off     -       none
+
+  - name: Link history_event-zfs-list-cacher.sh
+    file:
+      src: /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh  # No /mnt prefix here, as this is symlink target
+      dest: /mnt/etc/zfs/zed.d/history_event-zfs-list-cacher.sh
+      state: link
+
+  - name: Fix filesystem mount ordering
+    shell: |
+      zfs set mountpoint=legacy bpool/BOOT/debian
+
+  - name: Setup regular user
+    shell:
+      cmd: |
+        chroot /mnt bash -c "
+        adduser --disabled-password --gecos '' {{ regular_user.username }}
+        cp -a /etc/skel/. /home/{{ regular_user.username }}
+        echo '{{ regular_user.username }}:{{ regular_user.password }}' | chpasswd
+        usermod -a -G audio,cdrom,dip,floppy,netdev,plugdev,sudo,video {{ regular_user.username }}
+        mkdir -p /home/{{ regular_user.username }}/.ssh
+        chmod 700 /home/{{ regular_user.username }}/.ssh
+        echo {{ regular_user.public_key }} > /home/{{ regular_user.username }}/.ssh/authorized_keys
+        chmod 600 /home/{{ regular_user.username }}/.ssh/authorized_keys
+        chown -R {{ regular_user.username }}:{{ regular_user.username }} /home/{{ regular_user.username }}
+        "
+      creates: "/mnt/home/{{ regular_user.username }}/.ssh/authorized_keys"
+
+  - name: Add regular user to sudo group
+    lineinfile:
+      name: /mnt/etc/sudoers
+      state: present
+      regexp: '^{{ regular_user.username }}\s'
+      line: '{{ regular_user.username }} ALL=(ALL) NOPASSWD: ALL'
+
+  - name: Snapshot filesystems
+    shell: |
+      zfs destroy bpool/BOOT/debian@install
+      zfs snapshot bpool/BOOT/debian@install
+      zfs destroy rpool/ROOT/debian@install
+      zfs snapshot rpool/ROOT/debian@install
+
+  - name: Unmount filesystems
+    shell:
+      cmd: |
+        mount | grep -v zfs | tac | awk '/\/mnt/ {print $3}' | xargs -i{} umount -lf {}
+        zpool export -a
+      warn: false
+
+  - name: Confirm reboot
+    pause:
+      prompt: |
+
+        ##################################################################################
+        ##
+        ##  Installation complete!
+        ##
+        ##  Reboot? (yes/no)
+    register: reboot
+
+  - name: Reboot
+    command: reboot
+    when: reboot is defined and reboot.user_input | default(false) | bool
