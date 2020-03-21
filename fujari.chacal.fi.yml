@@ -89,25 +89,6 @@
       when: hddpool_missing and create_hddpool.user_input | default(false) | bool
       tags: storagepools
 
-    - name: Gather zfs mounts
-      command: zfs mount
-      register: zfs_mounts
-      changed_when: False
-      tags: storagepools
-
-    - name: Create datasets
-      zfs:
-        name: "{{ item.name }}"
-        extra_zfs_properties:
-          canmount: "{{ item.canmount }}"
-          mountpoint: "{{ item.mountpoint }}"
-        state: present
-      when: "zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
-      loop:
-        - { name: hddpool/nonbackupped, mountpoint: /hddpool/nonbackupped, canmount: on }
-        - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
-      tags: storagepools
-
     - name: Gather storage pools
       shell: pvesm status | sed "1d" | awk '{print $1}'
       register: storage_pools
@@ -165,6 +146,13 @@
       copy:
         dest: /etc/sanoid/sanoid.conf
         content: |
+    - name: Setup ZFS datasets
+      include_role: name=zfs_datasets
+      vars:
+        zfs_datasets:
+          - { name: hddpool/nonbackupped, mountpoint: /hddpool/nonbackupped, canmount: on }
+          - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+
           [rpool]
                   use_template = pve_system
                   recursive = yes
