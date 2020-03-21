@@ -18,6 +18,9 @@ filebeat.inputs:
     - /var/log/secure*
     - .gz$
     - .xz$
+{% for exclude in filebeat_exclude_files %}
+    - {{ exclude }}
+{% endfor %}
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
