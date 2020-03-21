@@ -166,6 +166,12 @@
 
       notify: Restart vmbr0
 
+    - name: Set vmbr0 up again to get the ZT interface connected to the bridge
+      cron:
+        name: "Setup vmbr0"
+        special_time: reboot
+        job: "/usr/sbin/ifup vmbr0"
+
     - name: Add SSH key for root
       lineinfile:
         dest: /root/.ssh/authorized_keys
