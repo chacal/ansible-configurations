@@ -1,0 +1,43 @@
+---
+- name: Gather PVE user groups
+  shell: pveum group list | grep -v "─────" | sed '1d;2d' | awk '{ print $2 }'
+  register: pve_user_groups
+  changed_when: False
+  check_mode: no
+  tags: pve_admin_user
+
+- name: Gather PVE user ACLs
+  shell: pveum acl list | grep -v "─────" | sed '1d;2d' | awk '{print $8}'
+  register: pve_user_acls
+  changed_when: False
+  check_mode: no
+  tags: pve_admin_user
+
+- name: Gather PVE users
+  shell: pveum user list | grep -v "─────" | sed '1d;2d' | awk '{print $2}'
+  register: pve_users
+  changed_when: False
+  check_mode: no
+  tags: pve_admin_user
+
+- name: Add PVE Administrator group
+  shell: pveum groupadd admin -comment "System Administrators"
+  when: "'admin' not in pve_user_groups.stdout_lines"
+  tags: pve_admin_user
+
+- name: Add administrator ACL
+  shell: pveum aclmod / -group admin -role Administrator
+  when: "'admin' not in pve_user_acls.stdout_lines"
+  tags: pve_admin_user
+
+- name: Add user to PVE
+  shell: "pveum useradd {{ pve_admin_username }}@pam -group admin"
+  when: "pve_admin_username + '@pam' not in pve_users.stdout_lines"
+  tags: pve_admin_user
+
+- name: Add user to Linux
+  user:
+    name: "{{ pve_admin_username }}"
+    create_home: no
+    password: "{{ pve_admin_pw_hash }}"
+  tags: pve_admin_user

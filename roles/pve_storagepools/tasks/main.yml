@@ -1,0 +1,12 @@
+---
+- name: Gather storage pools
+  shell: pvesm status | sed "1d" | awk '{print $1}'
+  register: storage_pools
+  changed_when: False
+  check_mode: no
+
+- name: Create PVE storage pools
+  command:
+    cmd: "pvesm add zfspool {{ item.name }} --pool {{ item.dataset }} --content rootdir,images --sparse 1"
+  when: "item.name not in storage_pools.stdout_lines"
+  loop: "{{ pve_storagepools }}"
