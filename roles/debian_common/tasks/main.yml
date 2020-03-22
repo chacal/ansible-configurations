@@ -26,3 +26,12 @@
     insertafter: '^#ZED_SYSLOG_SUBCLASS_EXCLUDE'
   when: zed_rc.stat.exists
   tags: debian_common
+
+- name: Disable PAM logging for cron tasks
+  lineinfile:
+    dest: /etc/pam.d/common-session-noninteractive
+    state: present
+    regex: '^session [success=1 default=ignore] pam_succeed_if.so service in cron quiet use_uid'
+    line: 'session [success=1 default=ignore] pam_succeed_if.so service in cron quiet use_uid'
+    insertbefore: '^session.*required.*pam_unix.so'
+  tags: debian_common
