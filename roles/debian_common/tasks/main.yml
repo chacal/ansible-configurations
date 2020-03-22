@@ -10,3 +10,19 @@
   notify: Restart cron
   tags: debian_common
 
+- name: Check zed.rc
+  stat:
+    path: /etc/zfs/zed.d/zed.rc
+  register: zed_rc
+  tags: debian_common
+
+# By default every Sanoid snapshot creates a logged history event to syslog -> disable that
+- name: Disable ZED history_event log spamming
+  lineinfile:
+    dest: /etc/zfs/zed.d/zed.rc
+    state: present
+    regex: '^ZED_SYSLOG_SUBCLASS_EXCLUDE'
+    line: 'ZED_SYSLOG_SUBCLASS_EXCLUDE="history_event"'
+    insertafter: '^#ZED_SYSLOG_SUBCLASS_EXCLUDE'
+  when: zed_rc.stat.exists
+  tags: debian_common
