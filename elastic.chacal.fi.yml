@@ -28,6 +28,8 @@
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
 
+    - role: debian_common
+
     - role: certbot-dns-route53
       certbot_email: "{{ chacal.certbot.email }}"
 

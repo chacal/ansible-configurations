@@ -1,0 +1,12 @@
+---
+# Suppress cron default logging
+- name: Decrease cron logging
+  lineinfile:
+    dest: /etc/default/cron
+    state: present
+    regex: '^EXTRA_OPTS'
+    line: 'EXTRA_OPTS="-L 4"'
+    insertafter: '^#EXTRA_OPTS'
+  notify: Restart cron
+  tags: debian_common
+

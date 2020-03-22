@@ -37,6 +37,7 @@
         - "elastic.chacal.fi"
       filebeat_exclude_files:
         - "/var/log/pveproxy/*"
+    - role: debian_common
 
   tasks:
     - name: Enable IOMMU
