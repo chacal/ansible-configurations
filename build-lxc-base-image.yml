@@ -182,6 +182,9 @@
         dest: "/Users/jihartik/nonbackupped/Disk Images/lxc/"
         mode: pull
 
-    - name: Copy compressed rootfs to Proxmox
-      local_action: "command rsync '/Users/jihartik/nonbackupped/Disk Images/lxc/{{ rootfs_pkg }}' root@fujari.chacal.fi:/var/lib/vz/template/cache/{{ rootfs_pkg }}"
+    - name: Copy compressed rootfs to Proxmox hosts
+      local_action: "command rsync '/Users/jihartik/nonbackupped/Disk Images/lxc/{{ rootfs_pkg }}' {{ item }}:/var/lib/vz/template/cache/{{ rootfs_pkg }}"
       become: false
+      loop:
+        - root@fujari.chacal.fi
+        - root@wario.chacal.fi
