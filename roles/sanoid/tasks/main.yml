@@ -10,24 +10,58 @@
       - mbuffer
       - perl
       - pv
+  tags: sanoid
 
 # Sanoid is installed from Sid .deb as it is not available for Buster
 - name: Install sanoid
   apt:
     deb: http://ftp.fi.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-2_all.deb
+  tags: sanoid
 
 # sanoid .deb also installs systemd timer -> use only that
 - name: Disable sanoid cron job
   file:
     path: /etc/cron.d/sanoid
     state: absent
+  tags: sanoid
+
+- name: Create systemd override directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/systemd/system/sanoid.service.d
+    - /etc/systemd/system/sanoid-prune.service.d
+  tags: sanoid
+
+- name: Create systemd override file for sanoid.service
+  copy:
+    dest: /etc/systemd/system/sanoid.service.d/override.conf
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/sbin/sanoid --take-snapshots
+  notify: Reload systemd
+  tags: sanoid
+
+- name: Create systemd override file for sanoid-prune.service
+  copy:
+    dest: /etc/systemd/system/sanoid-prune.service.d/override.conf
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/sbin/sanoid --prune-snapshots
+  notify: Reload systemd
+  tags: sanoid
 
 - name: Create sanoid config dir
   file:
     path: /etc/sanoid
     state: directory
+  tags: sanoid
 
 - name: Configure sanoid
   copy:
     dest: /etc/sanoid/sanoid.conf
     content: "{{ sanoid_config }}"
+  tags: sanoid

@@ -167,6 +167,7 @@
                   autoprune = no
                   autosnap = no
                   monitor = no
+      tags: sanoid
 
     - name: Install Zerotier for TRANSIT-ZT
       include_role:
