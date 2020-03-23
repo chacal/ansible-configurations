@@ -1,4 +1,11 @@
 ---
+- name: Install dependencies
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - gpg
+
 - name: Add Elastic apt key
   apt_key: url=https://artifacts.elastic.co/GPG-KEY-elasticsearch state=present
   tags: filebeat
