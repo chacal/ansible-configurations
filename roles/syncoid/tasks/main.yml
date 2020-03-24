@@ -16,6 +16,8 @@
     state: present
     key: "{{ syncoid_public_key }}"
   delegate_to: "{{ syncoid_dst_host }}"
+  remote_user: "{{ syncoid_dst_user }}"
+
 
 - name: Generate excludes list
   set_fact:
