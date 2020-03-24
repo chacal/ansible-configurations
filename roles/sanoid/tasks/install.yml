@@ -1,0 +1,20 @@
+---
+- name: Install/update sanoid dependencies
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - libcapture-tiny-perl
+      - libconfig-inifiles-perl
+      - lzop
+      - mbuffer
+      - perl
+      - pv
+  tags: sanoid
+
+# Sanoid is installed from Sid .deb as it is not available for Buster
+- name: Install sanoid
+  apt:
+    deb: http://ftp.fi.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-2_all.deb
+  tags: sanoid
+
