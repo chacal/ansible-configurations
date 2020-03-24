@@ -90,6 +90,18 @@
                 autosnap = no
                 monitor = no
 
+    - role: syncoid
+      syncoid_private_key: "{{ chacal.wario.syncoid.private_key }}"
+      syncoid_public_key: "{{ chacal.wario.syncoid.public_key }}"
+      syncoid_source: rpool
+      syncoid_dst_host: fujari.chacal.fi
+      syncoid_dst_dir: hddpool/backups/wario  # This dataset has to exist on fujari
+      syncoid_excludes:
+        - nonbackupped
+        - backups
+      syncoid_cron_minutes: "40"   # Override default to avoid syncing at the same time than fujari
+      tags: syncoid
+
   tasks:
     - name: Add PVE apt key
       apt_key:
