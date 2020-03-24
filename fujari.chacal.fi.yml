@@ -103,6 +103,8 @@
       vars:
         zfs_datasets:
           - { name: hddpool/nonbackupped, mountpoint: /hddpool/nonbackupped, canmount: on }
+          - { name: hddpool/backups, mountpoint: /hddpool/backups, canmount: on }
+          - { name: hddpool/backups/wario, mountpoint: /hddpool/backups/wario, canmount: on }
           - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
 
     - name: Setup PVE storage pools
@@ -136,11 +138,17 @@
                   use_template = vm_disks
                   recursive = yes
 
+          [hddpool/backups]
+                  use_template = prune_only
+                  recursive = yes
+
           [rpool/nonbackupped]
                   use_template = ignore
+                  recursive = yes
 
           [hddpool/nonbackupped]
                   use_template = ignore
+                  recursive = yes
 
           [template_pve_system]
                   frequent_period = 30
@@ -163,6 +171,11 @@
                   yearly = 0
                   autosnap = yes
                   autoprune = yes
+
+          [template_prune_only]
+                  autoprune = yes
+                  autosnap = no
+                  monitor = no
 
           [template_ignore]
                   autoprune = no
