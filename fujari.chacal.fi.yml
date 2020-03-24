@@ -191,7 +191,7 @@
         syncoid_public_key: "{{ chacal.fujari.syncoid.public_key }}"
         syncoid_source: rpool
         syncoid_dst_host: wario.chacal.fi
-        syncoid_dst_dir: rpool/backups/fujari  # This dataset has to exist on wario
+        syncoid_dst_dir: rpool/backups/fujari/rpool  # Parents of this dataset has to exist on fujari
         syncoid_excludes:
           - nonbackupped
       tags: syncoid
