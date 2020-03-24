@@ -24,6 +24,6 @@
 - name: Add syncoid to cron
   cron:
     name: "Syncoid"
-    minute: "10"
+    minute: "{{ syncoid_cron_minutes }}"
     hour: "*/2"
     job: "/usr/sbin/syncoid -r --sshkey=/root/.ssh/id_rsa_syncoid {{ syncoid_excludes_str }} {{ syncoid_source }} {{ syncoid_dst_user }}@{{ syncoid_dst_host }}:{{ syncoid_dst_dir }} >> /var/log/syncoid.log 2>&1"
