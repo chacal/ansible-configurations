@@ -35,3 +35,12 @@
     line: 'session [success=1 default=ignore] pam_succeed_if.so service in cron quiet use_uid'
     insertbefore: '^session.*required.*pam_unix.so'
   tags: debian_common
+
+- name: Install basic tools
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - net-tools
+      - sysstat
+      - bash-completion
