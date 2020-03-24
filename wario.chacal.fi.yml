@@ -32,6 +32,8 @@
       zfs_datasets:
         - { name: rpool/data, mountpoint: /rpool/data, canmount: on }
         - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+        - { name: rpool/backups, mountpoint: /rpool/backups, canmount: on }
+        - { name: rpool/backups/fujari, mountpoint: /rpool/backups/fujari, canmount: on }
     - role: filebeat
       filebeat_elasticsearch_hosts:
         - "elastic.chacal.fi"
@@ -50,6 +52,11 @@
 
         [rpool/nonbackupped]
                 use_template = ignore
+                recursive = yes
+
+        [rpool/backups]
+                use_template = prune_only
+                recursive = yes
 
         [template_pve_system]
                 frequent_period = 30
@@ -72,6 +79,11 @@
                 yearly = 0
                 autosnap = yes
                 autoprune = yes
+
+        [template_prune_only]
+                autoprune = yes
+                autosnap = no
+                monitor = no
 
         [template_ignore]
                 autoprune = no

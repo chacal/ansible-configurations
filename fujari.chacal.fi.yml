@@ -170,6 +170,19 @@
                   monitor = no
       tags: sanoid
 
+    - name: Setup syncoid zfs dataset backups
+      import_role:
+        name: syncoid
+      vars:
+        syncoid_private_key: "{{ chacal.fujari.syncoid.private_key }}"
+        syncoid_public_key: "{{ chacal.fujari.syncoid.public_key }}"
+        syncoid_source: rpool
+        syncoid_dst_host: wario.chacal.fi
+        syncoid_dst_dir: rpool/backups/fujari  # This dataset has to exist on wario
+        syncoid_excludes:
+          - nonbackupped
+      tags: syncoid
+
     - name: Install Zerotier for TRANSIT-ZT
       include_role:
         name: zerotier
