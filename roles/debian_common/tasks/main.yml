@@ -44,3 +44,15 @@
       - net-tools
       - sysstat
       - bash-completion
+
+- name: Stop & disable rpcbind service
+  service:
+    name: rpcbind
+    state: stopped
+    enabled: no
+
+- name: Stop & disable rpcbind socket
+  service:
+    name: rpcbind.socket
+    state: stopped
+    enabled: no
