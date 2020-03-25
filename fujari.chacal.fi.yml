@@ -265,3 +265,7 @@
       loop:
         - vmbr0
         - mgmtbr0
+
+    - name: Set zfs_zevent_len_max
+      import_role:
+        name: zfs_zevent_len_max
