@@ -146,7 +146,7 @@
           - { name: "local-zfs", dataset: rpool/data }
           - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
 
-    - name: Install Zerotier for MGMT-ZT
+    - name: Install Zerotier for MGMT
       include_role:
         name: zerotier
       vars:
