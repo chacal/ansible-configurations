@@ -202,6 +202,16 @@
       vars:
         zerotier_network_id: "{{ chacal.zerotier.transit.network_id }}"
         zerotier_moon_id: "{{ chacal.zerotier.transit.moon_id }}"
+      tags: zerotier
+
+    - name: Install Zerotier for MGMT
+      include_role:
+        name: zerotier
+      vars:
+        zerotier_network_id: "{{ chacal.zerotier.mgmt.network_id }}"
+        zerotier_moon_id: "{{ chacal.zerotier.mgmt.moon_id }}"
+        zerotier_allow_managed: false
+      tags: zerotier
 
     - name: Setup networks
       copy:
@@ -221,14 +231,11 @@
           auto lo
           iface lo inet loopback
 
-          auto eno2
-          iface eno2 inet static
-                  address 10.90.99.6/24
-                  gateway 10.90.99.1
-          #MGMT, Intel i217LM
-
           iface eno1 inet manual
-          #Intel i210
+          #vmbr0, Intel i210
+
+          iface eno2 inet manual
+          #mgmtbr0, Intel i217LM
 
           auto vmbr0
           iface vmbr0 inet manual
@@ -239,4 +246,22 @@
                   bridge-vids 2-4094
           #SERVER
 
+          auto mgmtbr0
+          iface mgmtbr0 inet static
+                  address 10.90.99.6/24
+                  gateway 10.90.99.1
+                  bridge-ports eno2 ztuku43gze
+                  bridge-stp off
+                  bridge-fd 0
+          #MGMT
+
       notify: Restart vmbr0
+
+    - name: Set bridge interfaces up again to get the ZT interface connected to the bridges
+      cron:
+        name: "Setup {{ item }}"
+        special_time: reboot
+        job: "/usr/sbin/ifup {{ item }}"
+      loop:
+        - vmbr0
+        - mgmtbr0
