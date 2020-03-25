@@ -1,0 +1,5 @@
+---
+- name: Update zfs_zevent_len_max
+  shell: |
+    echo {{ zfs_zevent_len_max }} > /sys/module/zfs/parameters/zfs_zevent_len_max
+    update-initramfs -u -k all

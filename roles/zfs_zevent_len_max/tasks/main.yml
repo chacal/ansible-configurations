@@ -1,0 +1,10 @@
+---
+- name: Set zfs_zevent_len_max in /etc/modprobe.d/zfs.conf
+  lineinfile:
+    dest: /etc/modprobe.d/zfs.conf
+    state: present
+    create: true
+    regexp: "zfs_zevent_len_max"
+    line: "options zfs zfs_zevent_len_max={{ zfs_zevent_len_max }}"
+  notify: Update zfs_zevent_len_max
+  tags: zfs_zevent_len_max
