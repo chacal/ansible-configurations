@@ -31,6 +31,17 @@
   notify: Restart Filebeat
   tags: filebeat
 
+- name: Disable reading /var/log/messages in order to avoid duplicate lines from /var/log/syslog
+  lineinfile:
+    dest: /etc/filebeat/modules.d/system.yml
+    state: present
+    regexp: "^    var.paths"
+    line: '    var.paths: ["/var/log/syslog*"]'
+    insertafter: "^    #var.paths"
+    firstmatch: true
+  notify: Restart Filebeat
+  tags: filebeat
+
 - name: Install Filebeat configuration file
   template:
     src: filebeat.yml.j2
