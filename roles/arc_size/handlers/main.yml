@@ -3,3 +3,4 @@
   shell: |
     echo {{ arc_cache_size }} > /sys/module/zfs/parameters/zfs_arc_max
     echo 3 > /proc/sys/vm/drop_caches
+    update-initramfs -u -k all
