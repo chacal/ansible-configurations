@@ -169,6 +169,28 @@
 
 
 
+  #
+  #  Install PostgreSQL
+  #
+    - name: Create PostgreSQL data directory
+      file: path=/srv/postgres state=directory
+
+    - name: Install PostgreSQL
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "root"
+        docker_app_name: "postgres"
+        docker_app_container_name: "postgres:12"
+        docker_app_extra_params: "-v /srv/postgres:/var/lib/postgresql/data"
+        docker_app_ports:
+          - "127.0.0.1:5432:5432"
+        docker_app_env:
+          - "POSTGRES_USER=ha"
+          - "POSTGRES_DB=ha"
+          - "POSTGRES_PASSWORD={{ chacal.ha.postgres.password }}"
+
+
 
   #
   #  Install Home Assistant

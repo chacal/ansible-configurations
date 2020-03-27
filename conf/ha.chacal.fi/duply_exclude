@@ -1,3 +1,4 @@
 + /srv/home-assistant
++ /srv/postgres
 + /etc/letsencrypt
 **

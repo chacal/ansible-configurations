@@ -25,6 +25,12 @@ http:
   # Set this to your NGINX machine IP, or localhost if hosted on the same machine.
   trusted_proxies: 127.0.0.1
 
+recorder:
+  purge_keep_days: 180
+  db_url: !secret recorder_db_url
+  db_max_retries: 30
+  db_retry_wait: 10
+
 homeassistant:
   customize_glob:
     binary_sensor.p*:
