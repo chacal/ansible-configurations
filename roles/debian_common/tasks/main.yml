@@ -44,15 +44,26 @@
       - net-tools
       - sysstat
       - bash-completion
+  tags: debian_common
+
+- name: Check rpcbind service
+  stat:
+    path: /lib/systemd/system/rpcbind.service
+  register: rpcbind_service
+  tags: debian_common
 
 - name: Stop & disable rpcbind service
   service:
     name: rpcbind
     state: stopped
     enabled: no
+  when: rpcbind_service.stat.exists
+  tags: debian_common
 
 - name: Stop & disable rpcbind socket
   service:
     name: rpcbind.socket
     state: stopped
     enabled: no
+  when: rpcbind_service.stat.exists
+  tags: debian_common
