@@ -265,4 +265,5 @@
           - "NOTIFIERS=sendgrid://{{ chacal.sendgrid.netserver }}:root@ha.chacal.fi/jouni.hartikainen@iki.fi"
           - TZ=Europe/Helsinki
           - SELF_UPDATE=true
+          - CLEANUP=true
 
