@@ -110,6 +110,9 @@
               timeout client 10s
               timeout server 30s
 
+          userlist admins
+              user {{ chacal.monitor.basic_auth.username }} insecure-password {{ chacal.monitor.basic_auth.password }}
+
           frontend http-in
               bind *:443 ssl crt /usr/local/etc/haproxy/certificate.pem ssl-min-ver TLSv1.2
               default_backend grafana
@@ -121,8 +124,11 @@
               server grafana1 grafana:3000
 
           backend prometheus
+              acl valid_admin_user http_auth(admins)
+              http-request auth realm Prometheus if !valid_admin_user
               server prometheus1 prometheus:9090
       notify: Restart HAProxy
+      tags: haproxy
 
     - name: Create docker-compose service
       include_role:
