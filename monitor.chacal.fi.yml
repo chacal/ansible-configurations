@@ -1,0 +1,169 @@
+---
+#
+# Playbook that sets up Prometheus and Grafana on monitor.chacal.fi
+#
+- hosts: monitor.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  handlers:
+    - name: Restart Prometheus
+      docker_compose: project_src=/srv/monitoring-compose services=prometheus state=present restarted=true
+    - name: Restart HAProxy
+      docker_compose: project_src=/srv/monitoring-compose services=haproxy state=present restarted=true
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+
+    - name: Create data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+      loop:
+        - /srv/prometheus
+        - /srv/grafana
+        - /srv/haproxy
+
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Updating haproxy certificates with certbot deploy-hook.."
+          cat /etc/letsencrypt/live/monitor.chacal.fi/fullchain.pem /etc/letsencrypt/live/monitor.chacal.fi/privkey.pem > \
+          /srv/haproxy/certificate.pem
+          docker kill -s HUP monitoring-compose_haproxy_1 || true
+          echo "Certificate updated"
+
+    - name: Create Prometheus configuration
+      copy:
+        dest: /srv/prometheus/prometheus.yml
+        content: |
+          global:
+            scrape_interval:     15s
+            evaluation_interval: 15s
+
+          rule_files:
+            - custom_rules.yml
+
+          scrape_configs:
+            - job_name: 'node'
+              static_configs:
+              - targets:
+                - 'monitor.chacal.fi:9100'
+            - job_name: 'secure-node'
+              scheme: 'https'
+              metrics_path: '/node-metrics/metrics'
+              basic_auth:
+                username: '{{ chacal.prometheus.basic_auth_username }}'
+                password: '{{ chacal.prometheus.basic_auth_password }}'
+              static_configs:
+              - targets:
+                - 'grafana.netserver.chacal.fi:443'
+                - 'ha.chacal.fi:443'
+      notify: Restart Prometheus
+
+    - name: Create Prometheus custom rules
+      copy:
+        dest: /srv/prometheus/custom_rules.yml
+        content: |
+          groups:
+            - name: custom rules
+              rules:
+              - record: custom_cpu_count
+                expr: count(node_cpu_seconds_total{mode="idle"}) without (cpu, mode)
+              - record: custom_cpu_usage
+                expr: avg by (instance, mode) (irate(node_cpu_seconds_total[1m]))
+      notify: Restart Prometheus
+
+    - name: Create HAProxy configuration
+      copy:
+        dest: /srv/haproxy/haproxy.cfg
+        content: |
+          global
+              maxconn 100
+              ssl-default-bind-ciphers  ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+              tune.ssl.default-dh-param 2048
+
+          defaults
+              mode http
+              timeout connect 5s
+              timeout client 10s
+              timeout server 30s
+
+          frontend http-in
+              bind *:443 ssl crt /usr/local/etc/haproxy/certificate.pem ssl-min-ver TLSv1.2
+              default_backend grafana
+
+              acl is_prometheus path_beg -i /prometheus
+              use_backend prometheus if is_prometheus
+
+          backend grafana
+              server grafana1 grafana:3000
+
+          backend prometheus
+              server prometheus1 prometheus:9090
+      notify: Restart HAProxy
+
+    - name: Create docker-compose service
+      include_role:
+        name: docker-compose
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_compose_name: "monitoring-compose"
+        docker_compose_file: |
+          version: '2'
+          services:
+            prometheus:
+              image: "prom/prometheus"
+              command: |
+                --config.file=/prometheus/prometheus.yml
+                --web.external-url=http://{{ inventory_hostname }}/prometheus
+                --web.enable-admin-api
+                --storage.tsdb.retention.time 10y
+              volumes:
+                - "/srv/prometheus:/prometheus"
+              restart: always
+
+            grafana:
+              image: "grafana/grafana"
+              environment:
+                - GF_SERVER_DOMAIN={{ inventory_hostname }}
+                - GF_SMTP_ENABLED=true
+                - GF_SMTP_HOST=smtp.sendgrid.net:587
+                - GF_SMTP_USER=apikey
+                - GF_SMTP_PASSWORD={{ chacal.sendgrid.monitor }}
+                - GF_SMTP_FROM_ADDRESS=grafana@{{ inventory_hostname }}
+                - GF_SMTP_FROM_NAME='Grafana - monitor.chacal.fi'
+              volumes:
+                - "/srv/grafana:/var/lib/grafana"
+              user: "nobody"
+              restart: always
+
+            haproxy:
+              image: "haproxy"
+              ports:
+                - "80:80"
+                - "443:443"
+              volumes:
+                - "/srv/haproxy:/usr/local/etc/haproxy:ro"
+              restart: always
