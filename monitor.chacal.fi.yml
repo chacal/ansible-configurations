@@ -109,6 +109,10 @@
               timeout connect 5s
               timeout client 10s
               timeout server 30s
+              stats enable
+              stats uri /stats
+              stats realm Haproxy\ Statistics
+              stats auth {{ chacal.monitor.basic_auth.username }}:{{ chacal.monitor.basic_auth.password }}
 
           userlist admins
               user {{ chacal.monitor.basic_auth.username }} insecure-password {{ chacal.monitor.basic_auth.password }}
