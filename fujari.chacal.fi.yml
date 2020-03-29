@@ -38,6 +38,7 @@
       filebeat_exclude_files:
         - "/var/log/pveproxy/*"
     - role: debian_common
+    - role: self_monitoring
 
   tasks:
     - name: Enable IOMMU

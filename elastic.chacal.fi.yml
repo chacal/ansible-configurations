@@ -30,6 +30,8 @@
 
     - role: debian_common
 
+    - role: self_monitoring
+
     - role: certbot-dns-route53
       certbot_email: "{{ chacal.certbot.email }}"
 

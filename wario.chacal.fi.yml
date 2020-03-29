@@ -6,7 +6,7 @@
 #  - Passwordless sudo with "jihartik"
 #
 
-- hosts: all
+- hosts: wario.chacal.fi
   become: true
   remote_user: jihartik
   gather_facts: yes
@@ -40,6 +40,7 @@
       filebeat_exclude_files:
         - "/var/log/pveproxy/*"
     - role: debian_common
+    - role: self_monitoring
     - role: sanoid
       sanoid_config: |
         [rpool]
