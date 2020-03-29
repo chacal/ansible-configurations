@@ -38,8 +38,10 @@
         group: nogroup
       loop:
         - /srv/prometheus
+        - /srv/prometheus/targets
         - /srv/grafana
         - /srv/haproxy
+      tags: prometheus
 
     - name: Create letsencrypt certificate
       include_role:
@@ -66,21 +68,30 @@
             - custom_rules.yml
 
           scrape_configs:
-            - job_name: 'node'
+            - job_name: prometheus-servers
               static_configs:
-              - targets:
-                - 'monitor.chacal.fi:9100'
-            - job_name: 'secure-node'
-              scheme: 'https'
-              metrics_path: '/node-metrics/metrics'
+                - targets:
+                  - localhost:9090
+              metrics_path: /prometheus/metrics
+
+            - job_name: nodes
+              file_sd_configs:
+                - files:
+                   - /prometheus/targets/*.yml
+                  refresh_interval: 15s
+
+            - job_name: secure-nodes
+              scheme: https
+              metrics_path: /node-metrics/metrics
               basic_auth:
-                username: '{{ chacal.prometheus.basic_auth_username }}'
-                password: '{{ chacal.prometheus.basic_auth_password }}'
+                username: "{{ chacal.prometheus.basic_auth_username }}"
+                password: "{{ chacal.prometheus.basic_auth_password }}"
               static_configs:
-              - targets:
-                - 'grafana.netserver.chacal.fi:443'
-                - 'ha.chacal.fi:443'
+                - targets:
+                  - grafana.netserver.chacal.fi:443
+                  - ha.chacal.fi:443
       notify: Restart Prometheus
+      tags: prometheus
 
     - name: Create Prometheus custom rules
       copy:
@@ -94,6 +105,7 @@
               - record: custom_cpu_usage
                 expr: avg by (instance, mode) (irate(node_cpu_seconds_total[1m]))
       notify: Restart Prometheus
+      tags: prometheus
 
     - name: Create HAProxy configuration
       copy:
