@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:16",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,8 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1585470824859,
+  "iteration": 1585479417665,
   "links": [],
   "panels": [
     {
@@ -95,9 +95,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "node_time_seconds{instance=\"$host\"} - node_boot_time_seconds{instance=\"$host\"}",
+          "expr": "node_time_seconds{instance=~\"$host.*\"} - node_boot_time_seconds{instance=~\"$host.*\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -179,10 +181,12 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "node_load1{instance=\"$host\"} / custom_cpu_count",
+          "expr": "node_load1{instance=~\"$host.*\"} / custom_cpu_count",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A",
           "step": 900
         }
@@ -265,10 +269,12 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "node_load5{instance=\"$host\"} / custom_cpu_count",
+          "expr": "node_load5{instance=~\"$host.*\"} / custom_cpu_count",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A",
           "step": 900
         }
@@ -351,11 +357,13 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "node_load15{instance=\"$host\"} / custom_cpu_count",
+          "expr": "node_load15{instance=~\"$host.*\"} / custom_cpu_count",
           "format": "time_series",
           "hide": false,
           "instant": false,
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A",
           "step": 900
         }
@@ -435,10 +443,12 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum by (instance) (apt_upgrades_pending{instance=\"$host\"})",
+          "expr": "sum by (instance) (apt_upgrades_pending{instance=~\"$host.*\"})",
           "format": "time_series",
           "instant": true,
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -542,11 +552,12 @@
       ],
       "targets": [
         {
-          "expr": "sort(smartmon_device_smart_healthy{instance=\"$host\"})",
+          "expr": "sort(smartmon_device_smart_healthy{instance=~\"$host.*\"})",
           "format": "table",
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -570,8 +581,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "title": "Metrics",
@@ -620,8 +631,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -630,45 +641,50 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "custom_cpu_usage{instance=~\"$host\",mode=\"user\"}",
+          "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"user\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "user",
           "refId": "A"
         },
         {
-          "expr": "custom_cpu_usage{instance=~\"$host\",mode=\"system\"}",
+          "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"system\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "system",
           "refId": "B"
         },
         {
-          "expr": "custom_cpu_usage{instance=~\"$host\",mode=\"iowait\"}",
+          "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"iowait\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "iowait",
           "refId": "C"
         },
         {
-          "expr": "custom_cpu_usage{instance=~\"$host\",mode=\"nice\"} + on(instance) custom_cpu_usage{instance=~\"$host\",mode=\"irq\"} + on(instance) custom_cpu_usage{instance=~\"$host\",mode=\"softirq\"} + on(instance) custom_cpu_usage{instance=~\"$host\",mode=\"steal\"}",
+          "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"nice\"} + on(instance) custom_cpu_usage{instance=~\"$host.*\",mode=\"irq\"} + on(instance) custom_cpu_usage{instance=~\"$host.*\",mode=\"softirq\"} + on(instance) custom_cpu_usage{instance=~\"$host.*\",mode=\"steal\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "other",
           "refId": "D"
         },
         {
-          "expr": "custom_cpu_usage{instance=~\"$host\",mode=\"idle\"}",
+          "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"idle\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "idle",
           "refId": "E"
@@ -761,8 +777,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -771,15 +787,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "-rate(node_network_receive_bytes_total{instance=~\"$host\",device=~\"$net_devices\"}[30s]) * 8",
+          "expr": "-rate(node_network_receive_bytes_total{instance=~\"$host.*\",device=~\"$net_devices\"}[30s]) * 8",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}} (rx)",
           "refId": "A"
         },
         {
-          "expr": "rate(node_network_transmit_bytes_total{instance=~\"$host\",device=~\"$net_devices\"}[30s]) * 8",
+          "expr": "rate(node_network_transmit_bytes_total{instance=~\"$host.*\",device=~\"$net_devices\"}[30s]) * 8",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}} (tx)",
           "refId": "B"
@@ -893,8 +911,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -908,42 +926,46 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_memory_MemTotal_bytes{instance=~\"$host\"} - node_memory_MemFree_bytes{instance=~\"$host\"} - node_memory_Buffers_bytes{instance=~\"$host\"} - node_memory_Cached_bytes{instance=~\"$host\"} - node_memory_Slab_bytes{instance=~\"$host\"} - node_memory_PageTables_bytes{instance=~\"$host\"} - node_memory_SwapCached_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_MemTotal_bytes{instance=~\"$host.*\"} - node_memory_MemFree_bytes{instance=~\"$host.*\"} - node_memory_Buffers_bytes{instance=~\"$host.*\"} - node_memory_Cached_bytes{instance=~\"$host.*\"} - node_memory_Slab_bytes{instance=~\"$host.*\"} - node_memory_PageTables_bytes{instance=~\"$host.*\"} - node_memory_SwapCached_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Apps",
           "refId": "Q",
           "step": 240
         },
         {
-          "expr": "node_memory_PageTables_bytes{instance=~\"$host\"} ",
+          "expr": "node_memory_PageTables_bytes{instance=~\"$host.*\"} ",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "PageTables",
           "refId": "G",
           "step": 240
         },
         {
-          "expr": "node_memory_SwapCached_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_SwapCached_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "SwapCache",
           "refId": "F",
           "step": 240
         },
         {
-          "expr": "node_memory_Slab_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_Slab_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Slab",
           "refId": "E",
           "step": 240
         },
         {
-          "expr": "node_memory_Cached_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_Cached_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -953,36 +975,40 @@
           "step": 240
         },
         {
-          "expr": "node_memory_Buffers_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_Buffers_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Buffers",
           "refId": "B",
           "step": 240
         },
         {
-          "expr": "node_memory_MemFree_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_MemFree_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Unused",
           "refId": "D",
           "step": 240
         },
         {
-          "expr": "(node_memory_SwapTotal_bytes{instance=~\"$host\"} - node_memory_SwapFree_bytes{instance=~\"$host\"})",
+          "expr": "(node_memory_SwapTotal_bytes{instance=~\"$host.*\"} - node_memory_SwapFree_bytes{instance=~\"$host.*\"})",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Swap",
           "refId": "I",
           "step": 240
         },
         {
-          "expr": "node_memory_HardwareCorrupted_bytes{instance=~\"$host\"}",
+          "expr": "node_memory_HardwareCorrupted_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Corrupted",
           "refId": "O",
@@ -1069,8 +1095,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1079,8 +1105,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_filesystem_size_bytes{instance=~\"$host\"} - node_filesystem_avail_bytes{instance=~\"$host\"}",
+          "expr": "node_filesystem_size_bytes{instance=~\"$host.*\"} - node_filesystem_avail_bytes{instance=~\"$host.*\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mountpoint}}",
           "refId": "A"
@@ -1172,8 +1199,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1182,8 +1209,9 @@
       "steppedLine": true,
       "targets": [
         {
-          "expr": "irate(node_disk_reads_completed_total{instance=\"$host\",device=~\"$blk_devices\"}[1m]) + irate(node_disk_writes_completed_total{instance=\"$host\",device=~\"$blk_devices\"}[1m])",
+          "expr": "irate(node_disk_reads_completed_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m]) + irate(node_disk_writes_completed_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}}",
           "refId": "A"
@@ -1283,8 +1311,8 @@
       "scopedVars": {
         "host": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -1299,17 +1327,19 @@
       "steppedLine": true,
       "targets": [
         {
-          "expr": "irate(node_disk_read_bytes_total{instance=\"$host\",device=~\"$blk_devices\"}[1m])",
+          "expr": "irate(node_disk_read_bytes_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m])",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}} r",
           "refId": "A"
         },
         {
-          "expr": "irate(node_disk_written_bytes_total{instance=\"$host\",device=~\"$blk_devices\"}[1m])",
+          "expr": "irate(node_disk_written_bytes_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m])",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}} w",
           "refId": "B"
@@ -1363,7 +1393,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 714
+        "y": 1054
       },
       "id": 27,
       "panels": [],
@@ -1421,7 +1451,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 715
+        "y": 1055
       },
       "hiddenSeries": false,
       "id": 29,
@@ -1521,8 +1551,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "elastic.chacal.fi:9100",
-          "value": "elastic.chacal.fi:9100"
+          "text": "elastic.chacal.fi",
+          "value": "elastic.chacal.fi"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_boot_time_seconds, instance)",
@@ -1535,7 +1565,7 @@
         "options": [],
         "query": "label_values(node_boot_time_seconds, instance)",
         "refresh": 1,
-        "regex": "/([^:]+:.*)/",
+        "regex": "/([^:]*)/",
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
@@ -1547,7 +1577,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1602,7 +1632,7 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -1636,5 +1666,5 @@
   "variables": {
     "list": []
   },
-  "version": 4
+  "version": 5
 }
