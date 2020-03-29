@@ -39,6 +39,8 @@
         - "/var/log/pveproxy/*"
     - role: debian_common
     - role: self_monitoring
+    - role: self_monitoring
+      self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134
     - role: prometheus_zfs_exporter
 
   tasks:
