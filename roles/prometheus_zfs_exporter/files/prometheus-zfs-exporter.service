@@ -1,0 +1,11 @@
+[Unit]
+Description=Prometheus ZFS exporter
+
+[Service]
+Restart=always
+User=root
+ExecStart=/usr/local/bin/zfs_exporter
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

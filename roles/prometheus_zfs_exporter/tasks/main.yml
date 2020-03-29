@@ -1,0 +1,39 @@
+---
+- name: Download Prometheus zfs exporter
+  get_url:
+    url: https://github.com/pdf/zfs_exporter/releases/download/v0.0.3/zfs_exporter-0.0.3.linux-amd64.tar.gz
+    dest: /tmp/
+  tags: zfs_exporter
+
+- name: Unarchive Prometheus zfs exporter
+  unarchive:
+    src: /tmp/zfs_exporter-0.0.3.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+    creates: /tmp/zfs_exporter-0.0.3.linux-amd64/zfs_exporter
+  tags: zfs_exporter
+
+- name: Copy Prometheus zfs exporter to /usr/local/bin
+  copy:
+    src: /tmp/zfs_exporter-0.0.3.linux-amd64/zfs_exporter
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
+  tags: zfs_exporter
+
+- name: Install Prometheus zfs exporter service file
+  copy:
+    src: prometheus-zfs-exporter.service
+    dest: /etc/systemd/system/
+  notify: Restart Prometheus zfs exporter
+  tags: zfs_exporter
+
+- name: Enable and start Prometheus zfs exporter
+  systemd:
+    name: prometheus-zfs-exporter
+    daemon_reload: yes
+    enabled: yes
+    state: started
+  tags: zfs_exporter

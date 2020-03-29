@@ -1,0 +1,6 @@
+---
+- name: Restart Prometheus zfs exporter
+  systemd:
+    name: prometheus-zfs-exporter
+    daemon_reload: yes
+    state: restarted

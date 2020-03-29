@@ -39,6 +39,7 @@
         - "/var/log/pveproxy/*"
     - role: debian_common
     - role: self_monitoring
+    - role: prometheus_zfs_exporter
 
   tasks:
     - name: Enable IOMMU
