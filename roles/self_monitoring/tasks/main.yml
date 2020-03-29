@@ -1,0 +1,19 @@
+---
+- name: Install prometheus node exporter
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - prometheus-node-exporter
+  tags: self_monitoring
+
+- name: Add self to monitoring
+  copy:
+    dest: "/srv/prometheus/targets/{{ self_monitoring_target_host }}.yml"
+    content: |
+      - targets:
+        - {{ self_monitoring_target_host }}:{{ self_monitoring_target_port }}
+  delegate_to: "{{ self_monitoring_monitor_host }}"
+  remote_user: "{{ self_monitoring_remote_user }}"
+  become: "{{ self_monitoring_remote_become }}"
+  tags: self_monitoring
