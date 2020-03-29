@@ -188,12 +188,6 @@
     copy:
       dest: /mnt/etc/apt/sources.list
       content: |
-        # Packages from the Hetzner Debian Mirror
-        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster main contrib non-free
-        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster-updates main contrib non-free
-        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/packages buster-backports main contrib non-free
-        deb [arch=i386,amd64] http://mirror.hetzner.de/debian/security buster/updates main contrib non-free
-
         ### Debian official mirror
         deb [arch=i386,amd64] http://deb.debian.org/debian buster main non-free contrib
         deb-src [arch=i386,amd64] http://deb.debian.org/debian buster main non-free contrib
