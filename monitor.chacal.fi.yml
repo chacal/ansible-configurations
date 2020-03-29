@@ -19,6 +19,8 @@
       docker_compose: project_src=/srv/monitoring-compose services=prometheus state=present restarted=true
     - name: Restart HAProxy
       docker_compose: project_src=/srv/monitoring-compose services=haproxy state=present restarted=true
+    - name: Restart Grafana
+      docker_compose: project_src=/srv/monitoring-compose services=grafana state=present restarted=true
 
   roles:
     - role: filebeat
@@ -41,8 +43,13 @@
         - /srv/prometheus
         - /srv/prometheus/targets
         - /srv/grafana
+        - /srv/grafana/provisioning
+        - /srv/grafana/provisioning/datasources
+        - /srv/grafana/provisioning/dashboards
         - /srv/haproxy
-      tags: prometheus
+      tags:
+        - prometheus
+        - grafana
 
     - name: Create letsencrypt certificate
       include_role:
@@ -147,6 +154,53 @@
       notify: Restart HAProxy
       tags: haproxy
 
+    - name: Provision Grafana Prometheus data source
+      copy:
+        dest: /srv/grafana/provisioning/datasources/datasource.yaml
+        content: |
+          apiVersion: 1
+
+          deleteDatasources:
+            - name: Prometheus
+              orgId: 1
+
+          datasources:
+          - name: Prometheus
+            id: 1
+            orgId: 1
+            type: prometheus
+            access: proxy
+            url: http://prometheus:9090/prometheus
+            isDefault: 1
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboard provider
+      copy:
+        dest: /srv/grafana/provisioning/dashboards/dashboards.yaml
+        content: |
+          apiVersion: 1
+
+          providers:
+          - name: 'Dashboard provider'
+            orgId: 1
+            folder: 'Provisioned'
+            type: file
+            editable: true
+            updateIntervalSeconds: 10
+            allowUiUpdates: false
+            options:
+              path: /var/lib/grafana/dashboards
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboard
+      copy:
+        src: ./conf/monitor.chacal.fi/servers_dashboard.json
+        dest: /srv/grafana/dashboards/
+      notify: Restart Grafana
+      tags: grafana
+
     - name: Create docker-compose service
       include_role:
         name: docker-compose
@@ -171,6 +225,7 @@
               image: "grafana/grafana"
               environment:
                 - GF_SERVER_DOMAIN={{ inventory_hostname }}
+                - GF_SECURITY_ADMIN_PASSWORD={{ chacal.monitor.grafana.password }}
                 - GF_SMTP_ENABLED=true
                 - GF_SMTP_HOST=smtp.sendgrid.net:587
                 - GF_SMTP_USER=apikey
@@ -179,6 +234,8 @@
                 - GF_SMTP_FROM_NAME='Grafana - monitor.chacal.fi'
               volumes:
                 - "/srv/grafana:/var/lib/grafana"
+                - "/srv/grafana/provisioning:/etc/grafana/provisioning"
+                - "/srv/grafana/dashboards:/var/lib/grafana/dashboards"
               user: "nobody"
               restart: always
 
