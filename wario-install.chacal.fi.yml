@@ -149,7 +149,7 @@
   - name: Add hostname to /etc/hosts
     lineinfile:
       path: /mnt/etc/hosts
-      line: "{{ ip }}       wario.chacal.fi wario"
+      line: "{{ ip }}       wario.external.chacal.fi wario"
 
   - name: Remove 127.0.1.1 from /etc/hosts
     lineinfile:
