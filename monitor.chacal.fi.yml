@@ -27,6 +27,7 @@
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
     - role: debian_common
+    - role: prometheus_node_exporter
     - role: self_monitoring
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
