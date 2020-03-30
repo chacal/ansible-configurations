@@ -1,12 +1,4 @@
 ---
-- name: Install prometheus node exporter
-  apt:
-    state: latest
-    cache_valid_time: 3600
-    pkg:
-      - prometheus-node-exporter
-  tags: self_monitoring
-
 - name: Add self to monitoring
   copy:
     dest: "/srv/prometheus/targets/{{ self_monitoring_target_host }}_{{ self_monitoring_target_port }}.yml"
