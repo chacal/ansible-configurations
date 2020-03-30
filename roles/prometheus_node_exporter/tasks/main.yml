@@ -1,0 +1,19 @@
+---
+- name: Install dependencies
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - smartmontools
+      - moreutils
+
+# prometheus-node-exporter is installed from Sid .deb as Buster version has bugs
+# See:
+# - https://github.com/prometheus/node_exporter/issues/1462
+# - https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/pull/8
+- name: Install prometheus-node-exporter
+  apt:
+    deb: "{{ item }}"
+  loop:
+    - http://ftp.fi.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_0.18.1+ds-2_amd64.deb
+    - http://ftp.fi.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200110.fc91c86-1_all.deb
