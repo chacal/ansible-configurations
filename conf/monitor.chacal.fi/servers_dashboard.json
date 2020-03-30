@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1585500658404,
+  "iteration": 1585576485869,
   "links": [],
   "panels": [
     {
@@ -1770,7 +1770,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 663
+        "y": 51
       },
       "id": 27,
       "panels": [],
@@ -1779,6 +1779,7 @@
     },
     {
       "alert": {
+        "alertRuleTags": {},
         "conditions": [
           {
             "evaluator": {
@@ -1810,11 +1811,7 @@
         "handler": 1,
         "name": "Server online status alert",
         "noDataState": "alerting",
-        "notifications": [
-          {
-            "id": 2
-          }
-        ]
+        "notifications": []
       },
       "aliasColors": {},
       "bars": false,
@@ -1828,7 +1825,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 664
+        "y": 52
       },
       "hiddenSeries": false,
       "id": 29,
@@ -1895,6 +1892,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:215",
           "decimals": 0,
           "format": "short",
           "label": "",
@@ -1904,6 +1902,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:216",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1927,7 +1926,6 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
           "text": "elastic.chacal.fi",
           "value": "elastic.chacal.fi"
         },
@@ -1954,7 +1952,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -2043,5 +2041,5 @@
   "variables": {
     "list": []
   },
-  "version": 7
+  "version": 9
 }

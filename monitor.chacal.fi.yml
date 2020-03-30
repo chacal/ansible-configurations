@@ -47,6 +47,7 @@
         - /srv/grafana/provisioning
         - /srv/grafana/provisioning/datasources
         - /srv/grafana/provisioning/dashboards
+        - /srv/grafana/provisioning/notifiers
         - /srv/haproxy
       tags:
         - prometheus
@@ -161,10 +162,6 @@
         content: |
           apiVersion: 1
 
-          deleteDatasources:
-            - name: Prometheus
-              orgId: 1
-
           datasources:
           - name: Prometheus
             id: 1
@@ -199,6 +196,26 @@
       copy:
         src: ./conf/monitor.chacal.fi/servers_dashboard.json
         dest: /srv/grafana/dashboards/
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana alert notification channels
+      copy:
+        dest: /srv/grafana/provisioning/notifiers/notifiers.yaml
+        content: |
+          notifiers:
+            - name: "Elytys Slack"
+              type: slack
+              uid: elytys-slack
+              org_id: 1
+              is_default: true
+              send_reminder: true
+              frequency: 6h
+              disable_resolve_message: false
+              settings:
+                url: {{ chacal.monitor.grafana.slack_hook }}
+                username: Grafana Monitoring
+                uploadImage: true
       notify: Restart Grafana
       tags: grafana
 
