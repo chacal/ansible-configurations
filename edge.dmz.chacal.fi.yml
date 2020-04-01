@@ -1,0 +1,194 @@
+---
+#
+# Playbook that sets up HAProxy on edge.dmz.chacal.fi
+#
+- hosts: edge.dmz.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  handlers:
+    - name: Restart HAProxy
+      service: name=haproxy state=restarted
+    - name: Restart network
+      service: name=networking state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: frr_ospf
+      frr_config: |
+        log syslog informational
+        router ospf
+          ospf router-id {{ ansible_eth0.ipv4.address }}
+          network {{ ansible_eth0.ipv4.network }}/24 area 0.0.0.0
+
+  tasks:
+    # Flush handlers to trigger frr restart
+    - meta: flush_handlers
+
+    - name: Wait until ospf route to MGMT net is present
+      shell: ip r | grep -q "10.90.99.0"
+      register: cmd_res
+      until: cmd_res.rc == 0
+      retries: 10
+      failed_when: cmd_res.rc == 1
+      changed_when: False
+      tags: network
+
+    - name: Remove default gateway from eth0
+      lineinfile:
+        dest: /etc/network/interfaces.d/50-cloud-init.cfg
+        state: absent
+        regexp: "gateway"
+      notify:
+        - Restart network
+        - Restart HAProxy
+      tags: network
+
+    - name: Setup WAN interface on ens19
+      copy:
+        dest: /etc/network/interfaces.d/60-wan.cfg
+        content: |
+          auto ens19
+          iface ens19 inet static
+              address 95.216.233.249
+              netmask 255.255.255.240
+              gateway 95.216.233.241
+              213.133.98.98 213.133.99.99 213.133.100.100
+      notify:
+        - Restart network
+        - Restart HAProxy
+      tags: network
+
+    - name: Install HAProxy & ufw
+      apt:
+        state: latest
+        cache_valid_time: 3600
+        default_release: "{{ansible_distribution_release}}-backports"
+        pkg:
+          - haproxy
+          - ufw
+      tags:
+        - haproxy
+        - ufw
+
+    - name: Allow HTTP traffic in from anywhere
+      ufw: rule=allow name='WWW'
+      tags: ufw
+
+    - name: Allow HTTPS traffic in from anywhere
+      ufw: rule=allow name='WWW Secure'
+      tags: ufw
+
+    - name: Allow all traffic in from internal networks
+      ufw: rule=allow from=10.0.0.0/8
+      tags: ufw
+
+    - name: Enable firewall & disable logging
+      ufw: state=enabled policy=deny logging=off
+      tags: ufw
+
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_certificate_domains:
+          - tuuleeko.fi
+          - www.tuuleeko.fi
+          - sensors.chacal.fi
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Updating haproxy certificates with certbot deploy-hook.."
+          cat /etc/letsencrypt/live/tuuleeko.fi/fullchain.pem /etc/letsencrypt/live/tuuleeko.fi/privkey.pem > \
+          /etc/haproxy/letsencrypt-chain.pem
+          chmod 600 /etc/haproxy/letsencrypt-chain.pem
+          systemctl restart haproxy
+          echo "Certificates updated"
+      tags: certbot
+
+    - name: Create HAProxy configuration
+      copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              log /dev/log    local0
+              log /dev/log    local1 notice
+              chroot /var/lib/haproxy
+              user haproxy
+              group haproxy
+              daemon
+
+              # Default SSL material locations
+              ca-base /etc/ssl/certs
+              crt-base /etc/ssl/private
+
+              # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+              ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+              ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+              ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+              tune.ssl.default-dh-param 2048
+
+          defaults
+              mode http
+              timeout connect 5s
+              timeout client 10s
+              timeout server 30s
+
+              stats enable
+              stats uri /haproxy-stats
+              stats realm Haproxy\ Statistics
+              stats auth {{ chacal.edge_dmz.haproxy_stats.username }}:{{ chacal.edge_dmz.haproxy_stats.password }}
+
+              errorfile 400 /etc/haproxy/errors/400.http
+              errorfile 403 /etc/haproxy/errors/403.http
+              errorfile 408 /etc/haproxy/errors/408.http
+              errorfile 500 /etc/haproxy/errors/500.http
+              errorfile 502 /etc/haproxy/errors/502.http
+              errorfile 503 /etc/haproxy/errors/503.http
+              errorfile 504 /etc/haproxy/errors/504.http
+
+          frontend http-in
+              bind *:80
+              bind *:443 ssl crt /etc/haproxy/letsencrypt-chain.pem alpn h2,http/1.1
+              redirect scheme https code 301 if !{ ssl_fc }
+              http-response set-header Strict-Transport-Security max-age=63072000
+
+              default_backend weather_app
+
+              # Allow accessing haproxy stats only from internal network
+              http-request deny if { path -i -m beg /haproxy-stats } !{ src 10.0.0.0/8 }
+
+              acl is_tuuleeko ssl_fc_sni www.tuuleeko.fi
+              acl is_tuuleeko ssl_fc_sni tuuleeko.fi
+              acl is_sensors ssl_fc_sni sensors.chacal.fi
+              acl is_fmiproxy path_beg -i /fmiproxy
+
+              use_backend sensors if is_sensors
+              use_backend fmiproxy if is_tuuleeko is_fmiproxy
+              use_backend weather_app if is_tuuleeko
+
+          backend sensors
+              # TODO: Change this when sensor Grafana is up
+              server sensors1 localhost:8000
+
+          backend fmiproxy
+              http-request set-path "%[path,regsub(^/fmiproxy/,/)]"
+              server fmiproxy1 tuuleeko.dmz.chacal.fi:8000
+
+          backend weather_app
+              server weather_app1 tuuleeko.dmz.chacal.fi:8005
+      notify: Restart HAProxy
+      tags: haproxy
