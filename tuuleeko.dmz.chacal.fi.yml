@@ -1,0 +1,50 @@
+---
+#
+# Playbook that sets up fmiproxy and weather_app on tuuleeko.dmz.chacal.fi
+#
+- hosts: tuuleeko.dmz.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+    - name: Add user for Node apps
+      user: name=nodeapp system=yes
+
+    - name: Install FMI Proxy
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "fmiproxy"
+        docker_app_container_name: "jihartik/fmiproxy"
+        docker_app_extra_params: "--init"
+        docker_app_ports:
+          - 8000:8000
+
+    - name: Install Weather App
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "weatherapp"
+        docker_app_container_name: "jihartik/weatherapp"
+        docker_app_extra_params: "--init"
+        docker_app_ports:
+          - 8005:8005
