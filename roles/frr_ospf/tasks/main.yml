@@ -1,0 +1,36 @@
+---
+- name: Add frr APT key
+  apt_key:
+    url: https://deb.frrouting.org/frr/keys.asc
+  tags: frr_ospf
+
+- name: Add frr APT repository
+  apt_repository:
+    repo: "deb https://deb.frrouting.org/frr {{ ansible_distribution_release }} frr-stable"
+    update_cache: yes
+  tags: frr_ospf
+
+- name: Install frr
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - frr
+      - frr-pythontools
+  tags: frr_ospf
+
+- name: Enable OSPF for frr
+  lineinfile:
+    dest: /etc/frr/daemons
+    state: present
+    regexp: "^ospfd="
+    line: "ospfd=yes"
+  notify: Restart frr
+  tags: frr_ospf
+
+- name: Configure frr
+  copy:
+    dest: /etc/frr/frr.conf
+    content: "{{ frr_config }}"
+  notify: Restart frr
+  tags: frr_ospf
