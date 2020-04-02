@@ -129,7 +129,7 @@
         pkg: os-prober
 
     - name: Setup PVE
-      include_role: name=pve_common
+      import_role: name=pve_common
 
     - name: Add PVE admin user
       include_role:
