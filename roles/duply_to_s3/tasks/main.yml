@@ -1,0 +1,54 @@
+---
+- name: Install duply
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - duply
+      - duplicity
+      - python-boto
+  tags: duply_to_s3
+
+- name: Create conf dir for duply backups
+  file:
+    path: "/root/.duply/{{ inventory_hostname }}"
+    state: directory
+  tags: duply_to_s3
+
+- name: Setup duply backup configuration
+  copy:
+    dest: "/root/.duply/{{ inventory_hostname }}/conf"
+    content: "{{ dupply_to_s3_conf }}"
+  tags: duply_to_s3
+
+- name: Setup duply backup excludes
+  copy:
+    dest: "/root/.duply/{{ inventory_hostname }}/exclude"
+    content: "{{ dupply_to_s3_exclude }}"
+  tags: duply_to_s3
+
+- name: Setup Dupply S3 credentials
+  copy:
+    dest: "/root/.duply/{{ inventory_hostname }}/aws_credentials"
+    mode: 0600
+    content: |
+      export AWS_ACCESS_KEY_ID='{{ duply_to_s3_access_key }}'
+      export AWS_SECRET_ACCESS_KEY='{{ duply_to_s3_secret_key }}'
+  tags: duply_to_s3
+
+- name: Backup periodically
+  cron:
+    name: "Duply backup"
+    minute: "0"
+    hour: "*/12"
+    job: ". /root/.duply/{{ inventory_hostname }}/aws_credentials; duply {{ inventory_hostname }} backup 2>&1 | /usr/bin/logger -t duply"
+  tags: duply_to_s3
+
+- name: Purge too old backups
+  cron:
+    name: "Purge old duply backups"
+    minute: "0"
+    hour: "13"
+    weekday: "mon"
+    job: ". /root/.duply/{{ inventory_hostname }}/aws_credentials; duply {{ inventory_hostname }} purge 6M --force 2>&1 | /usr/bin/logger -t duply"
+  tags: duply_to_s3
