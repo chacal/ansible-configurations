@@ -24,9 +24,6 @@
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
 
   tasks:
-    - name: Add user for Node apps
-      user: name=nodeapp system=yes
-
     - name: Install FMI Proxy
       include_role:
         name: docker-app
