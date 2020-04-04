@@ -76,3 +76,12 @@
   notify: Reset smartd systemd fail state
   when: ansible_virtualization_role == "guest"
   tags: debian_common
+
+- name: Run fstrim periodically
+  cron:
+    name: "Run fstrim"
+    minute: "20"
+    hour: "*/6"
+    job: "/usr/sbin/fstrim -Av 2>&1 | /usr/bin/logger -t fstrim"
+  when: ansible_virtualization_role == "guest"
+  tags: debian_common
