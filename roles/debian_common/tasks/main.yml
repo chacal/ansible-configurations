@@ -67,3 +67,12 @@
     enabled: no
   when: rpcbind_service.stat.exists
   tags: debian_common
+
+- name: Stop & disable smartd on VMs
+  service:
+    name: smartd
+    state: stopped
+    enabled: no
+  notify: Reset smartd systemd fail state
+  when: ansible_virtualization_role == "guest"
+  tags: debian_common

@@ -3,3 +3,6 @@
   service:
     name: cron
     state: restarted
+
+- name: Reset smartd systemd fail state
+  command: systemctl reset-failed smartd
