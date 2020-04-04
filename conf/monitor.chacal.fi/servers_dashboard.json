@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1585576485869,
+  "iteration": 1585990575966,
   "links": [],
   "panels": [
     {
@@ -434,7 +434,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "6.7.1",
+      "pluginVersion": "6.7.2",
       "targets": [
         {
           "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
@@ -548,9 +548,10 @@
       "repeat": "host",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "title": "Metrics",
@@ -598,9 +599,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -767,9 +769,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -958,9 +961,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1067,9 +1071,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1170,9 +1175,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1272,9 +1278,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1378,9 +1385,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1490,9 +1498,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -1604,9 +1613,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1702,9 +1712,10 @@
       "renderer": "flot",
       "scopedVars": {
         "host": {
+          "$$hashKey": "object:1081",
           "selected": true,
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1770,7 +1781,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 204
       },
       "id": 27,
       "panels": [],
@@ -1825,7 +1836,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 205
       },
       "hiddenSeries": false,
       "id": 29,
@@ -1926,8 +1937,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "elastic.chacal.fi",
-          "value": "elastic.chacal.fi"
+          "tags": [],
+          "text": "edge.dmz.chacal.fi",
+          "value": "edge.dmz.chacal.fi"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_boot_time_seconds, instance)",
@@ -1952,7 +1964,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1985,7 +1997,7 @@
           ]
         },
         "datasource": "Prometheus",
-        "definition": "label_values(node_network_iface_id, interface)",
+        "definition": "label_values(node_network_iface_id, device)",
         "hide": 2,
         "includeAll": true,
         "index": -1,
@@ -1993,9 +2005,9 @@
         "multi": true,
         "name": "net_devices",
         "options": [],
-        "query": "label_values(node_network_iface_id, interface)",
+        "query": "label_values(node_network_iface_id, device)",
         "refresh": 1,
-        "regex": "^(?!lo|veth|tap|br-|^zt|docker)(.*)$",
+        "regex": "^(?!lo|veth|tap|^br-|^zt|docker|.+br[0-9])(.*)$",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
@@ -2041,5 +2053,5 @@
   "variables": {
     "list": []
   },
-  "version": 9
+  "version": 10
 }
