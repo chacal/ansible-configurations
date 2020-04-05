@@ -122,6 +122,7 @@
           - open-iscsi
           - man
           - sysstat
+          - ksm-control-daemon
 
     - name: Remove os-prober
       apt:
