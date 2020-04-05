@@ -340,3 +340,23 @@
           - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
           - MQTT_CLIENT_ID=sensor-backend-influxdb-sender
+
+    - name: Install mqtt-to-db-sender for writing to ClickHouse
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "mqtt-to-db-sender-clickhouse"
+        docker_app_container_name: "jihartik/mqtt-to-db-sender"
+        docker_app_extra_params: "--init"
+        docker_app_env:
+          - DB_TYPE=clickhouse
+          - DB_HOST=sensor-backend.chacal.fi
+          - DB_PORT=8443
+          - DB_USERNAME={{ chacal.sensor_backend.clickhouse.rw_user.username }}
+          - DB_PASSWORD={{ chacal.sensor_backend.clickhouse.rw_user.password }}
+          - DB_NAME=default
+          - MQTT_BROKER=mqtts://sensor-backend.chacal.fi
+          - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
+          - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
+          - MQTT_CLIENT_ID=sensor-backend-clickhouse-sender
