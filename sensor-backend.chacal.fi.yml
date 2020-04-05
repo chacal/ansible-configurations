@@ -326,10 +326,11 @@
         name: docker-app
       vars:
         docker_regular_user: "{{ ansible_user }}"
-        docker_app_name: "mqtt-to-influxdb-sender"
-        docker_app_container_name: "jihartik/mqtt-to-influxdb-sender"
+        docker_app_name: "mqtt-to-db-sender-influxdb"
+        docker_app_container_name: "jihartik/mqtt-to-db-sender"
         docker_app_extra_params: "--init"
         docker_app_env:
+          - DB_TYPE=influxdb
           - DB_HOST=sensor-backend.chacal.fi
           - DB_PORT=8086
           - DB_USERNAME={{ chacal.influxdb.regular_user.username }}
