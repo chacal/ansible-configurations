@@ -1,4 +1,7 @@
 ---
+- name: Populate service facts
+  service_facts:
+
 # Suppress cron default logging
 - name: Decrease cron logging
   lineinfile:
@@ -74,7 +77,7 @@
     state: stopped
     enabled: no
   notify: Reset smartd systemd fail state
-  when: ansible_virtualization_role == "guest"
+  when: ansible_virtualization_role == "guest" and ansible_facts.services['smartd.service'] is defined
   tags: debian_common
 
 - name: Run fstrim periodically
