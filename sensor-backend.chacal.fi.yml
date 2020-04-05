@@ -225,11 +225,12 @@
         docker_app_container_name: "jihartik/mqtt-to-influxdb-sender"
         docker_app_extra_params: "--init"
         docker_app_env:
-          - INFLUXDB_HOST=sensor-backend.chacal.fi
-          - INFLUXDB_PORT=8086
-          - INFLUXDB_USERNAME={{ chacal.influxdb.regular_user.username }}
-          - INFLUXDB_PASSWORD={{ chacal.influxdb.regular_user.password }}
-          - INFLUXDB_DB=sensors
+          - DB_HOST=sensor-backend.chacal.fi
+          - DB_PORT=8086
+          - DB_USERNAME={{ chacal.influxdb.regular_user.username }}
+          - DB_PASSWORD={{ chacal.influxdb.regular_user.password }}
+          - DB_NAME=sensors
           - MQTT_BROKER=mqtts://sensor-backend.chacal.fi
           - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
+          - MQTT_CLIENT_ID=sensor-backend-influxdb-sender
