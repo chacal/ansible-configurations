@@ -181,8 +181,7 @@
               use_backend weather_app if is_tuuleeko
 
           backend sensors
-              # TODO: Change this when sensor Grafana is up
-              server sensors1 localhost:8000
+              server sensors1 sensors.dmz.chacal.fi:3000 ssl ca-file ca-certificates.crt
 
           backend fmiproxy
               http-request set-path "%[path,regsub(^/fmiproxy/,/)]"
