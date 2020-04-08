@@ -1,0 +1,166 @@
+---
+#
+# Playbook that sets up Grafana on sensors.dmz.chacal.fi
+#
+- hosts: sensors.dmz.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  handlers:
+    - name: Restart Grafana
+      service: name=grafana state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+
+    - name: Create data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+      loop:
+        - /srv/grafana
+        - /srv/grafana/certs
+        - /srv/grafana/provisioning
+        - /srv/grafana/provisioning/datasources
+        - /srv/grafana/provisioning/dashboards
+        - /srv/grafana/provisioning/notifiers
+      tags:
+        - grafana
+
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Restarting Grafana due to updated certificates.."
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /srv/grafana/certs/
+          cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /srv/grafana/certs/
+          chown nobody:nogroup /srv/grafana/certs/*.pem
+          chmod -R 0600 /srv/grafana/certs/*
+          docker restart grafana || true
+
+    - name: Provision Grafana data sources
+      copy:
+        dest: /srv/grafana/provisioning/datasources/clickhouse.yaml
+        content: |
+          apiVersion: 1
+
+          datasources:
+          - name: Clickhouse
+            id: 1
+            orgId: 1
+            type: vertamedia-clickhouse-datasource
+            access: proxy
+            url: https://sensor-backend.chacal.fi:8443
+            basicAuth: 1
+            basicAuthUser: {{ chacal.sensor_backend.clickhouse.ro_user.username }}
+            secureJsonData:
+              basicAuthPassword: {{ chacal.sensor_backend.clickhouse.ro_user.password }}
+            isDefault: 1
+
+          - name: InfluxDB
+            id: 2
+            orgId: 1
+            type: influxdb
+            access: proxy
+            database: sensors
+            user: {{ chacal.influxdb.readonly_user.username }}
+            url: https://sensor-backend.chacal.fi:8086
+            secureJsonData:
+              password: {{ chacal.influxdb.readonly_user.password }}
+            jsonData:
+              httpMode: GET
+
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboard provider
+      copy:
+        dest: /srv/grafana/provisioning/dashboards/dashboards.yaml
+        content: |
+          apiVersion: 1
+
+          providers:
+          - name: 'Dashboard provider'
+            orgId: 1
+            folder: 'Provisioned'
+            type: file
+            editable: true
+            updateIntervalSeconds: 10
+            allowUiUpdates: false
+            options:
+              path: /var/lib/grafana/dashboards
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboard
+      copy:
+        src: ./conf/sensors.dmz.chacal.fi/sensors_dashboard.json
+        dest: /srv/grafana/dashboards/
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana alert notification channels
+      copy:
+        dest: /srv/grafana/provisioning/notifiers/notifiers.yaml
+        content: |
+          notifiers:
+            - name: "Elytys Slack"
+              type: slack
+              uid: elytys-slack
+              org_id: 1
+              is_default: true
+              send_reminder: true
+              frequency: 6h
+              disable_resolve_message: false
+              settings:
+                url: {{ chacal.sensors_dmz.grafana.slack_hook }}
+                username: Grafana Sensors
+                uploadImage: true
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Add Grafana docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "grafana"
+        docker_app_container_name: "grafana/grafana"
+        docker_app_extra_params: "-u nobody -v /srv/grafana:/var/lib/grafana -v /srv/grafana/provisioning:/etc/grafana/provisioning -v /srv/grafana/certs:/etc/grafana/certs"
+        docker_app_env:
+          - GF_SECURITY_ADMIN_PASSWORD={{ chacal.sensors_dmz.grafana.password }}
+          - GF_SERVER_PROTOCOL=https
+          - GF_SERVER_CERT_FILE=/etc/grafana/certs/fullchain.pem
+          - GF_SERVER_CERT_KEY=/etc/grafana/certs/privkey.pem
+          - GF_SMTP_ENABLED=true
+          - GF_SMTP_HOST=smtp.sendgrid.net:587
+          - GF_SMTP_USER=apikey
+          - GF_SMTP_PASSWORD={{ chacal.sendgrid.sensors_dmz }}
+          - GF_SMTP_FROM_ADDRESS=grafana@{{ inventory_hostname }}
+          - GF_SMTP_FROM_NAME='Grafana - sensors.chacal.fi'
+          - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+        docker_app_ports:
+          - "0.0.0.0:3000:3000"
+      tags: grafana

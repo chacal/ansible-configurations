@@ -3,3 +3,4 @@
 - import_playbook: monitor.chacal.fi.yml
 - import_playbook: sensor-backend.chacal.fi.yml
 - import_playbook: tuuleeko.dmz.chacal.fi.yml
+- import_playbook: sensors.dmz.chacal.fi.yml
