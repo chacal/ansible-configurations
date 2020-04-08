@@ -208,20 +208,30 @@
       when: influx_db_check.changed
       tags: influxdb
 
-    - name: Check if InfluxDB regular user has been created
+    - name: Gather InfluxDB users
       command: '{{ influx_cmd }} -execute "SHOW USERS" {{ influx_cli_auth_params }}'
-      register: influx_user_check
-      changed_when: "chacal.influxdb.regular_user.username not in influx_user_check.stdout"
+      register: influxdb_users
+      changed_when: False
       tags: influxdb
 
     - name: Create InfluxDB regular user
       command: "{{ influx_cmd }} -execute \"CREATE USER {{ chacal.influxdb.regular_user.username }} WITH PASSWORD '{{ chacal.influxdb.regular_user.password }}'\" {{ influx_cli_auth_params }}"
-      when: influx_user_check.changed
+      when: "chacal.influxdb.regular_user.username not in influxdb_users.stdout"
       tags: influxdb
 
     - name: Grant DB access to regular user
       command: '{{ influx_cmd }} -execute "GRANT ALL ON sensors TO {{ chacal.influxdb.regular_user.username }}" {{ influx_cli_auth_params }}'
-      when: influx_user_check.changed
+      when: "chacal.influxdb.regular_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+    - name: Create InfluxDB readonly user
+      command: "{{ influx_cmd }} -execute \"CREATE USER {{ chacal.influxdb.readonly_user.username }} WITH PASSWORD '{{ chacal.influxdb.readonly_user.password }}'\" {{ influx_cli_auth_params }}"
+      when: "chacal.influxdb.readonly_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+    - name: Grant DB access to readonly user
+      command: '{{ influx_cmd }} -execute "GRANT READ ON sensors TO {{ chacal.influxdb.readonly_user.username }}" {{ influx_cli_auth_params }}'
+      when: "chacal.influxdb.readonly_user.username not in influxdb_users.stdout"
       tags: influxdb
 
 
