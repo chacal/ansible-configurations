@@ -192,10 +192,13 @@
       notify: Restart Grafana
       tags: grafana
 
-    - name: Provision Grafana dashboard
+    - name: Provision Grafana dashboards
       copy:
-        src: ./conf/monitor.chacal.fi/servers_dashboard.json
+        src: "{{ item }}"
         dest: /srv/grafana/dashboards/
+      loop:
+        - ./conf/monitor.chacal.fi/servers_dashboard.json
+        - ./conf/monitor.chacal.fi/clickhouse_dashboard.json
       notify: Restart Grafana
       tags: grafana
 
