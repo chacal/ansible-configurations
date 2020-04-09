@@ -2,5 +2,6 @@
 self_monitoring_target_host: "{{ inventory_hostname }}"
 self_monitoring_target_port: 9100
 self_monitoring_monitor_host: monitor.chacal.fi
+self_monitoring_use_https: False
 self_monitoring_remote_user: jihartik
 self_monitoring_remote_become: True

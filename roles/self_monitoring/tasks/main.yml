@@ -1,7 +1,7 @@
 ---
 - name: Add self to monitoring
   copy:
-    dest: "/srv/prometheus/targets/{{ self_monitoring_target_host }}_{{ self_monitoring_target_port }}.yml"
+    dest: "/srv/prometheus/{{ 'secure_' if self_monitoring_use_https else '' }}targets/{{ self_monitoring_target_host }}_{{ self_monitoring_target_port }}.yml"
     content: |
       - targets:
         - {{ self_monitoring_target_host }}:{{ self_monitoring_target_port }}

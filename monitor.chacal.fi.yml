@@ -43,6 +43,7 @@
       loop:
         - /srv/prometheus
         - /srv/prometheus/targets
+        - /srv/prometheus/secure_targets
         - /srv/grafana
         - /srv/grafana/provisioning
         - /srv/grafana/provisioning/datasources
@@ -91,6 +92,13 @@
                   refresh_interval: 15s
 
             - job_name: secure-nodes
+              scheme: https
+              file_sd_configs:
+                - files:
+                   - /prometheus/secure_targets/*.yml
+                  refresh_interval: 15s
+
+            - job_name: authenticated-nodes
               scheme: https
               metrics_path: /node-metrics/metrics
               basic_auth:
