@@ -72,7 +72,7 @@
             orgId: 1
             type: vertamedia-clickhouse-datasource
             access: proxy
-            url: https://sensor-backend.chacal.fi:8443
+            url: https://sensor-backend.chacal.fi:9443
             basicAuth: 1
             basicAuthUser: {{ chacal.sensor_backend.clickhouse.ro_user.username }}
             secureJsonData:
