@@ -1,0 +1,137 @@
+---
+#
+# Playbook that sets up ZooKeeper and ClickHouse on sensor-backend2.chacal.fi
+#
+- hosts: sensor-backend2.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  handlers:
+    - name: Restart ClickHouse
+      service: name=clickhouse-server state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+    - name: clickhouse
+      clickhouse_custom_config: |
+        <?xml version="1.0"?>
+        <yandex>
+          <logger>
+            <level>notice</level>
+          </logger>
+          <https_port>8443</https_port>
+          <tcp_port_secure>9440</tcp_port_secure>
+          <interserver_https_port>9009</interserver_https_port>
+          <listen_host>0.0.0.0</listen_host>
+
+          <tcp_port remove="true"/>
+          <mysql_port remove="true"/>
+          <interserver_http_port remove="true"/>
+
+          <zookeeper>
+            <node index="1">
+              <host>localhost</host>
+              <port>2181</port>
+            </node>
+          </zookeeper>
+
+          <macros>
+            <shard>01</shard>
+            <replica>{{ inventory_hostname }}</replica>
+          </macros>
+        </yandex>
+      clickhouse_user_config: |
+        <?xml version="1.0"?>
+        <yandex>
+          <users>
+            <default>
+              <!-- Restrict default (passwordless) user to local access -->
+              <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+            </default>
+
+            <!-- User with r/w access -->
+            <{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
+              <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.rw_user.sha256 }}</password_sha256_hex>
+              <networks>
+                <ip>10.0.0.0/8</ip>
+                <ip>172.16.0.0/12</ip>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+              <profile>default</profile>
+              <quota>default</quota>
+            </{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
+
+            <!-- User with ro access -->
+            <{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
+              <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.ro_user.sha256 }}</password_sha256_hex>
+              <networks>
+                <ip>10.0.0.0/8</ip>
+                <ip>172.16.0.0/12</ip>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+              <profile>readonly</profile>
+              <quota>default</quota>
+            </{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
+          </users>
+        </yandex>
+
+    - name: certbot-dns-route53
+      certbot_email: "{{ chacal.certbot.email }}"
+      certbot_deploy_hook: |
+        #!/bin/bash
+        echo "Restarting ClickHouse due to updated certificates.."
+        mkdir -p /etc/clickhouse-server
+        cp /etc/letsencrypt/live/sensor-backend2.chacal.fi/fullchain.pem /etc/clickhouse-server/server.crt
+        cp /etc/letsencrypt/live/sensor-backend2.chacal.fi/privkey.pem /etc/clickhouse-server/server.key
+        chown clickhouse:clickhouse /etc/clickhouse-server/server.crt
+        chown clickhouse:clickhouse /etc/clickhouse-server/server.key
+        systemctl restart clickhouse-server || true
+      tags: certbot
+
+
+  tasks:
+    - name: Create data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /srv/zookeeper
+        - /srv/zookeeper/conf
+        - /srv/zookeeper/data
+        - /srv/zookeeper/datalog
+      tags:
+        - zookeeper
+
+    - name: Install Zookeeper as Docker container
+      include_role:
+        name: docker-app
+      vars:
+        docker_app_name: "zookeeper"
+        docker_app_container_name: "zookeeper"
+        docker_app_extra_params: "-v /srv/zookeeper/data:/data -v /srv/zookeeper/datalog:/datalog"
+        docker_app_env:
+          - ZOO_AUTOPURGE_PURGEINTERVAL=1
+        docker_app_ports:
+          - "0.0.0.0:2181:2181"
+

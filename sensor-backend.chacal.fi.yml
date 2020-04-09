@@ -1,6 +1,6 @@
 ---
 #
-# Playbook that sets up mosquitto, InfluxDB and mqtt-to-influxdb-sender on sensor-backend.chacal.fi
+# Playbook that sets up mosquitto, InfluxDD, ClickHouse and 2 x mqtt-to-db-sender on sensor-backend.chacal.fi
 #
 - hosts: sensor-backend.chacal.fi
   remote_user: jihartik
@@ -15,12 +15,13 @@
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
     - influx_cli_auth_params: '-username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}'
     - influx_cmd: 'influx -ssl -host sensor-backend.chacal.fi'
+    - chproxy_listen_port: 9443
 
   handlers:
     - name: Restart InfluxDB
       service: name=influxdb state=restarted
-    - name: Restart ClickHouse
-      service: name=clickhouse-server state=restarted
+    - name: Restart chproxy
+      service: name=chproxy state=restarted
 
   roles:
     - role: filebeat
@@ -28,7 +29,6 @@
         - elastic.chacal.fi
     - role: debian_common
     - role: prometheus_node_exporter
-    - role: self_monitoring
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
 
@@ -46,9 +46,15 @@
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /etc/clickhouse-server/server.key
         chown clickhouse:clickhouse /etc/clickhouse-server/server.crt
         chown clickhouse:clickhouse /etc/clickhouse-server/server.key
+        mkdir -p /srv/chproxy/certs
+        cp /etc/letsencrypt/live/sensor-backend.chacal.fi/fullchain.pem /srv/chproxy/certs/server.crt
+        cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /srv/chproxy/certs/server.key
+        chown 1000:1000 /srv/chproxy/certs/server.crt
+        chown 1000:1000 /srv/chproxy/certs/server.key
         systemctl restart mosquitto || true
         systemctl restart influxdb || true
         systemctl restart clickhouse-server || true
+        systemctl restart chproxy || true
       tags: certbot
 
     - name: mqtt-server
@@ -99,7 +105,86 @@
       duply_to_s3_access_key: "{{ chacal.aws.sensor_backend_backup.access_key }}"
       duply_to_s3_secret_key: "{{ chacal.aws.sensor_backend_backup.secret_key }}"
 
+    - name: clickhouse
+      clickhouse_custom_config: |
+        <?xml version="1.0"?>
+        <yandex>
+          <logger>
+            <level>notice</level>
+          </logger>
+          <https_port>8443</https_port>
+          <tcp_port_secure>9440</tcp_port_secure>
+          <interserver_https_port>9009</interserver_https_port>
+          <listen_host>0.0.0.0</listen_host>
+
+          <tcp_port remove="true"/>
+          <mysql_port remove="true"/>
+          <interserver_http_port remove="true"/>
+
+          <zookeeper>
+            <node index="1">
+              <host>sensor-backend2.chacal.fi</host>
+              <port>2181</port>
+            </node>
+          </zookeeper>
+
+          <macros>
+            <shard>01</shard>
+            <replica>{{ inventory_hostname }}</replica>
+          </macros>
+        </yandex>
+      clickhouse_user_config: |
+        <?xml version="1.0"?>
+        <yandex>
+          <users>
+            <default>
+              <!-- Restrict default (passwordless) user to local access -->
+              <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+            </default>
+
+            <!-- User with r/w access -->
+            <{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
+              <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.rw_user.sha256 }}</password_sha256_hex>
+              <networks>
+                <ip>10.0.0.0/8</ip>
+                <ip>172.16.0.0/12</ip>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+              <profile>default</profile>
+              <quota>default</quota>
+            </{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
+
+            <!-- User with ro access -->
+            <{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
+              <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.ro_user.sha256 }}</password_sha256_hex>
+              <networks>
+                <ip>10.0.0.0/8</ip>
+                <ip>172.16.0.0/12</ip>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+              </networks>
+              <profile>readonly</profile>
+              <quota>default</quota>
+            </{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
+          </users>
+        </yandex>
+
   tasks:
+    - name: Install prometheus self monitoring for OS
+      include_role:
+        name: self_monitoring
+
+    - name: Install prometheus self monitoring for chproxy
+      include_role:
+        name: self_monitoring
+      vars:
+        self_monitoring_target_port: "{{ chproxy_listen_port }}"
+        self_monitoring_use_https: True
+
     - name: Configure InfluxDB to use HTTPS
       lineinfile:
         dest: /etc/influxdb/influxdb.conf
@@ -235,102 +320,6 @@
       tags: influxdb
 
 
-    - name: Add ClickHouse apt key
-      apt_key:
-        keyserver: hkp://keyserver.ubuntu.com:80
-        id: E0C56BD4
-      tags: clickhouse
-
-    - name: Add ClickHouse repository
-      apt_repository:
-        repo: "deb http://repo.clickhouse.tech/deb/stable/ main/"
-        state: present
-      tags: clickhouse
-
-    - name: Install ClickHouse
-      apt:
-        state: latest
-        cache_valid_time: 3600
-        pkg:
-          - clickhouse-client
-          - clickhouse-server
-      tags: clickhouse
-
-    - name: Generate DH params for ClickHouse
-      command:
-        cmd: openssl dhparam -out /etc/clickhouse-server/dhparam.pem 4096
-        creates: /etc/clickhouse-server/dhparam.pem
-      notify: Restart ClickHouse
-      tags: clickhouse
-
-    - name: Configure ClickHouse
-      copy:
-        dest: /etc/clickhouse-server/config.d/custom_config.xml
-        content: |
-          <?xml version="1.0"?>
-          <yandex>
-            <logger>
-              <level>notice</level>
-            </logger>
-            <https_port>8443</https_port>
-            <tcp_port_secure>9440</tcp_port_secure>
-            <listen_host>0.0.0.0</listen_host>
-
-            <http_port remove="true"/>
-            <tcp_port remove="true"/>
-            <mysql_port remove="true"/>
-            <interserver_http_port remove="true"/>
-          </yandex>
-      notify: Restart ClickHouse
-      tags: clickhouse
-
-    - name: Add ClickHouse users
-      copy:
-        dest: /etc/clickhouse-server/users.d/custom_users.xml
-        content: |
-          <?xml version="1.0"?>
-          <yandex>
-            <users>
-              <default>
-                <!-- Restrict default (passwordless) user to local access -->
-                <networks>
-                  <ip>::1</ip>
-                  <ip>127.0.0.1</ip>
-                </networks>
-              </default>
-
-              <!-- User with r/w access -->
-              <{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
-                <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.rw_user.sha256 }}</password_sha256_hex>
-                <networks>
-                  <ip>10.0.0.0/8</ip>
-                  <ip>172.16.0.0/12</ip>
-                  <ip>::1</ip>
-                  <ip>127.0.0.1</ip>
-                </networks>
-                <profile>default</profile>
-                <quota>default</quota>
-              </{{ chacal.sensor_backend.clickhouse.rw_user.username }}>
-
-              <!-- User with ro access -->
-              <{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
-                <password_sha256_hex>{{ chacal.sensor_backend.clickhouse.ro_user.sha256 }}</password_sha256_hex>
-                <networks>
-                  <ip>10.0.0.0/8</ip>
-                  <ip>172.16.0.0/12</ip>
-                  <ip>::1</ip>
-                  <ip>127.0.0.1</ip>
-                </networks>
-                <profile>readonly</profile>
-                <quota>default</quota>
-              </{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
-            </users>
-          </yandex>
-      notify: Restart ClickHouse
-      tags: clickhouse
-
-
-
     - name: Install mqtt-to-db-sender for writing to InfluxDB
       include_role:
         name: docker-app
@@ -370,3 +359,55 @@
           - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
           - MQTT_CLIENT_ID=sensor-backend-clickhouse-sender
+
+    - name: Create data directory for chproxy
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /srv/chproxy
+        - /srv/chproxy/certs
+      tags: chproxy
+
+    - name: Configure chproxy
+      copy:
+        dest: /srv/chproxy/config.yml
+        content: |
+          server:
+            https:
+                listen_addr: ":{{ chproxy_listen_port }}"
+                # Allow queries to chproxy only from DMZ
+                allowed_networks: ["10.50.102.0/24"]
+                cert_file: /etc/certs/server.crt
+                key_file: /etc/certs/server.key
+
+          users:
+            - name: "{{ chacal.sensor_backend.clickhouse.ro_user.username }}"
+              password: "{{ chacal.sensor_backend.clickhouse.ro_user.password }}"
+              to_cluster: "sensors-cluster"
+              to_user: "{{ chacal.sensor_backend.clickhouse.ro_user.username }}"
+
+          clusters:
+            - name: "sensors-cluster"
+              scheme: "http"
+              nodes: [
+                "sensor-backend.chacal.fi:8123",
+                "sensor-backend2.chacal.fi:8123"
+              ]
+              users:
+                - name: "{{ chacal.sensor_backend.clickhouse.ro_user.username }}"
+                  password: "{{ chacal.sensor_backend.clickhouse.ro_user.password }}"
+        mode: 0600
+      notify: Restart chproxy
+      tags: chproxy
+
+    - name: Install chproxy
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "chproxy"
+        docker_app_container_name: "tacyuuhon/clickhouse-chproxy"
+        docker_app_extra_params: "-v /srv/chproxy/config.yml:/opt/config.yml -v /srv/chproxy/certs:/etc/certs -v /etc/ssl/certs:/etc/ssl/certs"
+        docker_app_ports:
+          - "0.0.0.0:{{ chproxy_listen_port }}:{{ chproxy_listen_port }}"
