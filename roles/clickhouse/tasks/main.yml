@@ -1,0 +1,44 @@
+---
+- name: Add ClickHouse apt key
+  apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: E0C56BD4
+  tags: clickhouse
+
+- name: Add ClickHouse repository
+  apt_repository:
+    repo: "deb http://repo.clickhouse.tech/deb/stable/ main/"
+    state: present
+  tags: clickhouse
+
+- name: Install ClickHouse
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - clickhouse-client
+      - clickhouse-server
+  tags: clickhouse
+
+- name: Generate DH params for ClickHouse
+  command:
+    cmd: openssl dhparam -out /etc/clickhouse-server/dhparam.pem 4096
+    creates: /etc/clickhouse-server/dhparam.pem
+  notify: Restart ClickHouse
+  tags: clickhouse
+
+- name: Configure ClickHouse
+  copy:
+    dest: /etc/clickhouse-server/config.d/custom_config.xml
+    content: "{{ clickhouse_custom_config }}"
+  when: clickhouse_custom_config != ""
+  notify: Restart ClickHouse
+  tags: clickhouse
+
+- name: Add ClickHouse users
+  copy:
+    dest: /etc/clickhouse-server/users.d/custom_users.xml
+    content: "{{ clickhouse_user_config }}"
+  when: clickhouse_user_config != ""
+  notify: Restart ClickHouse
+  tags: clickhouse
