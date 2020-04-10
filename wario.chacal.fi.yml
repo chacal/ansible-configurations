@@ -70,11 +70,10 @@
                 autoprune = yes
 
         [template_vm_disks]
-                frequent_period = 30
-                # 24h worth of 30min snapshots
-                frequently = 48
-                hourly = 48
-                daily = 21
+                # frequent_period = 30
+                frequently = 0
+                hourly = 24
+                daily = 14
                 monthly = 12
                 yearly = 0
                 autosnap = yes
