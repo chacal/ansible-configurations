@@ -99,24 +99,6 @@
         DUPLICACY_B2_ID: "{{ chacal.sensor_backend.duplicacy.b2_id }}"
         DUPLICACY_B2_KEY: "{{ chacal.sensor_backend.duplicacy.b2_key }}"
 
-    - name: duply_to_s3
-      dupply_to_s3_conf: |
-        GPG_PW='{{ chacal.sensor_backend.duply.pgp_key }}'
-
-        TARGET='s3://s3-eu-west-1.amazonaws.com/chacal-backups/sensor-backend.chacal.fi'
-
-        SOURCE='/'
-
-        MAX_FULLBKP_AGE=1W
-        DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
-        DUPL_PARAMS="$DUPL_PARAMS --s3-european-buckets --s3-use-new-style --s3-use-ia --allow-source-mismatch"
-      dupply_to_s3_exclude: |
-        + /var/lib/influxdb
-        + /var/lib/clickhouse
-        **
-      duply_to_s3_access_key: "{{ chacal.aws.sensor_backend_backup.access_key }}"
-      duply_to_s3_secret_key: "{{ chacal.aws.sensor_backend_backup.secret_key }}"
-
     - name: clickhouse
       clickhouse_custom_config: |
         <?xml version="1.0"?>
