@@ -1,0 +1,8 @@
+---
+duplicacy_version: "2.4.1"
+duplicacy_backup_id: "{{ inventory_hostname }}"
+duplicacy_repository: "/"
+duplicacy_storage: "b2://chacal-backups/{{ duplicacy_backup_id }}"
+duplicacy_filters: ""
+duplicacy_backup_hours: "*/12"
+duplicacy_backup_minutes: "0"

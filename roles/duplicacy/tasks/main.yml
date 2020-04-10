@@ -1,0 +1,47 @@
+---
+- name: Install Duplicacy {{ duplicacy_version }}
+  get_url:
+    url: "https://github.com/gilbertchen/duplicacy/releases/download/v{{ duplicacy_version }}/duplicacy_linux_x64_{{ duplicacy_version }}"
+    dest: /usr/local/bin/duplicacy
+    mode: 0755
+  tags: duplicacy
+
+- name: Create Duplicacy config dir
+  file:
+    path: /root/.duplicacy
+    state: directory
+  tags: duplicacy
+
+- name: Store Duplicacy environment variables
+  copy:
+    dest: /root/.duplicacy/environment
+    mode: 0600
+    content: |
+      {% for e in duplicacy_environment | dict2items %}
+      export {{ e.key }}={{ e.value }}
+      {% endfor %}
+      export DUPLICACY_PASSWORD={{ duplicacy_encryption_key }}
+  no_log: True
+  tags: duplicacy
+
+- name: Initialize Duplicacy backup
+  shell:
+    cmd: ". /root/.duplicacy/environment; duplicacy init -repository {{ duplicacy_repository }} -e {{ duplicacy_backup_id }} {{ duplicacy_storage }}"
+    chdir: /root
+    creates: /root/.duplicacy/preferences
+  tags: duplicacy
+
+- name: Configure duplicacy includes/excludes
+  copy:
+    dest: /root/.duplicacy/filters
+    content: "{{ duplicacy_filters }}"
+  when: duplicacy_filters != ""
+  tags: duplicacy
+
+- name: Backup periodically
+  cron:
+    name: "Duplicacy backup"
+    minute: "{{ duplicacy_backup_minutes }}"
+    hour: "{{ duplicacy_backup_hours }}"
+    job: ". /root/.duplicacy/environment; cd /root; /usr/local/bin/duplicacy -log backup -threads 50 2>&1 | /usr/bin/logger -t duplicacy"
+  tags: duplicacy
