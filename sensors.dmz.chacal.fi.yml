@@ -148,7 +148,7 @@
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "grafana"
         docker_app_container_name: "grafana/grafana"
-        docker_app_extra_params: "-u nobody -v /srv/grafana:/var/lib/grafana -v /srv/grafana/provisioning:/etc/grafana/provisioning -v /srv/grafana/certs:/etc/grafana/certs"
+        docker_app_extra_params: "--net=host -u nobody -v /srv/grafana:/var/lib/grafana -v /srv/grafana/provisioning:/etc/grafana/provisioning -v /srv/grafana/certs:/etc/grafana/certs"
         docker_app_env:
           - GF_SECURITY_ADMIN_PASSWORD={{ chacal.sensors_dmz.grafana.password }}
           - GF_SERVER_PROTOCOL=https
@@ -161,6 +161,4 @@
           - GF_SMTP_FROM_ADDRESS=grafana@{{ inventory_hostname }}
           - GF_SMTP_FROM_NAME='Grafana - sensors.chacal.fi'
           - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
-        docker_app_ports:
-          - "0.0.0.0:3000:3000"
       tags: grafana
