@@ -87,6 +87,18 @@
     - name: influxdb
       tags: influxdb
 
+    - role: duplicacy
+      duplicacy_filters: |
+        +var/
+        +var/lib/
+        +var/lib/influxdb/*
+        +var/lib/clickhouse/*
+        -*
+      duplicacy_encryption_key: "{{ chacal.sensor_backend.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.sensor_backend.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.sensor_backend.duplicacy.b2_key }}"
+
     - name: duply_to_s3
       dupply_to_s3_conf: |
         GPG_PW='{{ chacal.sensor_backend.duply.pgp_key }}'
