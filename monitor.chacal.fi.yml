@@ -31,6 +31,15 @@
     - role: self_monitoring
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+    - role: duplicacy
+      duplicacy_filters: |
+        +srv/
+        +srv/prometheus/*
+        -*
+      duplicacy_encryption_key: "{{ chacal.monitor.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.monitor.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.monitor.duplicacy.b2_key }}"
 
   tasks:
 
