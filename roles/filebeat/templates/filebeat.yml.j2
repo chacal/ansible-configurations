@@ -18,6 +18,7 @@ filebeat.inputs:
     - /var/log/secure*
     - /var/log/daemon.log
     - /var/log/user.log
+    - /var/log/debug
     - .gz$
     - .xz$
 {% for exclude in filebeat_exclude_files %}
