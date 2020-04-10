@@ -1,5 +1,0 @@
-+ /var/lib/influxdb
-+ /var/lib/grafana
-+ /var/lib/postgresql
-+ /etc/letsencrypt
-**

@@ -239,42 +239,6 @@
 
 
   #
-  #  Configure duply backups
-  #
-    - name: Create conf dir for duply backups
-      file: path=/root/.duply/netserver state=directory
-
-    - name: Setup duply backup configuration
-      template: src=./conf/netserver.chacal.fi/duply_conf.j2 dest=/root/.duply/netserver/conf
-
-    - name: Setup duply backup excludes
-      copy: src=./conf/netserver.chacal.fi/duply_exclude dest=/root/.duply/netserver/exclude
-
-    - name: Setup Dupply S3 credentials
-      copy:
-        dest: /root/.duply/netserver/aws_credentials
-        mode: 0600
-        content: |
-          export AWS_ACCESS_KEY_ID='{{ chacal.aws.netserver_backup.access_key }}'
-          export AWS_SECRET_ACCESS_KEY='{{ chacal.aws.netserver_backup.secret_key }}'
-
-    - name: Backup periodically
-      cron:
-        name: "Duply backup"
-        minute: "0"
-        hour: "*/12"
-        job: ". /root/.duply/netserver/aws_credentials; duply netserver backup 2>&1 | /usr/bin/logger -t duply-netserver"
-
-    - name: Purge too old backups
-      cron:
-        name: "Purge old duply backups"
-        minute: "0"
-        hour: "13"
-        weekday: "mon"
-        job: ". /root/.duply/netserver/aws_credentials; duply netserver purge 6M --force 2>&1 | /usr/bin/logger -t duply-netserver"
-
-
-  #
   #  Configure firewall
   #
     - name: Allow SSH traffic in
