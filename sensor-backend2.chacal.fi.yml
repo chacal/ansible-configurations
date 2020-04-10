@@ -44,6 +44,11 @@
           <mysql_port remove="true"/>
           <interserver_http_port remove="true"/>
 
+          <interserver_http_credentials>
+            <user>{{ chacal.sensor_backend.clickhouse.interserver_user.username }}</user>
+            <password>{{ chacal.sensor_backend.clickhouse.interserver_user.password }}</password>
+          </interserver_http_credentials>
+
           <zookeeper>
             <node index="1">
               <host>localhost</host>
