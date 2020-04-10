@@ -139,7 +139,7 @@
                   recursive = yes
 
           [hddpool/backups]
-                  use_template = prune_only
+                  use_template = backups
                   recursive = yes
 
           [rpool/nonbackupped]
@@ -172,8 +172,10 @@
                   autosnap = yes
                   autoprune = yes
 
-          [template_prune_only]
+          [template_backups]
                   autoprune = yes
+                  # Prune backups only if pool is > 50% full
+                  prune_defer = 50
                   autosnap = no
                   monitor = no
 
