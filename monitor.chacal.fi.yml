@@ -36,6 +36,7 @@
         +srv/
         +srv/prometheus/*
         -*
+      duplicacy_backup_hours: "2,14"
       duplicacy_encryption_key: "{{ chacal.monitor.duplicacy.encryption_key }}"
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.monitor.duplicacy.b2_id }}"
