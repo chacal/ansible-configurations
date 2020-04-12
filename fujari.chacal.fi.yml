@@ -215,6 +215,15 @@
         zerotier_allow_managed: false
       tags: zerotier
 
+    - name: Install Zerotier for FREYA
+      include_role:
+        name: zerotier
+      vars:
+        zerotier_network_id: "{{ chacal.zerotier.freya.network_id }}"
+        zerotier_moon_id: "{{ chacal.zerotier.freya.moon_id }}"
+        zerotier_allow_managed: false
+      tags: zerotier
+
     - name: Setup networks
       copy:
         dest: /etc/network/interfaces
@@ -241,11 +250,15 @@
 
           auto vmbr0
           iface vmbr0 inet manual
-                  bridge-ports eno1 ztzlgndbao
+                  bridge-ports eno1 ztzlgndbao ztuku5opwi
                   bridge-stp off
                   bridge-fd 0
                   bridge-vlan-aware yes
                   bridge-vids 2-4094
+                  # Remove all vlans from FREYA ZeroTier interface
+                  post-up bridge vlan del vid 1-4094 dev ztuku5opwi
+                  # Send VLAN 103 untagged to FREYA ZeroTier interface and tag incoming traffic as VLAN 103
+                  post-up bridge vlan add vid 103 pvid 103 untagged dev ztuku5opwi
           #SERVER
 
           auto mgmtbr0
