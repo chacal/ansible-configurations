@@ -46,6 +46,7 @@
       retries: 10
       failed_when: cmd_res.rc == 1
       changed_when: False
+      check_mode: no
       tags: network
 
     - name: Remove default gateway from eth0

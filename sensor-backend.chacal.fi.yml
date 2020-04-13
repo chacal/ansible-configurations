@@ -297,6 +297,7 @@
       command: '{{ influx_cmd }} -execute "SHOW USERS" {{ influx_cli_auth_params }}'
       register: influxdb_users
       changed_when: False
+      check_mode: no
       tags: influxdb
 
     - name: Create InfluxDB regular user
