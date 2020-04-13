@@ -152,7 +152,7 @@
         name: zerotier
       vars:
         zerotier_network_id: "{{ chacal.zerotier.mgmt.network_id }}"
-        zerotier_moon_id: "{{ chacal.zerotier.mgmt.moon_id }}"
+        zerotier_create_moon: true
 
     - name: Install Zerotier for TRANSIT-ZT
       include_role:
