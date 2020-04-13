@@ -40,6 +40,7 @@
       filebeat_exclude_files:
         - "/var/log/pveproxy/*"
     - role: debian_common
+      unattended_upgrades_origins: '"o=Proxmox";"o=elastic";'
     - role: sanoid
       sanoid_config: |
         [rpool]

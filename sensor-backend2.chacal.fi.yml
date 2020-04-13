@@ -23,6 +23,7 @@
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
     - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=main";"o=Docker";'
     - role: prometheus_node_exporter
     - role: self_monitoring
     - role: ouroboros

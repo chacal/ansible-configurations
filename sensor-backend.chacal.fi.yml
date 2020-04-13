@@ -28,6 +28,7 @@
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
     - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=InfluxDB";"o=main";"o=Docker";'
     - role: prometheus_node_exporter
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"

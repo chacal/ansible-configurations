@@ -88,3 +88,12 @@
     job: "/usr/sbin/fstrim -Av 2>&1 | /usr/bin/logger -t fstrim"
   when: ansible_virtualization_role == "guest"
   tags: debian_common
+
+- name: Setup unattended upgrades
+  import_role:
+    name: unattended_upgrades
+  vars:
+    unattended_upgrades_email: "{{ chacal.unattended_upgrades.to_email }}"
+  tags:
+    - debian_common
+    - unattended_upgrades
