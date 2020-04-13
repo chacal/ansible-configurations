@@ -30,10 +30,18 @@
   copy:
     dest: /etc/systemd/system/prometheus-node-exporter-apt.timer.d/override.conf
     content: |
+      [Unit]
+      Description=
+      Description=Run apt metrics collection on boot and every 6 hours
+
       [Timer]
+      OnBootSec=0
       OnUnitActiveSec=
-      OnUnitActiveSec=6h
-  notify: Reload systemd
+      OnCalendar=*-*-* 00/6:00:00
+      AccuracySec=5m
+  notify:
+    - Reload systemd
+    - Start apt exporter
   tags: prometheus_node_exporter
 
 - name: Create systemd override directory for /etc/systemd/system/prometheus-node-exporter-smartmon.timer
@@ -48,9 +56,13 @@
     dest: /etc/systemd/system/prometheus-node-exporter-smartmon.timer.d/override.conf
     content: |
       [Timer]
+      OnBootSec=0
       OnUnitActiveSec=
-      OnUnitActiveSec=6h
-  notify: Reload systemd
+      OnCalendar=*-*-* 00/6:00:00
+      AccuracySec=5m
+  notify:
+    - Reload systemd
+    - Start smartmon exporter
   when: ansible_virtualization_role != "guest"
   tags: prometheus_node_exporter
 
