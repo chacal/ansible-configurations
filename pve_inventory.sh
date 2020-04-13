@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-WARIO_VMS=$(ssh wario.chacal.fi "sudo qm list | tail -n+2 | grep running | awk '{print \$2}'")
-FUJARI_VMS=$(ssh fujari.chacal.fi "qm list | tail -n+2 | grep running | awk '{print \$2}'")
+LIST_CMD="qm list | tail -n+2 | grep running | grep -v pfsense | awk '{print \$2}'"
+WARIO_VMS=$(ssh wario.chacal.fi "sudo ${LIST_CMD}")
+FUJARI_VMS=$(ssh fujari.chacal.fi "${LIST_CMD}")
 
 echo "{"
 echo "  \"all\": {"
