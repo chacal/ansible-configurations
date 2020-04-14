@@ -1,0 +1,72 @@
+---
+#
+# Playbook that initially sets up signalk-stash.dmz.chacal.fi. Actual SignalK Stash specific installation
+# is done using playbooks in signalk-stash repository.
+#
+- hosts: signalk-stash.dmz.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: Restart network
+      service: name=networking state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+      filebeat_exclude_files:
+        - "/var/log/nginx/*"
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: frr_ospf
+      frr_config: |
+        log syslog informational
+        router ospf
+          ospf router-id {{ ansible_eth0.ipv4.address }}
+          network {{ ansible_eth0.ipv4.network }}/24 area 0.0.0.0
+
+  tasks:
+    # Flush handlers to trigger frr restart
+    - meta: flush_handlers
+
+    - name: Wait until ospf route to MGMT net is present
+      shell: ip r | grep -q "10.90.99.0"
+      register: cmd_res
+      until: cmd_res.rc == 0
+      retries: 10
+      failed_when: cmd_res.rc == 1
+      changed_when: False
+      check_mode: no
+      tags: network
+
+    - name: Remove default gateway from eth0
+      lineinfile:
+        dest: /etc/network/interfaces.d/50-cloud-init.cfg
+        state: absent
+        regexp: "gateway"
+      notify:
+        - Restart network
+      tags: network
+
+    - name: Setup WAN interface on ens19
+      copy:
+        dest: /etc/network/interfaces.d/60-wan.cfg
+        content: |
+          auto ens19
+          iface ens19 inet static
+              address 95.216.233.247
+              netmask 255.255.255.240
+              gateway 95.216.233.241
+              213.133.98.98 213.133.99.99 213.133.100.100
+      notify:
+        - Restart network
+      tags: network
+
