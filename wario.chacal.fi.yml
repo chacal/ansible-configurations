@@ -147,6 +147,13 @@
           - { name: "local-zfs", dataset: rpool/data }
           - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
 
+    - name: TRIM rpool periodically
+      cron:
+        name: "Run zfs trim"
+        minute: "50"
+        hour: "*/6"
+        job: "/usr/sbin/zpool trim rpool 2>&1 | /usr/bin/logger -t zfs-trim"
+
     - name: Install Zerotier for MGMT
       include_role:
         name: zerotier
