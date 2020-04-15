@@ -1,0 +1,106 @@
+---
+#
+# Playbook that sets up Prometheus and Grafana on monitor.chacal.fi
+#
+- hosts:
+    - azure-agent1.chacal.fi
+    - azure-agent2.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    agent_regular_user: azure
+
+  handlers:
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+
+  tasks:
+    - name: Install required packages
+      apt:
+        state: latest
+        cache_valid_time: 3600
+        pkg:
+          - xvfb
+          - libgtk-3-dev
+          - libnotify-dev
+          - libgconf-2-4
+          - libnss3
+          - libxss1
+          - libasound2
+
+    - name: Add user for Azure agent
+      user:
+        name: "{{ agent_regular_user }}"
+
+    - name: Install Docker
+      import_role:
+        name: docker
+      vars:
+        docker_regular_user: "{{ agent_regular_user }}"
+
+    - name: Prune Docker data periodically
+      cron:
+        name: "Prune Docker"
+        minute: "25"
+        hour: "5"
+        job: "/usr/bin/docker system prune -a -f 2>&1 | logger -t docker-prune"
+
+    - name: Create Azure agent directory
+      file:
+        path: "/home/{{ agent_regular_user }}/agent"
+        state: directory
+      become_user: "{{ agent_regular_user }}"
+      tags: azure_agent
+
+    - name: Install Azure agent
+      unarchive:
+        src: https://vstsagentpackage.azureedge.net/agent/2.166.2/vsts-agent-linux-x64-2.166.2.tar.gz
+        dest: "/home/{{ agent_regular_user }}/agent"
+        remote_src: yes
+      become_user: "{{ agent_regular_user }}"
+      tags: azure_agent
+
+    - name: Configure Azure agent
+      command:
+        cmd: >
+          ./config.sh --unattended --url https://dev.azure.com/signalk --auth pat
+          --token {{ chacal.azure.signalk.pipelines.agent_auth_token }} --pool 'Self hosted'
+          --agent {{ inventory_hostname }} --acceptTeeEula --replace
+        chdir: "/home/{{ agent_regular_user }}/agent"
+        creates: "/home/{{ agent_regular_user }}/agent/.agent"
+      become_user: "{{ agent_regular_user }}"
+      tags: azure_agent
+
+    - name: Install Azure agent service
+      command:
+        cmd: "./svc.sh install {{ agent_regular_user }}"
+        chdir: "/home/{{ agent_regular_user }}/agent"
+        creates: "/home/{{ agent_regular_user }}/agent/.service"
+      tags: azure_agent
+
+    - name: Populate service facts
+      service_facts:
+      tags: azure_agent
+
+    - name: Check agent service
+      set_fact:
+        azure_agent_service: '{{ ansible_facts.services | dict2items | selectattr("key", "match", "^vsts.*") | list }}'
+      tags: azure_agent
+
+    - name: Start Azure agent service
+      command:
+        cmd: "./svc.sh start"
+        chdir: "/home/{{ agent_regular_user }}/agent"
+      when: azure_agent_service | length > 0 and azure_agent_service[0].value.state == "stopped"
+      tags: azure_agent
