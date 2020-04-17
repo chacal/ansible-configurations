@@ -27,6 +27,8 @@
     - role: filebeat
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
+      filebeat_exclude_files:
+        - "/var/log/elasticsearch/elasticsearch_deprecation*"
 
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";'
