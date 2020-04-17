@@ -15,12 +15,13 @@
 
   roles:
     - role: elastic.elasticsearch
-      es_version: 7.6.0
+      es_version: 7.6.2
       es_heap_size: 3g
       es_config:
         network.host: 0.0.0.0
         discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
         cluster.initial_master_nodes: "{{ ansible_default_ipv4.address }}"
+      es_path_repo: /srv/elastic_snapshots
       es_jvm_custom_parameters:
         - "-Xlog:disable"      # Disable JVM GC logging
 
@@ -61,3 +62,56 @@
       command:
         cmd: /etc/letsencrypt/renewal-hooks/deploy/10-kibana.sh
         creates: /etc/kibana/fullchain.pem
+
+    - name: Create /srv
+      file:
+        path: "/srv"
+        state: directory
+      tags: elastic_search
+
+    - name: Create Elasticsearch snapshot directory
+      file:
+        path: "/srv/elastic_snapshots"
+        state: directory
+        owner: elasticsearch
+        group: elasticsearch
+      tags: elastic_search
+
+    - meta: flush_handlers
+
+    - name: Create local snapshot repository
+      uri:
+        url: "http://{{ inventory_hostname }}:9200/_snapshot/local_repository"
+        method: PUT
+        body: |
+          {
+            "type": "fs",
+            "settings": {
+              "location": "/srv/elastic_snapshots"
+            }
+          }
+        status_code: 200
+        body_format: json
+      tags: elastic_search
+
+    - name: Configure snapshot policy
+      uri:
+        url: "http://{{ inventory_hostname }}:9200/_slm/policy/local_snapshots"
+        method: PUT
+        body: |
+          {
+            "schedule": "0 30 1/6 * * ?",
+            "name": "<elastic-snap-{now/m{yyyyMMdd-HHmm|Europe/Helsinki}}>",
+            "repository": "local_repository",
+            "config": {
+              "indices": ["*"]
+            },
+            "retention": {
+              "expire_after": "90d",
+              "min_count": 10,
+              "max_count": 100
+            }
+          }
+        status_code: 200
+        body_format: json
+      tags: elastic_search
