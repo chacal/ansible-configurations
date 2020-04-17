@@ -174,7 +174,7 @@
       notify: Restart HAProxy
       tags: haproxy
 
-    - name: Provision Grafana Prometheus data source
+    - name: Provision Grafana Prometheus & Elasticsearch data source
       copy:
         dest: /srv/grafana/provisioning/datasources/datasource.yaml
         content: |
@@ -188,6 +188,18 @@
             access: proxy
             url: http://prometheus:9090/prometheus
             isDefault: 1
+          - name: Elasticsearch
+            id: 2
+            orgId: 1
+            type: elasticsearch
+            access: proxy
+            url: http://elastic.chacal.fi:9200
+            database: "filebeat-*"
+            jsonData:
+              timeField: "@timestamp"
+              esVersion: 70
+              logMessageField: message
+              logLevelField: fields.level
       notify: Restart Grafana
       tags: grafana
 
