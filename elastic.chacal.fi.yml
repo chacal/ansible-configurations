@@ -44,6 +44,17 @@
       kibana_ssl_cert_path: "/etc/kibana/fullchain.pem"
       kibana_ssl_key_path: "/etc/kibana/privkey.pem"
 
+    - role: duplicacy
+      duplicacy_filters: |
+        +srv/
+        +srv/elastic_snapshots/*
+        -*
+      duplicacy_backup_hours: "1"
+      duplicacy_encryption_key: "{{ chacal.elastic.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.elastic.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.elastic.duplicacy.b2_key }}"
+
   tasks:
     - name: Install certbot deploy-hook to copy generated certificates
       copy:
