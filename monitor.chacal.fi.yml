@@ -324,7 +324,7 @@
           es_port: 9200
           rules_folder: /srv/elastalert/rules
           run_every:
-            seconds: 20
+            minutes: 2
           buffer_time:
             minutes: 5
           writeback_index: elastalert_status
@@ -346,19 +346,23 @@
       copy:
         dest: /srv/elastalert/rules/log_amount_spike_per_host.yaml
         content: |
-          name: Log output spiking
+          name: Increased log output
           type: spike
+          spike_type: "up"
           index: filebeat-*
 
-          threshold_cur: 20
-          threshold_ref: 5
-          timeframe:
-            hours: 2
+          threshold_cur: 40
           spike_height: 5
-          spike_type: "up"
+          alert_on_new_data: true
+
+          timeframe:
+            hours: 1
+          scan_entire_timeframe: true
+
           doc_type: _doc
           use_terms_query: true
           query_key: host.name
+
           alert:
             - slack
       tags: elastalert
