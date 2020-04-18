@@ -21,6 +21,8 @@
       docker_compose: project_src=/srv/monitoring-compose services=haproxy state=present restarted=true
     - name: Restart Grafana
       docker_compose: project_src=/srv/monitoring-compose services=grafana state=present restarted=true
+    - name: Restart ElastAlert
+      service: name=elastalert state=restarted
 
   roles:
     - role: filebeat
@@ -298,3 +300,116 @@
               volumes:
                 - "/srv/haproxy:/usr/local/etc/haproxy:ro"
               restart: always
+
+    - name: Create elastalert user
+      user: name=elastalert system=yes
+      tags: elastalert
+
+    - name: Create ElastAlert data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: elastalert
+        group: elastalert
+      loop:
+        - /srv/elastalert
+        - /srv/elastalert/rules
+      tags: elastalert
+
+    - name: Create ElastAlert config.yaml
+      copy:
+        dest: /srv/elastalert/config.yaml
+        content: |
+          es_host: elastic.chacal.fi
+          es_port: 9200
+          rules_folder: /srv/elastalert/rules
+          run_every:
+            seconds: 20
+          buffer_time:
+            minutes: 5
+          writeback_index: elastalert_status
+          alert_time_limit:
+            days: 3
+          alert_text: |-
+            LogTrail: <https://elastic.chacal.fi:5601/app/logtrail#/?h={0}&t={1}&i=filebeat-*&_g=()|{0}>
+          alert_text_args:
+            - host.name
+            - "@timestamp"
+          slack_webhook_url: {{ chacal.monitor.elastalert.slack_hook }}
+          slack_username_override: ElastAlert
+        owner: elastalert
+        group: elastalert
+      notify: Restart ElastAlert
+      tags: elastalert
+
+    - name: Add ElastAlert log output spiking rule
+      copy:
+        dest: /srv/elastalert/rules/log_amount_spike_per_host.yaml
+        content: |
+          name: Log output spiking
+          type: spike
+          index: filebeat-*
+
+          threshold_cur: 20
+          threshold_ref: 5
+          timeframe:
+            hours: 2
+          spike_height: 5
+          spike_type: "up"
+          doc_type: _doc
+          use_terms_query: true
+          query_key: host.name
+          alert:
+            - slack
+      tags: elastalert
+
+    - name: Install ElastAlert
+      pip:
+        name: "{{ item }}"
+        state: latest
+        executable: pip3
+      loop:
+        - PyYAML
+        - elastalert
+      tags: elastalert
+
+    - name: Check ElastAlert index
+      uri:
+        url: http://elastic.chacal.fi:9200/elastalert_status
+        status_code: [200, 404]
+      register: elastalert_index
+      tags: elastalert
+
+    - name: Create ElastAlert indices
+      command:
+        cmd: /usr/local/bin/elastalert-create-index --config /srv/elastalert/config.yaml
+      when: elastalert_index.status == 404
+      tags: elastalert
+
+    - name: Install ElastAlert systemd unit file
+      copy:
+        dest: /etc/systemd/system/elastalert.service
+        content: |
+          [Unit]
+          Description=ElastAlert
+
+          [Service]
+          User=elastalert
+          Group=elastalert
+          Type=exec
+          ExecStart=/usr/local/bin/elastalert --config /srv/elastalert/config.yaml
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Restart ElastAlert
+      tags: elastalert
+
+    - name: Enable and start ElastAlert
+      systemd:
+        name: elastalert
+        daemon_reload: yes
+        enabled: yes
+        state: started
+      tags: elastalert
