@@ -383,6 +383,8 @@
         url: http://elastic.chacal.fi:9200/elastalert_status
         status_code: [200, 404]
       register: elastalert_index
+      changed_when: False
+      check_mode: no
       tags: elastalert
 
     - name: Create ElastAlert indices
