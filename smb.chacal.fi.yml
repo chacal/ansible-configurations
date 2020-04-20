@@ -1,0 +1,64 @@
+---
+#
+# Playbook that sets up Samba server on smb.chacal.fi
+#
+- hosts: smb.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+    - name: Creat samba user
+      user: name=samba system=yes create_home=no
+      tags: samba
+
+    - name: Get samba uid & gid
+      getent:
+        database: passwd
+        key: samba
+      tags: samba
+
+    - name: Create Samba data directory
+      file:
+        path: /srv/samba
+        state: directory
+        owner: samba
+        group: samba
+        mode: 0750
+      tags: samba
+
+    - name: Add Samba docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "samba-server"
+        docker_app_container_name: "dperson/samba"
+        docker_app_container_params: >-
+          -p -r
+          -u '{{ chacal.smb.smb_server.user1.username }};{{ chacal.smb.smb_server.user1.password }}'
+          -u '{{ chacal.smb.smb_server.user2.username }};{{ chacal.smb.smb_server.user2.password }}'
+          -s 'scratch;/samba/scratch;yes;no;no;all;none;'
+          -s 'laura-arq;/samba/laura-arq;yes;no;no;all;none;'
+        docker_app_extra_params: "-v /srv/samba:/samba"
+        docker_app_ports:
+          - 139:139
+          - 445:445
+        docker_app_env:
+          - "TZ='Europe/Helsinki'"
+          - "USERID={{ getent_passwd.samba[1] }}"
+          - "GROUPID={{ getent_passwd.samba[2] }}"
+      tags: samba-server
