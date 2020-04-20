@@ -1,0 +1,60 @@
+---
+#
+# Playbook that sets up AFP server on afp.chacal.fi
+#
+- hosts: afp.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+    - name: Creat afp user
+      user: name=afp system=yes
+      tags: afp
+
+    - name: Get afp uid & gid
+      getent:
+        database: passwd
+        key: afp
+      tags: afp
+
+    - name: Create AFP data directory
+      file:
+        path: /srv/afp
+        state: directory
+        owner: afp
+        group: afp
+        mode: 0750
+      tags: afp
+
+    - name: Add AFP docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "afp-server"
+        docker_app_container_name: "odarriba/timemachine"
+        docker_app_extra_params: "-h afp-chacal-fi -v /srv/afp:/timemachine"
+        docker_app_ports:
+          - 548:548
+          - 636:636
+        docker_app_env:
+          - "AFP_LOGIN={{ chacal.afp.afp_server.username }}"
+          - "AFP_PASSWORD={{ chacal.afp.afp_server.password }}"
+          - "AFP_NAME={{ chacal.afp.afp_server.share }}"
+          - "PUID={{ getent_passwd.afp[1] }}"
+          - "PGID={{ getent_passwd.afp[2] }}"
+      tags: afp-server
