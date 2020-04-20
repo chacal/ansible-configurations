@@ -15,6 +15,6 @@
 # Sanoid is installed from Sid .deb as it is not available for Buster
 - name: Install sanoid
   apt:
-    deb: http://ftp.fi.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-2_all.deb
+    deb: http://deb.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-2_all.deb
   tags: sanoid
 

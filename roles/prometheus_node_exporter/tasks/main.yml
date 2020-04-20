@@ -16,8 +16,8 @@
   apt:
     deb: "{{ item }}"
   loop:
-    - http://ftp.fi.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_0.18.1+ds-2_amd64.deb
-    - http://ftp.fi.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200110.fc91c86-1_all.deb
+    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_0.18.1+ds-2_amd64.deb
+    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200110.fc91c86-1_all.deb
   tags: prometheus_node_exporter
 
 - name: Create systemd override directory for prometheus-node-exporter-apt.timer
