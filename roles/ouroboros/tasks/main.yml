@@ -12,3 +12,4 @@
       - TZ=Europe/Helsinki
       - SELF_UPDATE=true
       - CLEANUP=true
+  tags: ouroboros
