@@ -43,5 +43,5 @@
     name: "Duplicacy backup"
     minute: "{{ duplicacy_backup_minutes }}"
     hour: "{{ duplicacy_backup_hours }}"
-    job: ". /root/.duplicacy/environment; cd /root; /usr/local/bin/duplicacy -log backup -threads 20 -stats 2>&1 | grep -v --line-buffered 'PACK_END\\|UPLOAD_FILE\\|SKIP_FILE' |/usr/bin/logger -t duplicacy"
+    job: ". /root/.duplicacy/environment; cd /root; /usr/local/bin/duplicacy -log backup -threads 20 -stats -suppress PACK_END -suppress UPLOAD_FILE -suppress SKIP_FILE 2>&1 | /usr/bin/logger -t duplicacy"
   tags: duplicacy
