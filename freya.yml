@@ -6,6 +6,8 @@
 
   handlers:
     - include: ../../handlers/handlers.yml
+    - name: Restart dhcpcd
+      service: name=dhcpcd state=restarted
 
   vars:
     - hostname: freya
@@ -13,8 +15,8 @@
     - timezone: Europe/Helsinki
     - aws_access_key_id: "{{ chacal.aws.freya.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.freya.secret_key }}"
-    - router_ip_address: 10.90.70.201
-    - lan_ip_address: 10.90.70.202
+    - router_ip_address: 10.50.103.1
+    - lan_ip_address: 10.50.103.3
 
   vars_files:
     - secrets.yml
@@ -25,27 +27,6 @@
       mcp2515_int_pin: 25
     - crda_domain
     - role: aws-cli
-    - role: nat_router
-      nat_router_local_interface: eth0
-      nat_router_inet_interface: eth0
-      nat_router_ip: "{{lan_ip_address}}"
-      nat_router_gateway: "{{router_ip_address}}"
-      nat_router_dhcp_range: "10.90.70.220,10.90.70.249,6h"
-      nat_router_dhcp_options:
-        - "option:router,{{router_ip_address}}"
-      nat_router_static_ips: "{{ chacal.freya.nat_router_static_ips }}"
-      nat_router_dns_servers:
-        - "193.210.19.19"     # Telia DNS1
-        - "193.210.18.18"     # Telia DNS2
-        - "193.210.19.190"    # Telia DNS3
-      nat_router_disable: true  # Disable firewall & packet forwarding
-    - role: signalk
-      signalk_defaults_file: conf/signalk-defaults-freya.json
-      signalk_settings_file: conf/signalk-settings-freya.json
-      signalk_plugins:
-        - plugin_name: "@signalk/aisreporter"
-          plugin_config_src: conf/signalk-aisreporter-conf.json
-          plugin_config_dst: aisreporter.json
     - role: mqtt-server
       mqtt_server_config: |
         autosave_interval 60
@@ -60,11 +41,11 @@
         protocol websockets
 
         connection netserver
-        address mqtt.netserver.chacal.fi:8883
+        address sensor-backend.chacal.fi:8883
         topic /sensor/# out 1 "" ""
         topic signalk/delta out 1 "" ""
-        remote_username {{ chacal.netserver.mqtt_users[0].username }}
-        remote_password {{ chacal.netserver.mqtt_users[0].password }}
+        remote_username {{ chacal.sensor_backend.mqtt_users[0].username }}
+        remote_password {{ chacal.sensor_backend.mqtt_users[0].password }}
         bridge_tls_version tlsv1.2
         bridge_capath /etc/ssl/certs
     - role: node-app
@@ -80,6 +61,7 @@
         - NMEA_DEVICE_2=/dev/tacktick
         - NMEA_LOG_DIR=/opt/freya-nmealogs
         - MQTT_BROKER=mqtt://localhost
+      tags: freya-server
     - role: docker-app
       docker_app_name: "bt-sensor-mqtt-decoder"
       docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
@@ -96,21 +78,84 @@
       docker_app_extra_params: "--privileged"
       docker_app_env:
         - MQTT_BROKER={{lan_ip_address}}
-    - role: docker-app
-      docker_app_name: "wpantund"
-      docker_app_container_name: "jihartik/wpantund-armv6"
-      docker_app_extra_params: "--network host --cap-add=NET_ADMIN --device=/dev/nrf52840"
-      docker_app_env:
-        - OPENTHREAD_DEVICE_PORT=/dev/nrf52840
+#    - role: docker-app
+#      vars:
+#        docker_app_name: "wpantund"
+#        docker_app_container_name: "jihartik/wpantund-armv6"
+#        docker_app_extra_params: "--network host --cap-add=NET_ADMIN --device=/dev/nrf52840"
+#        docker_app_env:
+#          - OPENTHREAD_DEVICE_PORT=/dev/nrf52840
     - role: rtc
     - role: s3-upload
       s3_upload_name: "signalk-raw-logs"
       s3_upload_src_dir: "/home/pi/.signalk"
-      s3_upload_dst: "s3://freyalogs/signalk_2019/"
+      s3_upload_dst: "s3://freyalogs/signalk_2020/"
       s3_upload_include_pattern: "skserver-raw*.log"
       s3_upload_period: "120min"
+    - role: signalk-npm
+      signalk_defaults_file: conf/signalk-defaults-freya.json
+      signalk_settings_file: conf/signalk-settings-freya.json
+      signalk_plugins:
+       - plugin_name: "@signalk/aisreporter"
+         plugin_config_src: conf/signalk-aisreporter-conf.json
+         plugin_config_dst: aisreporter.json
+    - role: duplicacy
+      duplicacy_filters: |
+        +opt/
+        +opt/freya-nmealogs/*
+        +home/
+        +home/pi/
+        +home/pi/.signalk/
+        +home/pi/.signalk/skserver-raw*.log
+        -*
+      duplicacy_backup_hours: "6,18"
+      duplicacy_encryption_key: "{{ chacal.freya.duplicacy.encryption_key }}"
+      duplicacy_backup_id: freya-raspi.chacal.fi
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.freya.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.freya.duplicacy.b2_key }}"
 
   tasks:
+    - name: Configure eth0 as static interface
+      lineinfile:
+        dest: /etc/dhcpcd.conf
+        state: present
+        regexp: '.*interface eth0'
+        line: 'interface eth0'
+        firstmatch: true
+      notify: Restart dhcpcd
+      tags: networking
+
+    - name: Set static IP address
+      lineinfile:
+        dest: /etc/dhcpcd.conf
+        state: present
+        regexp: '.*static ip_address'
+        line: 'static ip_address={{ lan_ip_address }}/24'
+        firstmatch: true
+      notify: Restart dhcpcd
+      tags: networking
+
+    - name: Set default gateway
+      lineinfile:
+        dest: /etc/dhcpcd.conf
+        state: present
+        regexp: '.*static routers'
+        line: 'static routers={{ router_ip_address }}'
+        firstmatch: true
+      notify: Restart dhcpcd
+      tags: networking
+
+    - name: Set DNS
+      lineinfile:
+        dest: /etc/dhcpcd.conf
+        state: present
+        regexp: '.*static domain_name_servers'
+        line: 'static domain_name_servers={{ router_ip_address }} 1.1.1.1 8.8.8.8'
+        firstmatch: true
+      notify: Restart dhcpcd
+      tags: networking
+
     - name: Create device link for NGW-1 serial port
       lineinfile:
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
@@ -131,10 +176,5 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="cafe", ATTRS{idVendor}=="1915", SYMLINK+="nrf52840"'
-    - name: Mount first USB block device automatically to /mnt/usb (ignore Huawei)
-      lineinfile:
-        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
-        create=yes
-        line="ACTION==\"add\", KERNEL==\"sd[a-h]1\", SUBSYSTEM==\"block\", ENV{ID_BUS}==\"usb\", ATTRS{idVendor}!=\"12d1\", RUN+=\"/bin/mkdir -p /mnt/usb\", RUN+=\"/bin/bash -c '/bin/mountpoint -q /mnt/usb || /bin/mount /dev/%k /mnt/usb'\""
     - name: Periodically backup NMEA logs to S3
-      cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs/2019; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
+      cron: name="Backup to S3" minute="0" hour="*/6" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs/2020; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
