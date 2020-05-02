@@ -115,10 +115,13 @@
       notify: Restart Grafana
       tags: grafana
 
-    - name: Provision Grafana dashboard
+    - name: Provision Grafana dashboards
       copy:
-        src: ./conf/sensors.dmz.chacal.fi/sensors_dashboard.json
+        src: "{{ item }}"
         dest: /srv/grafana/dashboards/
+      loop:
+        - ./conf/sensors.dmz.chacal.fi/sensors_dashboard.json
+        - ./conf/sensors.dmz.chacal.fi/freya_dashboard.json
       notify: Restart Grafana
       tags: grafana
 
