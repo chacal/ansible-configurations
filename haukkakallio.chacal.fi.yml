@@ -1,0 +1,123 @@
+---
+#
+# Playbook that sets up Mosquitto and mqtt-houm-gw on haukkakallio.chacal.fi
+#
+- hosts: haukkakallio.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+    - name: certbot-dns-route53
+      certbot_email: "{{ chacal.certbot.email }}"
+      certbot_deploy_hook: |
+        #!/bin/bash
+        echo "Restarting mosquitto due to updated certificates.."
+        systemctl restart mosquitto || true
+      tags: certbot
+
+    - name: mqtt-server
+      mqtt_server_config: |
+        log_dest syslog
+        log_type none
+        log_type error
+        log_type warning
+        log_type notice
+        autosave_interval 60
+        max_queued_messages 500000
+        password_file {{ mqtt_server_password_file }}
+        acl_file {{ mqtt_server_acl_file }}
+        persistent_client_expiration 14d
+
+        # TODO: Change this to false when using MQTT authentication
+        allow_anonymous true
+
+        # TODO: Restrict listening 1883 only to localhost when using MQTTS only
+        listener 1883
+        # listener 1883 localhost
+
+        listener 8883
+        cafile /etc/letsencrypt/live/haukkakallio.chacal.fi/chain.pem
+        certfile /etc/letsencrypt/live/haukkakallio.chacal.fi/cert.pem
+        keyfile /etc/letsencrypt/live/haukkakallio.chacal.fi/privkey.pem
+        tls_version tlsv1.2
+
+        listener 9883
+        protocol websockets
+        cafile /etc/letsencrypt/live/haukkakallio.chacal.fi/chain.pem
+        certfile /etc/letsencrypt/live/haukkakallio.chacal.fi/cert.pem
+        keyfile /etc/letsencrypt/live/haukkakallio.chacal.fi/privkey.pem
+        tls_version tlsv1.2
+
+        connection sensor-backend
+        address sensor-backend.chacal.fi:8883
+        topic /sensor/# out 1 "" ""
+        remote_username {{ chacal.sensor_backend.mqtt_users[0].username }}
+        remote_password {{ chacal.sensor_backend.mqtt_users[0].password }}
+        bridge_tls_version tlsv1.2
+        bridge_capath /etc/ssl/certs
+      mqtt_server_users: "{{ chacal.haukkakallio.mqtt_users }}"
+      # TODO: Remove the first ACL line (=anonymous users) when setting up auth for MQTT
+      mqtt_server_acl_config: |
+        topic readwrite #
+        user {{ chacal.haukkakallio.mqtt_users[0].username }}
+        topic readwrite #
+        user {{ chacal.haukkakallio.mqtt_users[1].username }}
+        topic readwrite /bt-sensor-gw/#
+        user {{ chacal.haukkakallio.mqtt_users[2].username }}
+        topic readwrite /sensor/#
+        user {{ chacal.haukkakallio.mqtt_users[3].username }}
+        topic readwrite /sensor/#
+      tags: mosquitto
+
+  tasks:
+    - name: Create mqtt-houm-gw data directory
+      file:
+        path: /srv/mqtt-houm-gw
+        state: directory
+        mode: 0750
+        owner: 1000       # Node user has UID 1000 in the  container
+      tags: mqtt-houm-gw
+
+    - name: Install mqtt-houm-gw docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "mqtt-houm-gw"
+        docker_app_container_name: "jihartik/mqtt-houm-gw"
+        docker_app_extra_params: "--network host --init -v /srv/mqtt-houm-gw:/state"
+        docker_app_ports:
+          - 5555:5555/udp
+          - 4000:4000
+        docker_app_env:
+          - "HOUM_SITE_KEY={{ chacal.houm.site_key }}"
+          - "CAR_HEATER_STATE_FILE=/state/car_heater_state.json"
+          - "CAR_HEATER_PUBLIC_DIR=/opt/app/public"
+      tags: mqtt-houm-gw
+
+    - name: Install bt-sensor-mqtt-decoder docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "bt-sensor-mqtt-decoder"
+        docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
+      tags: bt-sensor-mqtt-decoder
+
