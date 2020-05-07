@@ -352,8 +352,8 @@
           spike_type: "up"
           index: filebeat-*
 
-          threshold_cur: 40
-          spike_height: 5
+          threshold_cur: 80
+          spike_height: 10
           alert_on_new_data: true
 
           timeframe:
