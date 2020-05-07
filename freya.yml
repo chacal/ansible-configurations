@@ -40,9 +40,10 @@
         log_timestamp true
         connection_messages true
 
+        # TODO: Restrict listening 1883 only to localhost when using MQTTS only
         listener 1883
 
-        listener 8883
+        listener 9883
         protocol websockets
 
         connection netserver
@@ -53,6 +54,7 @@
         remote_password {{ chacal.sensor_backend.mqtt_users[0].password }}
         bridge_tls_version tlsv1.2
         bridge_capath /etc/ssl/certs
+      tags: mqtt-server
     - role: node-app
       node_app_name: "freya-server"
       node_app_git_repo: "https://github.com/chacal/freya-server.git"
