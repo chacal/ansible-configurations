@@ -121,3 +121,31 @@
         docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
       tags: bt-sensor-mqtt-decoder
 
+    - name: Create Unifi controller data directory
+      file:
+        path: /srv/unifi
+        state: directory
+        mode: 0750
+        owner: 1000
+      tags: unifi
+
+    - name: Install Unifi controller
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "unifi"
+        docker_app_container_name: "jacobalberty/unifi:stable"
+        docker_app_extra_params: "-v /srv/unifi:/unifi"
+        docker_app_env:
+          - "RUNAS_UID0=false"
+          - "UNIFI_UID=1000"
+          - "UNIFI_GID=1000"
+          - "TZ='Europe/Helsinki'"
+        docker_app_ports:
+          - 8080:8080
+          - 8443:8443
+          - 3478:3478
+          - 10001:10001/udp
+      tags: unifi
+
