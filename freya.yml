@@ -49,9 +49,17 @@
         connection netserver
         address sensor-backend.chacal.fi:8883
         topic /sensor/# out 1 "" ""
-        topic signalk/delta out 1 "" ""
         remote_username {{ chacal.sensor_backend.mqtt_users[0].username }}
         remote_password {{ chacal.sensor_backend.mqtt_users[0].password }}
+        bridge_tls_version tlsv1.2
+        bridge_capath /etc/ssl/certs
+
+        connection stash
+        address signalk-stash.chacal.fi:8883
+        topic signalk/delta/urn:mrn:imo:mmsi:230061450/stats in 0 "" ""
+        topic signalk/delta/urn:mrn:imo:mmsi:230061450 out 1 "" ""
+        remote_username {{ chacal.freya.signalk_stash.username }}
+        remote_password {{ chacal.freya.signalk_stash.password }}
         bridge_tls_version tlsv1.2
         bridge_capath /etc/ssl/certs
       tags: mqtt-server
