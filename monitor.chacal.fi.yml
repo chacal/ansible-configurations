@@ -111,15 +111,6 @@
                    - /prometheus/secure_targets/*.yml
                   refresh_interval: 15s
 
-            - job_name: authenticated-nodes
-              scheme: https
-              metrics_path: /node-metrics/metrics
-              basic_auth:
-                username: "{{ chacal.prometheus.basic_auth_username }}"
-                password: "{{ chacal.prometheus.basic_auth_password }}"
-              static_configs:
-                - targets:
-                  - ha.chacal.fi:443
       notify: Restart Prometheus
       tags: prometheus
 
