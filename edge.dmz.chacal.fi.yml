@@ -188,14 +188,17 @@
               use_backend homeassistant if is_homeassistant
 
           backend sensors
-              server sensors1 sensors.dmz.chacal.fi:3000 ssl ca-file ca-certificates.crt
+              option httpchk HEAD /login
+              server sensors1 sensors.dmz.chacal.fi:3000 ssl ca-file ca-certificates.crt check
 
           backend fmiproxy
               http-request set-path "%[path,regsub(^/fmiproxy/,/)]"
-              server fmiproxy1 tuuleeko.dmz.chacal.fi:8000
+              option httpchk
+              server fmiproxy1 tuuleeko.dmz.chacal.fi:8000 check
 
           backend weather_app
-              server weather_app1 tuuleeko.dmz.chacal.fi:8005
+              option httpchk GET /
+              server weather_app1 tuuleeko.dmz.chacal.fi:8005 check
 
           backend homeassistant
               option httpchk GET /
