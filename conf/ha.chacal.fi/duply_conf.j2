@@ -1,9 +1,0 @@
-GPG_PW='{{ chacal.ha.duply.gpg_pw }}'
-
-TARGET='s3://s3-eu-west-1.amazonaws.com/chacal-backups/ha.chacal.fi'
-
-SOURCE='/'
-
-MAX_FULLBKP_AGE=1W
-DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
-DUPL_PARAMS="$DUPL_PARAMS --s3-european-buckets --s3-use-new-style --s3-use-ia --allow-source-mismatch"

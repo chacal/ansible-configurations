@@ -1,0 +1,126 @@
+---
+#
+# Playbook that sets up PostgreSQL and Home Assistant on homeassistant.dmz.chacal.fi
+#
+- hosts: homeassistant.dmz.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: Restart Home Assistant
+      service: name=home-assistant state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+    - role: duplicacy
+      duplicacy_filters: |
+        +srv/
+        +srv/postgres/*
+        +srv/home-assistant/*
+        -*
+      duplicacy_backup_hours: "1,13"
+      duplicacy_encryption_key: "{{ chacal.ha.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.ha.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.ha.duplicacy.b2_key }}"
+
+  tasks:
+    #
+    #  Install PostgreSQL
+    #
+    - name: Create PostgreSQL data directory
+      file: path=/srv/postgres state=directory
+
+    - name: Install PostgreSQL
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "postgres"
+        docker_app_container_name: "postgres:12"
+        docker_app_extra_params: "-v /srv/postgres:/var/lib/postgresql/data"
+        docker_app_ports:
+          - "127.0.0.1:5432:5432"
+        docker_app_env:
+          - "POSTGRES_USER=ha"
+          - "POSTGRES_DB=ha"
+          - "POSTGRES_PASSWORD={{ chacal.ha.postgres.password }}"
+
+
+
+    #
+    #  Install Home Assistant
+    #
+    - name: Create Home Assistant data directory
+      file: path=/srv/home-assistant state=directory
+      tags: home-assistant
+
+    - name: Provision HA secrets
+      template: src=./conf/homeassistant.dmz.chacal.fi/secrets.yaml.j2 dest=/srv/home-assistant/secrets.yaml mode=0600
+      notify: Restart Home Assistant
+      tags: home-assistant
+
+    - name: Copy Home Assistant configuration file
+      copy: src=./conf/homeassistant.dmz.chacal.fi/ha-configuration.yaml dest=/srv/home-assistant/configuration.yaml
+      notify: Restart Home Assistant
+      tags: home-assistant
+
+    - name: Copy Home Assistant automations file
+      copy: src=./conf/homeassistant.dmz.chacal.fi/ha-automations.yaml dest=/srv/home-assistant/automations.yaml
+      notify: Restart Home Assistant
+      tags: home-assistant
+
+    - name: Copy Home Assistant scenes file
+      copy: src=./conf/homeassistant.dmz.chacal.fi/ha-scenes.yaml dest=/srv/home-assistant/scenes.yaml
+      notify: Restart Home Assistant
+      tags: home-assistant
+
+    - name: Create empty group and script configs
+      file: path=/srv/home-assistant/{{ item }} state=touch
+      loop:
+        - groups.yaml
+        - scripts.yaml
+      changed_when: False
+      tags: home-assistant
+
+    - name: Create Home Assistant custom_components directory
+      file: path=/srv/home-assistant/custom_components state=directory
+      tags: home-assistant
+
+    - name: Install Mount Kelvin integration
+      git:
+        repo: https://github.com/chacal/ha_mount_kelvin_integration.git
+        dest: /srv/home-assistant/custom_components/mount_kelvin
+        force: yes
+        version: master
+      register: mount_kelvin_git_pull
+      tags: home-assistant
+
+    - name: Install Home Assistant
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "home-assistant"
+        docker_app_container_name: "homeassistant/home-assistant:stable"
+        docker_app_extra_params: "--net=host -v /srv/home-assistant:/config --init"
+        docker_app_env:
+          - TZ=Europe/Helsinki
+
+    - name: Restart Home Assistant
+      service: name=home-assistant state=restarted enabled=yes
+      when: mount_kelvin_git_pull.changed
+
