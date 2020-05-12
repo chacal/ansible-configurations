@@ -38,6 +38,12 @@ homeassistant:
 
 mqtt:
   broker: mqtt-home.chacal.fi
+  port: 8883
+  client_id: homeassistant
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  certificate: /etc/ssl/certs/ca-certificates.crt
+  tls_version: '1.2'
 
 notify:
   - name: Slack
