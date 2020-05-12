@@ -87,6 +87,8 @@
         topic readwrite /sensor/#
         user {{ chacal.haukkakallio.mqtt_users[3].username }}
         topic readwrite /sensor/#
+        user {{ chacal.haukkakallio.mqtt_users[4].username }}
+        topic read /sensor/#
       tags: mosquitto
 
   tasks:
