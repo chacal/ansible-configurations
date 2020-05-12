@@ -26,6 +26,9 @@
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
     - name: certbot-dns-route53
       certbot_email: "{{ chacal.certbot.email }}"
+      certbot_certificate_domains:
+        - haukkakallio.chacal.fi
+        - mqtt-home.chacal.fi
       certbot_deploy_hook: |
         #!/bin/bash
         echo "Restarting mosquitto due to updated certificates.."
