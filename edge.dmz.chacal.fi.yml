@@ -111,6 +111,7 @@
           - tuuleeko.fi
           - www.tuuleeko.fi
           - sensors.chacal.fi
+          - ha.chacal.fi
         certbot_deploy_hook: |
           #!/bin/bash
           echo "Updating haproxy certificates with certbot deploy-hook.."
@@ -147,7 +148,9 @@
               mode http
               timeout connect 5s
               timeout client 10s
+              timeout client-fin 30s
               timeout server 30s
+              timeout tunnel  1h    # timeout to use with WebSocket and CONNECT
 
               stats enable
               stats uri /haproxy-stats
@@ -177,10 +180,12 @@
               acl is_tuuleeko ssl_fc_sni tuuleeko.fi
               acl is_sensors ssl_fc_sni sensors.chacal.fi
               acl is_fmiproxy path_beg -i /fmiproxy
+              acl is_homeassistant ssl_fc_sni ha.chacal.fi
 
               use_backend sensors if is_sensors
               use_backend fmiproxy if is_tuuleeko is_fmiproxy
               use_backend weather_app if is_tuuleeko
+              use_backend homeassistant if is_homeassistant
 
           backend sensors
               server sensors1 sensors.dmz.chacal.fi:3000 ssl ca-file ca-certificates.crt
@@ -191,5 +196,9 @@
 
           backend weather_app
               server weather_app1 tuuleeko.dmz.chacal.fi:8005
+
+          backend homeassistant
+              option httpchk GET /
+              server homeassistant1 homeassistant.dmz.chacal.fi:8123 check
       notify: Restart HAProxy
       tags: haproxy
