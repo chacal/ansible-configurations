@@ -34,6 +34,16 @@
         echo "Restarting mosquitto due to updated certificates.."
         systemctl restart mosquitto || true
       tags: certbot
+    - role: duplicacy
+      duplicacy_filters: |
+        +srv/
+        +srv/unifi/*
+        -*
+      duplicacy_backup_hours: "1,13"
+      duplicacy_encryption_key: "{{ chacal.haukkakallio.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.haukkakallio.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.haukkakallio.duplicacy.b2_key }}"
 
     - name: mqtt-server
       mqtt_server_config: |
