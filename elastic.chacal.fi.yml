@@ -19,7 +19,7 @@
 
   roles:
     - role: elastic.elasticsearch
-      es_version: 7.6.2
+      es_version: 7.7.0
       es_heap_size: 3g
       es_config:
         network.host: 0.0.0.0
@@ -105,21 +105,21 @@
       lineinfile:
         dest: /tmp/kibana/logtrail/package.json
         state: present
-        regexp: '    "version": "7.6.*"'
-        line: '    "version": "7.6.2"'
+        regexp: '    "version": "7.*.*"'
+        line: '    "version": "7.7.0"'
       tags: logtrail
 
     - name: Zip Logtrail plugin
       archive:
         path: /tmp/kibana
-        dest: /tmp/logtrail-7.6.2-0.1.31.zip
+        dest: /tmp/logtrail-7.7.0-0.1.31.zip
         format: zip
       tags: logtrail
 
     - name: Install Logtrail plugin to Kibana
       kibana_plugin:
         name: logtrail
-        url: file:///tmp/logtrail-7.6.2-0.1.31.zip
+        url: file:///tmp/logtrail-7.7.0-0.1.31.zip
         state: present
         plugin_bin: /usr/share/kibana/bin/kibana
         plugin_dir: /usr/share/kibana/plugins/
