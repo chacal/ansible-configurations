@@ -95,10 +95,13 @@
         topic readwrite /bt-sensor-gw/#
         user {{ chacal.haukkakallio.mqtt_users[2].username }}
         topic readwrite /sensor/#
+        topic read /bt-sensor-gw/#
         user {{ chacal.haukkakallio.mqtt_users[3].username }}
         topic readwrite /sensor/#
         user {{ chacal.haukkakallio.mqtt_users[4].username }}
         topic read /sensor/#
+        user {{ chacal.haukkakallio.mqtt_users[5].username }}
+        topic readwrite /sensor/#
       tags: mosquitto
 
   tasks:
@@ -125,6 +128,9 @@
           - "HOUM_SITE_KEY={{ chacal.houm.site_key }}"
           - "CAR_HEATER_STATE_FILE=/state/car_heater_state.json"
           - "CAR_HEATER_PUBLIC_DIR=/opt/app/public"
+          - "MQTT_BROKER=mqtts://mqtt-home.chacal.fi"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[5].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[5].password }}"
       tags: mqtt-houm-gw
 
     - name: Install bt-sensor-mqtt-decoder docker service
@@ -134,6 +140,10 @@
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "bt-sensor-mqtt-decoder"
         docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
+        docker_app_env:
+          - "MQTT_BROKER=mqtts://mqtt-home.chacal.fi"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[2].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[2].password }}"
       tags: bt-sensor-mqtt-decoder
 
     - name: Create Unifi controller data directory
