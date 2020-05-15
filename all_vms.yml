@@ -9,3 +9,5 @@
 - import_playbook: tuuleeko.dmz.chacal.fi.yml
 - import_playbook: sensors.dmz.chacal.fi.yml
 - import_playbook: signalk-stash.dmz.chacal.fi.yml
+- import_playbook: haukkakallio.chacal.fi.yml
+- import_playbook: homeassistant.dmz.chacal.fi.yml
