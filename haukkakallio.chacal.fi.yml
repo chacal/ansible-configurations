@@ -58,8 +58,7 @@
         acl_file {{ mqtt_server_acl_file }}
         persistent_client_expiration 14d
 
-        # TODO: Change this to false when using MQTT authentication
-        allow_anonymous true
+        allow_anonymous false
 
         # TODO: Restrict listening 1883 only to localhost when using MQTTS only
         listener 1883
@@ -86,9 +85,7 @@
         bridge_tls_version tlsv1.2
         bridge_capath /etc/ssl/certs
       mqtt_server_users: "{{ chacal.haukkakallio.mqtt_users }}"
-      # TODO: Remove the first ACL line (=anonymous users) when setting up auth for MQTT
       mqtt_server_acl_config: |
-        topic readwrite #
         user {{ chacal.haukkakallio.mqtt_users[0].username }}
         topic readwrite #
         user {{ chacal.haukkakallio.mqtt_users[1].username }}
