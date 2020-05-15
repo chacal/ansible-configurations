@@ -60,9 +60,8 @@
 
         allow_anonymous false
 
-        # TODO: Restrict listening 1883 only to localhost when using MQTTS only
-        listener 1883
-        # listener 1883 localhost
+        # Listen for plain text connections only on localhost
+        listener 1883 localhost
 
         listener 8883
         cafile /etc/letsencrypt/live/haukkakallio.chacal.fi/chain.pem
