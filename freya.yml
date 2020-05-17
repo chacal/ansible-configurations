@@ -63,20 +63,20 @@
         bridge_tls_version tlsv1.2
         bridge_capath /etc/ssl/certs
       tags: mqtt-server
-    - role: node-app
-      node_app_name: "freya-server"
-      node_app_git_repo: "https://github.com/chacal/freya-server.git"
-      node_app_main: "built/Main.js"
-      node_app_user: "root"
-      node_app_group: "root"
-      node_app_npm_unsafe_perm: true
-      node_app_use_socket: false
-      node_app_env:
+    - role: docker-app
+      docker_app_name: "freya-server-docker"
+      docker_app_container_name: "jihartik/freya-server"
+      docker_app_extra_params: >-
+        --init --privileged --net=host
+        -v /dev:/dev
+        -v /opt/freya-nmealogs:/opt/freya-nmealogs
+      docker_app_env:
         - NMEA_DEVICE_1=/dev/ngw-1
         - NMEA_DEVICE_2=/dev/tacktick
         - NMEA_LOG_DIR=/opt/freya-nmealogs
-        - MQTT_BROKER=mqtt://localhost
-      tags: freya-server
+        - MQTT_BROKER=mqtt://{{lan_ip_address}}
+        - TZ=Europe/Helsinki
+      tags: freya-server-docker
     - role: docker-app
       docker_app_name: "bt-sensor-mqtt-decoder"
       docker_app_container_name: "jihartik/bt-sensor-mqtt-decoder"
