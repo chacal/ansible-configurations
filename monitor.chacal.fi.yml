@@ -186,13 +186,17 @@
             orgId: 1
             type: elasticsearch
             access: proxy
-            url: http://elastic.chacal.fi:9200
+            url: https://elastic.chacal.fi:9200
+            basicAuth: 1
+            basicAuthUser: grafana
             database: "filebeat-*"
             jsonData:
               timeField: "@timestamp"
               esVersion: 70
               logMessageField: message
               logLevelField: fields.level
+            secureJsonData:
+              basicAuthPassword: {{ chacal.elastic.es.passwords.grafana }}
       notify: Restart Grafana
       tags: grafana
 
@@ -314,6 +318,9 @@
         content: |
           es_host: elastic.chacal.fi
           es_port: 9200
+          use_ssl: true
+          es_username: elastalert
+          es_password: {{ chacal.elastic.es.passwords.elastalert }}
           rules_folder: /srv/elastalert/rules
           run_every:
             minutes: 2
@@ -371,7 +378,10 @@
 
     - name: Check ElastAlert index
       uri:
-        url: http://elastic.chacal.fi:9200/elastalert_status
+        url: https://elastic.chacal.fi:9200/elastalert_status
+        user: elastalert
+        password: "{{ chacal.elastic.es.passwords.elastalert }}"
+        force_basic_auth: true
         status_code: [200, 404]
       register: elastalert_index
       changed_when: False

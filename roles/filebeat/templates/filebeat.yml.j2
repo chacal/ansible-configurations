@@ -38,6 +38,9 @@ output.elasticsearch:
 {% for host in filebeat_elasticsearch_hosts %}
     - {{ host }}
 {% endfor %}
+  protocol: https
+  username: filebeat
+  password: {{ chacal.elastic.es.passwords.filebeat }}
 
 
 logging.level: warning

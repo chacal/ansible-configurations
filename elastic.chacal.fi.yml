@@ -18,17 +18,6 @@
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
 
   roles:
-    - role: elastic.elasticsearch
-      es_version: 7.7.0
-      es_heap_size: 3g
-      es_config:
-        network.host: 0.0.0.0
-        discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
-        cluster.initial_master_nodes: "{{ ansible_default_ipv4.address }}"
-      es_path_repo: /srv/elastic_snapshots
-      es_jvm_custom_parameters:
-        - "-Xlog:disable"      # Disable JVM GC logging
-
     - role: filebeat
       filebeat_elasticsearch_hosts:
         - elastic.chacal.fi
@@ -43,10 +32,18 @@
 
     - role: certbot-dns-route53
       certbot_email: "{{ chacal.certbot.email }}"
-
-    - role: kibana
-      kibana_ssl_cert_path: "/etc/kibana/fullchain.pem"
-      kibana_ssl_key_path: "/etc/kibana/privkey.pem"
+      certbot_deploy_hook: |
+        #!/bin/bash
+        echo "Updating certificates with certbot deploy-hook.."
+        cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/kibana/
+        cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/kibana/
+        chown kibana:kibana /etc/kibana/*.pem
+        systemctl restart kibana.service || true
+        cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/elasticsearch/
+        cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/elasticsearch/
+        chown elasticsearch:elasticsearch /etc/elasticsearch/*.pem
+        systemctl restart elasticsearch.service || true
+        echo "Let's encrypt certificates updated and services restarted"
 
     - role: duplicacy
       duplicacy_filters: |
@@ -60,22 +57,106 @@
         DUPLICACY_B2_KEY: "{{ chacal.elastic.duplicacy.b2_key }}"
 
   tasks:
-    - name: Install certbot deploy-hook to copy generated certificates
-      copy:
-        dest: /etc/letsencrypt/renewal-hooks/deploy/10-kibana.sh
-        content: |
-          #!/bin/bash
-          echo "Updating Kibana certificates with certbot deploy-hook.."
-          cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/kibana/
-          cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/kibana/
-          chown kibana:kibana /etc/kibana/*.pem
-          systemctl restart kibana.service
-          echo "Kibana certificates updated and Kibana restarted"
-        mode: "755"
+    - name: Copy certificates from remote to localhost
+      fetch:
+        src: "/etc/letsencrypt/live/elastic.chacal.fi/{{ item }}"
+        dest: "conf/elastic.chacal.fi/"
+        flat: true
+      loop:
+        - fullchain.pem
+        - privkey.pem
 
-    - name: Ensure Kibana certs are copied to /etc/kibana for the first time
+    - name: Install Elasticsearch
+      include_role:
+        name: elastic.elasticsearch
+      vars:
+        es_version: 7.7.0
+        es_heap_size: 3g
+        es_config:
+          network.host: 0.0.0.0
+          discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
+          cluster.initial_master_nodes: "{{ ansible_default_ipv4.address }}"
+        es_path_repo: /srv/elastic_snapshots
+        es_jvm_custom_parameters:
+          - "-Xlog:disable"      # Disable JVM GC logging
+        es_users:
+          native:
+            kibana:
+              password: "{{ chacal.elastic.es.passwords.kibana }}"
+            jihartik:
+              password: "{{ chacal.elastic.es.passwords.jihartik }}"
+              roles:
+                - kibana_admin
+                - log_reader
+                - poweruser
+            filebeat:
+              password: "{{ chacal.elastic.es.passwords.filebeat }}"
+              roles:
+                - filebeat_writer
+                - ingest_admin
+            elastalert:
+              password: "{{ chacal.elastic.es.passwords.elastalert }}"
+              roles:
+                - elastalert
+            grafana:
+              password: "{{ chacal.elastic.es.passwords.grafana }}"
+              roles:
+                - log_reader
+        es_roles:
+          native:
+            log_reader:
+              indices:
+                - names: 'filebeat-*'
+                  privileges:
+                    - read
+            poweruser:
+              cluster:
+                - manage
+                - manage_ilm
+                - manage_index_templates
+            filebeat_writer:
+              cluster:
+                - monitor
+                - read_ilm
+              indices:
+                - names: 'filebeat-*'
+                  privileges:
+                    - create_doc
+                    - manage
+            elastalert:
+              cluster:
+                - monitor
+              indices:
+                - names: 'filebeat-*'
+                  privileges:
+                    - read
+                - names: 'elastalert_status*'
+                  privileges:
+                    - all
+        es_api_host: "{{ inventory_hostname }}"
+        es_api_basic_auth_username: elastic
+        es_api_basic_auth_password: "{{ chacal.elastic.es.passwords.elastic }}"
+        es_xpack_features:
+          - security
+        es_enable_http_ssl: true
+        es_enable_transport_ssl: true
+        es_ssl_certificate: conf/elastic.chacal.fi/fullchain.pem
+        es_ssl_key: conf/elastic.chacal.fi/privkey.pem
+
+    - name: Install Kibana
+      include_role:
+        name: kibana
+      vars:
+        kibana_ssl_cert_path: "/etc/kibana/fullchain.pem"
+        kibana_ssl_key_path: "/etc/kibana/privkey.pem"
+        kibana_elasticsearch_url: "https://{{ inventory_hostname }}:9200"
+        kibana_elasticsearch_username: kibana
+        kibana_elasticsearch_password: "{{ chacal.elastic.es.passwords.kibana }}"
+      tags: kibana
+
+    - name: Ensure certs are copied for the first time
       command:
-        cmd: /etc/letsencrypt/renewal-hooks/deploy/10-kibana.sh
+        cmd: /etc/letsencrypt/renewal-hooks/deploy/10-default.sh
         creates: /etc/kibana/fullchain.pem
 
     - name: Ensure dependencies are installed.
@@ -183,8 +264,11 @@
 
     - name: Create local snapshot repository
       uri:
-        url: "http://{{ inventory_hostname }}:9200/_snapshot/local_repository"
+        url: "https://{{ inventory_hostname }}:9200/_snapshot/local_repository"
         method: PUT
+        user: elastic
+        password: "{{ chacal.elastic.es.passwords.elastic }}"
+        force_basic_auth: true
         body: |
           {
             "type": "fs",
@@ -198,8 +282,11 @@
 
     - name: Configure snapshot policy
       uri:
-        url: "http://{{ inventory_hostname }}:9200/_slm/policy/local_snapshots"
+        url: "https://{{ inventory_hostname }}:9200/_slm/policy/local_snapshots"
         method: PUT
+        user: elastic
+        password: "{{ chacal.elastic.es.passwords.elastic }}"
+        force_basic_auth: true
         body: |
           {
             "schedule": "0 30 1/6 * * ?",
@@ -209,7 +296,7 @@
               "indices": ["*"]
             },
             "retention": {
-              "expire_after": "90d",
+              "expire_after": "14d",
               "min_count": 10,
               "max_count": 100
             }

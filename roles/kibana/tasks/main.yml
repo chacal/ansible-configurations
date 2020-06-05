@@ -27,6 +27,8 @@
     - { key: server.name, value: "\"{{ inventory_hostname }}\"" }
     - { key: logging.quiet, value: "true" }
     - { key: elasticsearch.hosts, value: "[\"{{ kibana_elasticsearch_url }}\"]" }
+    - { key: elasticsearch.username, value: "{{ kibana_elasticsearch_username }}" }
+    - { key: elasticsearch.password, value: "{{ kibana_elasticsearch_password }}" }
   tags: kibana
 
 - name: Setup TLS for Kibana UI
