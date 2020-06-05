@@ -21,6 +21,47 @@
     {
       "cacheTimeout": null,
       "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 14.6,
+          "min": 11.8,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 12
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 12.2
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 12.85
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 3,
@@ -30,55 +71,18 @@
       "id": 30,
       "links": [],
       "options": {
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [
-              {
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "max": 14.6,
-            "min": 11.8,
-            "nullValueMode": "connected",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "semi-dark-red",
-                  "value": null
-                },
-                {
-                  "color": "semi-dark-yellow",
-                  "value": 12
-                },
-                {
-                  "color": "semi-dark-green",
-                  "value": 12.2
-                },
-                {
-                  "color": "semi-dark-orange",
-                  "value": 12.85
-                }
-              ]
-            },
-            "unit": "volt"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "horizontal",
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "groupBy": [
@@ -131,6 +135,39 @@
     {
       "cacheTimeout": null,
       "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 40,
+          "min": -40,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 3,
@@ -140,47 +177,18 @@
       "id": 31,
       "links": [],
       "options": {
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [
-              {
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "max": 40,
-            "min": -40,
-            "nullValueMode": "connected",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "semi-dark-red",
-                  "value": null
-                },
-                {
-                  "color": "semi-dark-green",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "amp"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "horizontal",
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "groupBy": [
@@ -233,6 +241,43 @@
     {
       "cacheTimeout": null,
       "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "displayName": "",
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 0,
+          "min": -100,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": -80
+              },
+              {
+                "color": "semi-dark-green",
+                "value": -60
+              }
+            ]
+          },
+          "unit": "amph"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 3,
@@ -242,51 +287,18 @@
       "id": 12,
       "links": [],
       "options": {
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "mappings": [
-              {
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "max": 0,
-            "min": -100,
-            "nullValueMode": "connected",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "semi-dark-red",
-                  "value": null
-                },
-                {
-                  "color": "semi-dark-yellow",
-                  "value": -80
-                },
-                {
-                  "color": "semi-dark-green",
-                  "value": -60
-                }
-              ]
-            },
-            "title": "",
-            "unit": "amph"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "horizontal",
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "groupBy": [
@@ -339,6 +351,36 @@
     {
       "cacheTimeout": null,
       "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "semi-dark-blue",
+                "value": 15
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 3,
@@ -348,44 +390,18 @@
       "id": 9,
       "links": [],
       "options": {
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "mappings": [
-              {
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "nullValueMode": "connected",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "semi-dark-red",
-                  "value": null
-                },
-                {
-                  "color": "semi-dark-blue",
-                  "value": 15
-                }
-              ]
-            },
-            "unit": "percent"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "horizontal",
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "groupBy": [
@@ -446,6 +462,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "pressurehpa",
       "gauge": {
         "maxValue": 100,
@@ -566,6 +588,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -671,6 +699,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "celsius",
       "gauge": {
         "maxValue": 100,
@@ -794,6 +828,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "celsius",
       "gauge": {
         "maxValue": 100,
@@ -917,6 +957,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "celsius",
       "gauge": {
         "maxValue": 100,
@@ -1040,6 +1086,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "celsius",
       "gauge": {
         "maxValue": 100,
@@ -1163,6 +1215,12 @@
       ],
       "datasource": "InfluxDB",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "celsius",
       "gauge": {
         "maxValue": 100,
@@ -1286,6 +1344,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -1418,6 +1482,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1523,6 +1593,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1630,6 +1706,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -1756,6 +1838,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -1931,6 +2019,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -2099,6 +2193,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -2144,7 +2244,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S205\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"W100\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'W100' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S205\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'S205' GROUP BY t ORDER BY t",
           "refId": "F",
           "round": "0s",
           "table": "measurements",
@@ -2161,7 +2261,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S216\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S216\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'S216' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S216\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'S216' GROUP BY t ORDER BY t",
           "refId": "A",
           "round": "0s",
           "table": "measurements",
@@ -2178,7 +2278,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S217\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S217\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'S217' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S217\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'S217' GROUP BY t ORDER BY t",
           "refId": "B",
           "round": "0s",
           "table": "measurements",
@@ -2195,7 +2295,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S218\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S218\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'S218' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S218\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'S218' GROUP BY t ORDER BY t",
           "refId": "C",
           "round": "0s",
           "table": "measurements",
@@ -2212,7 +2312,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S219\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D103\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'D103' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S219\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'S219' GROUP BY t ORDER BY t",
           "refId": "G",
           "round": "0s",
           "table": "measurements",
@@ -2229,7 +2329,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"T100\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'T100'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"T100\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'T100' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"T100\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'T100' GROUP BY t ORDER BY t",
           "refId": "D",
           "round": "0s",
           "table": "measurements",
@@ -2246,8 +2346,42 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"W100\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'W100'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D102\" FROM default.measurements WHERE     dt >= toDateTime(1588332022)     AND instance = 'D102' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"W100\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'W100' GROUP BY t ORDER BY t",
           "refId": "E",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"P311\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P311'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"P311\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'P311' GROUP BY t ORDER BY t",
+          "refId": "H",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"P312\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P312'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"P312\" FROM default.measurements WHERE     dt >= toDateTime(1591280230)     AND instance = 'P312' GROUP BY t ORDER BY t",
+          "refId": "I",
           "round": "0s",
           "table": "measurements",
           "tableLoading": false
@@ -2302,6 +2436,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -2347,7 +2487,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S205\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S205\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'S205' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S205\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'S205' GROUP BY t ORDER BY t",
           "refId": "H",
           "round": "0s",
           "table": "measurements",
@@ -2364,7 +2504,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S216\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S216\" FROM default.measurements WHERE     dt >= toDateTime(1588533273)     AND instance = 'S216' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S216\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'S216' GROUP BY t ORDER BY t",
           "refId": "A",
           "round": "0s",
           "table": "measurements",
@@ -2381,7 +2521,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S217\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S217\" FROM default.measurements WHERE     dt >= toDateTime(1588533273)     AND instance = 'S217' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S217\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'S217' GROUP BY t ORDER BY t",
           "refId": "B",
           "round": "0s",
           "table": "measurements",
@@ -2398,7 +2538,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S218\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S218\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'S218' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S218\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'S218' GROUP BY t ORDER BY t",
           "refId": "C",
           "round": "0s",
           "table": "measurements",
@@ -2415,7 +2555,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S219\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S219\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'S219' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S219\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'S219' GROUP BY t ORDER BY t",
           "refId": "I",
           "round": "0s",
           "table": "measurements",
@@ -2432,7 +2572,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"T100\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'T100'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"T100\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'T100' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"T100\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'T100' GROUP BY t ORDER BY t",
           "refId": "D",
           "round": "0s",
           "table": "measurements",
@@ -2449,7 +2589,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"W100\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'W100'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"W100\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'W100' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"W100\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'W100' GROUP BY t ORDER BY t",
           "refId": "F",
           "round": "0s",
           "table": "measurements",
@@ -2466,7 +2606,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D102\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D102'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D102\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'D102' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D102\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'D102' GROUP BY t ORDER BY t",
           "refId": "E",
           "round": "0s",
           "table": "measurements",
@@ -2483,8 +2623,76 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D103\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D103'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D103\" FROM default.measurements WHERE     dt >= toDateTime(1588533583)     AND instance = 'D103' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D103\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'D103' GROUP BY t ORDER BY t",
           "refId": "G",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D105\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D105'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D105\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'D105' GROUP BY t ORDER BY t",
+          "refId": "J",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D106\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D106'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D106\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'D106' GROUP BY t ORDER BY t",
+          "refId": "K",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"P311\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P311'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"P311\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'P311' GROUP BY t ORDER BY t",
+          "refId": "L",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"P312\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P312'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"P312\" FROM default.measurements WHERE     dt >= toDateTime(1591280295)     AND instance = 'P312' GROUP BY t ORDER BY t",
+          "refId": "M",
           "round": "0s",
           "table": "measurements",
           "tableLoading": false
@@ -2533,10 +2741,143 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {
+        "Aft cabin (S205)": "dark-green",
+        "C400": "semi-dark-red",
+        "Fwd cabin (S218)": "light-green",
+        "Mast (S217)": "super-light-green",
+        "Outside (S219)": "rgb(171, 252, 0)",
+        "Saloon (S216)": "semi-dark-green"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "hiddenSeries": false,
+      "id": 34,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": true,
+      "targets": [
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    max(metric_values[indexOf(metric_names, 'motionDetected')]) AS \"Nav table (P311)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P311'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     max(metric_values[indexOf(metric_names, 'motionDetected')]) AS \"Nav table (P311)\" FROM default.measurements WHERE     dt >= toDateTime(1591280852)     AND instance = 'P311' GROUP BY t ORDER BY t",
+          "refId": "E",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    max(metric_values[indexOf(metric_names, 'motionDetected')]) AS \"Saloon (P312)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'P312'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     max(metric_values[indexOf(metric_names, 'motionDetected')]) AS \"Saloon (P312)\" FROM default.measurements WHERE     dt >= toDateTime(1591280852)     AND instance = 'P312' GROUP BY t ORDER BY t",
+          "refId": "A",
+          "round": "0s",
+          "table": "measurements",
+          "tableLoading": false
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Motion detection",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:781",
+          "decimals": 0,
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:782",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -2563,8 +2904,5 @@
   "timezone": "",
   "title": "Freya",
   "uid": "zfPhLceWz",
-  "variables": {
-    "list": []
-  },
-  "version": 47
+  "version": 49
 }
