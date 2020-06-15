@@ -24,7 +24,8 @@
   roles:
     - common
     - role: mcp2515-can
-      mcp2515_int_pin: 25
+      mcp2515_int_pin: 6
+      mcp2515_overlay_can_device: can1
     - crda_domain
     - role: aws-cli
     - role: mqtt-server
@@ -93,6 +94,7 @@
       docker_app_extra_params: "--privileged"
       docker_app_env:
         - MQTT_BROKER={{lan_ip_address}}
+        - SPI_DEVICE=0
     - role: docker-app
       docker_app_name: "wpantund"
       docker_app_container_name: "jihartik/wpantund-armv6"
@@ -100,7 +102,7 @@
       docker_app_env:
         - OPENTHREAD_DEVICE_PORT=/dev/nrf52840
       tags: wpantund
-    - role: rtc
+#    - role: rtc
     - role: s3-upload
       s3_upload_name: "signalk-raw-logs"
       s3_upload_src_dir: "/home/pi/.signalk"
