@@ -580,6 +580,119 @@
       "valueName": "current"
     },
     {
+      "cacheTimeout": null,
+      "datasource": "InfluxDB",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "max": 5,
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 1
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 2
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 2,
+        "x": 15,
+        "y": 0
+      },
+      "id": 35,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "displayMode": "lcd",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.0.3",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "level",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "instance",
+              "operator": "=",
+              "value": "H101"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "4G Signal",
+      "type": "bargauge"
+    },
+    {
       "aliasColors": {
         "C400": "dark-orange"
       },
@@ -598,8 +711,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 9,
-        "x": 15,
+        "w": 7,
+        "x": 17,
         "y": 0
       },
       "hiddenSeries": false,
@@ -2904,5 +3017,5 @@
   "timezone": "",
   "title": "Freya",
   "uid": "zfPhLceWz",
-  "version": 49
+  "version": 50
 }
