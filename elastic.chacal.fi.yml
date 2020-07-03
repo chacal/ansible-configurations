@@ -39,9 +39,9 @@
         cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/kibana/
         chown kibana:kibana /etc/kibana/*.pem
         systemctl restart kibana.service || true
-        cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/elasticsearch/
-        cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/elasticsearch/
-        chown elasticsearch:elasticsearch /etc/elasticsearch/*.pem
+        cp /etc/letsencrypt/live/elastic.chacal.fi/fullchain.pem /etc/elasticsearch/certs/
+        cp /etc/letsencrypt/live/elastic.chacal.fi/privkey.pem /etc/elasticsearch/certs/
+        chown elasticsearch:elasticsearch /etc/elasticsearch/certs/*.pem
         systemctl restart elasticsearch.service || true
         echo "Let's encrypt certificates updated and services restarted"
 
@@ -70,7 +70,7 @@
       include_role:
         name: elastic.elasticsearch
       vars:
-        es_version: 7.7.0
+        es_version: 7.8.0
         es_heap_size: 3g
         es_config:
           network.host: 0.0.0.0
@@ -136,8 +136,6 @@
         es_api_host: "{{ inventory_hostname }}"
         es_api_basic_auth_username: elastic
         es_api_basic_auth_password: "{{ chacal.elastic.es.passwords.elastic }}"
-        es_xpack_features:
-          - security
         es_enable_http_ssl: true
         es_enable_transport_ssl: true
         es_ssl_certificate: conf/elastic.chacal.fi/fullchain.pem
@@ -187,20 +185,20 @@
         dest: /tmp/kibana/logtrail/package.json
         state: present
         regexp: '    "version": "7.*.*"'
-        line: '    "version": "7.7.0"'
+        line: '    "version": "7.8.0"'
       tags: logtrail
 
     - name: Zip Logtrail plugin
       archive:
         path: /tmp/kibana
-        dest: /tmp/logtrail-7.7.0-0.1.31.zip
+        dest: /tmp/logtrail-7.8.0-0.1.31.zip
         format: zip
       tags: logtrail
 
     - name: Install Logtrail plugin to Kibana
       kibana_plugin:
         name: logtrail
-        url: file:///tmp/logtrail-7.7.0-0.1.31.zip
+        url: file:///tmp/logtrail-7.8.0-0.1.31.zip
         state: present
         plugin_bin: /usr/share/kibana/bin/kibana
         plugin_dir: /usr/share/kibana/plugins/
