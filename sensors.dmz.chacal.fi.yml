@@ -165,4 +165,5 @@
           - GF_SMTP_FROM_ADDRESS=grafana@{{ inventory_hostname }}
           - GF_SMTP_FROM_NAME='Grafana - sensors.chacal.fi'
           - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+          - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
       tags: grafana
