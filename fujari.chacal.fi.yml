@@ -174,9 +174,10 @@
                   autoprune = yes
 
           [template_backups]
+                  monthly = 12
                   autoprune = yes
-                  # Prune backups only if pool is > 50% full
-                  prune_defer = 50
+                  # Prune backups only if pool is > 70% full
+                  prune_defer = 70
                   autosnap = no
                   monitor = no
 
