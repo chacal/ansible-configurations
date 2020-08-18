@@ -2890,171 +2890,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 8,
+        "w": 12,
         "x": 0,
-        "y": 59
-      },
-      "hiddenSeries": false,
-      "id": 28,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "/Link quality.*/",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "database": "default",
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_avgRssi')]) AS \"RSSI (avg)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'thread_avgRssi')]) AS \"RSSI (avg)\" FROM default.measurements WHERE     dt >= toDateTime(1586233263)     AND instance = 'D101' GROUP BY t ORDER BY t",
-          "refId": "A",
-          "round": "0s",
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_latestRssi')]) AS \"RSSI (latest)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'thread_latestRssi')]) AS \"RSSI (latest)\" FROM default.measurements WHERE     dt >= toDateTime(1586233263)     AND instance = 'D101' GROUP BY t ORDER BY t",
-          "refId": "B",
-          "round": "0s",
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityIn')]) AS \"Link quality in\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'thread_linkQualityIn')]) AS \"Link quality in\" FROM default.measurements WHERE     dt >= toDateTime(1586233263)     AND instance = 'D101' GROUP BY t ORDER BY t",
-          "refId": "C",
-          "round": "0s",
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityOut')]) AS \"Link quality out\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'thread_linkQualityOut')]) AS \"Link quality out\" FROM default.measurements WHERE     dt >= toDateTime(1586233263)     AND instance = 'D101' GROUP BY t ORDER BY t",
-          "refId": "D",
-          "round": "0s",
-          "table": "measurements",
-          "tableLoading": false
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Thread Display D101",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": null,
-          "format": "dBm",
-          "label": null,
-          "logBase": 1,
-          "max": "-40",
-          "min": "-95",
-          "show": true
-        },
-        {
-          "decimals": null,
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": "3",
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "decimals": 1,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
         "y": 59
       },
       "hiddenSeries": false,
@@ -3216,8 +3053,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 16,
+        "w": 12,
+        "x": 12,
         "y": 59
       },
       "hiddenSeries": false,
@@ -3524,5 +3361,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "755FHtCWk",
-  "version": 16
+  "version": 17
 }
