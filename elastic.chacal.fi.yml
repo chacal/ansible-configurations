@@ -16,6 +16,7 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+    - elastic_version: 7.9.0
 
   roles:
     - role: filebeat
@@ -70,7 +71,7 @@
       include_role:
         name: elastic.elasticsearch
       vars:
-        es_version: 7.8.0
+        es_version: "{{ elastic_version }}"
         es_heap_size: 3g
         es_config:
           network.host: 0.0.0.0
@@ -167,14 +168,14 @@
 
     - name: Download Logtrail package
       get_url:
-        url: https://github.com/sivasamyk/logtrail/releases/download/v0.1.31/logtrail-7.6.1-0.1.31.zip
+        url: https://github.com/sivasamyk/logtrail/releases/download/v0.1.31/logtrail-7.8.0-0.1.31.zip
         dest: /tmp/
-        checksum: "sha1:1494c4d4dde7cbd644404737928d3be909afc872"
+        checksum: "sha1:75106c38d511e4b4a47039f234041d6ed0c09925"
       tags: logtrail
 
     - name: Unzip Logtrail package
       unarchive:
-        src: /tmp/logtrail-7.6.1-0.1.31.zip
+        src: /tmp/logtrail-7.8.0-0.1.31.zip
         dest: /tmp
         remote_src: yes
         creates: /tmp/kibana
@@ -185,20 +186,20 @@
         dest: /tmp/kibana/logtrail/package.json
         state: present
         regexp: '    "version": "7.*.*"'
-        line: '    "version": "7.8.0"'
+        line: '    "version": "{{ elastic_version }}"'
       tags: logtrail
 
     - name: Zip Logtrail plugin
       archive:
         path: /tmp/kibana
-        dest: /tmp/logtrail-7.8.0-0.1.31.zip
+        dest: "/tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
         format: zip
       tags: logtrail
 
     - name: Install Logtrail plugin to Kibana
       kibana_plugin:
         name: logtrail
-        url: file:///tmp/logtrail-7.8.0-0.1.31.zip
+        url: "file:///tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
         state: present
         plugin_bin: /usr/share/kibana/bin/kibana
         plugin_dir: /usr/share/kibana/plugins/
