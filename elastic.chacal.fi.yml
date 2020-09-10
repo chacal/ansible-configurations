@@ -16,7 +16,7 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
-    - elastic_version: 7.9.0
+    - elastic_version: 7.9.1
 
   roles:
     - role: filebeat
@@ -166,88 +166,84 @@
           - unzip
       tags: logtrail
 
-#
-#    Current Logtrail version is not compatible with Kibana 7.9.0 -> leave uninstalled
-#    ----------------------------------------------------------------------------------------
-#
-#    - name: Download Logtrail package
-#      get_url:
-#        url: https://github.com/sivasamyk/logtrail/releases/download/v0.1.31/logtrail-7.8.0-0.1.31.zip
-#        dest: /tmp/
-#        checksum: "sha1:75106c38d511e4b4a47039f234041d6ed0c09925"
-#      tags: logtrail
-#
-#    - name: Unzip Logtrail package
-#      unarchive:
-#        src: /tmp/logtrail-7.8.0-0.1.31.zip
-#        dest: /tmp
-#        remote_src: yes
-#        creates: /tmp/kibana
-#      tags: logtrail
-#
-#    - name: Patch Logtrail Kibana version
-#      lineinfile:
-#        dest: /tmp/kibana/logtrail/package.json
-#        state: present
-#        regexp: '    "version": "7.*.*"'
-#        line: '    "version": "{{ elastic_version }}"'
-#      tags: logtrail
-#
-#    - name: Zip Logtrail plugin
-#      archive:
-#        path: /tmp/kibana
-#        dest: "/tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
-#        format: zip
-#      tags: logtrail
-#
-#    - name: Install Logtrail plugin to Kibana
-#      kibana_plugin:
-#        name: logtrail
-#        url: "file:///tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
-#        state: present
-#        plugin_bin: /usr/share/kibana/bin/kibana
-#        plugin_dir: /usr/share/kibana/plugins/
-#      become_user: kibana
-#      notify: Restart Kibana
-#      tags: logtrail
-#
-#    - name: Configure Logtrail
-#      copy:
-#        dest: /usr/share/kibana/plugins/logtrail/logtrail.json
-#        content: |
-#          {
-#            "version" : 2,
-#            "index_patterns" : [
-#              {
-#                "es": {
-#                  "default_index": "filebeat-*"
-#                },
-#                "tail_interval_in_seconds": 10,
-#                "es_index_time_offset_in_seconds": 0,
-#                "display_timezone": "Europe/Helsinki",
-#                "display_timestamp_format": "MMM DD HH:mm:ss",
-#                "max_buckets": 500,
-#                "default_time_range_in_days" : 0,
-#                "max_hosts": 100,
-#                "max_events_to_keep_in_viewer": 15000,
-#                "default_search": "",
-#                "fields" : {
-#                  "mapping" : {
-#                      "timestamp" : "@timestamp",
-#                      "hostname" : "host.name",
-#                      "program": "process.name",
-#                      "message": "message"
-#                  },
-#                  "keyword_suffix" : ""
-#                },
-#                "color_mapping" : {
-#                }
-#              }
-#            ]
-#          }
-#      become_user: kibana
-#      notify: Restart Kibana
-#      tags: logtrail
+    - name: Download Logtrail package
+      get_url:
+        url: https://github.com/sivasamyk/logtrail/releases/download/v0.1.31/logtrail-7.9.1-0.1.31.zip
+        dest: /tmp/
+        checksum: "sha1:3a37583ea2bd53d695233b12afa56665e4376c65"
+      tags: logtrail
+
+    - name: Unzip Logtrail package
+      unarchive:
+        src: /tmp/logtrail-7.9.1-0.1.31.zip
+        dest: /tmp
+        remote_src: yes
+        creates: /tmp/kibana
+      tags: logtrail
+
+    - name: Patch Logtrail Kibana version
+      lineinfile:
+        dest: /tmp/kibana/logtrail/package.json
+        state: present
+        regexp: '    "version": "7.*.*"'
+        line: '    "version": "{{ elastic_version }}"'
+      tags: logtrail
+
+    - name: Zip Logtrail plugin
+      archive:
+        path: /tmp/kibana
+        dest: "/tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
+        format: zip
+      tags: logtrail
+
+    - name: Install Logtrail plugin to Kibana
+      kibana_plugin:
+        name: logtrail
+        url: "file:///tmp/logtrail-{{ elastic_version }}-0.1.31.zip"
+        state: present
+        plugin_bin: /usr/share/kibana/bin/kibana
+        plugin_dir: /usr/share/kibana/plugins/
+      become_user: kibana
+      notify: Restart Kibana
+      tags: logtrail
+
+    - name: Configure Logtrail
+      copy:
+        dest: /usr/share/kibana/plugins/logtrail/logtrail.json
+        content: |
+          {
+            "version" : 2,
+            "index_patterns" : [
+              {
+                "es": {
+                  "default_index": "filebeat-*"
+                },
+                "tail_interval_in_seconds": 10,
+                "es_index_time_offset_in_seconds": 0,
+                "display_timezone": "Europe/Helsinki",
+                "display_timestamp_format": "MMM DD HH:mm:ss",
+                "max_buckets": 500,
+                "default_time_range_in_days" : 0,
+                "max_hosts": 100,
+                "max_events_to_keep_in_viewer": 15000,
+                "default_search": "",
+                "fields" : {
+                  "mapping" : {
+                      "timestamp" : "@timestamp",
+                      "hostname" : "host.name",
+                      "program": "process.name",
+                      "message": "message"
+                  },
+                  "keyword_suffix" : ""
+                },
+                "color_mapping" : {
+                }
+              }
+            ]
+          }
+      become_user: kibana
+      notify: Restart Kibana
+      tags: logtrail
 
     - name: Create /srv
       file:
