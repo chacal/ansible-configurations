@@ -4,6 +4,12 @@
 # Assumptions:
 #  - Passwordless SSH connection with "root"
 #
+#
+# NOTE NOTE NOTE NOTE:
+# This is not totally up-to-date as hddpool now has two more disks! (2 x 1TB 2.5" HDD)
+# These disks were added manually to the pool using command:
+# zpool add hddpool -f mirror /dev/disk/by-id/ata-TOSHIBA_MQ01ABD100V_19OZPABGT /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S2RXJ9FC501526
+#
 
 - hosts: all
   remote_user: root
@@ -15,7 +21,7 @@
   vars:
     disks:
       - /dev/disk/by-id/scsi-36003005701ef594025e3130b929326b3  # /dev/sdc, 1.8TB HDD
-      - /dev/disk/by-id/scsi-36003005701ef594025e3130b9293bb07  # /dev/sdc, 1.8TB HDD
+      - /dev/disk/by-id/scsi-36003005701ef594025e3130b9293bb07  # /dev/sdd, 1.8TB HDD
 
   handlers:
     - name: Update boot parameters
