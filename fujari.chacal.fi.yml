@@ -264,9 +264,9 @@
                   bridge-vlan-aware yes
                   bridge-vids 2-4094
                   # Remove all vlans from FREYA ZeroTier interface
-                  post-up bridge vlan del vid 1-4094 dev ztuku5opwi
+                  post-up /usr/sbin/bridge vlan del vid 1-4094 dev ztuku5opwi
                   # Send VLAN 103 untagged to FREYA ZeroTier interface and tag incoming traffic as VLAN 103
-                  post-up bridge vlan add vid 103 pvid 103 untagged dev ztuku5opwi
+                  post-up /usr/sbin/bridge vlan add vid 103 pvid 103 untagged dev ztuku5opwi
           #SERVER
 
           auto mgmtbr0
