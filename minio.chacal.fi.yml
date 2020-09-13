@@ -9,6 +9,11 @@
   vars_files:
     - secrets.yml
 
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
   roles:
     - role: filebeat
       filebeat_elasticsearch_hosts:
@@ -40,6 +45,21 @@
         mode: 0750
       tags: minio
 
+    - name: Setup Letsencrypt certificates
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Restarting MinIO due to updated certificates.."
+          mkdir -p /home/minio/certs
+          cp /etc/letsencrypt/live/minio.chacal.fi/fullchain.pem /home/minio/certs/public.crt
+          cp /etc/letsencrypt/live/minio.chacal.fi/privkey.pem /home/minio/certs/private.key
+          chown -R minio:minio /home/minio/certs
+          systemctl restart minio || true
+      tags: certbot
+
     - name: Add MinIO docker service
       include_role:
         name: docker-app
@@ -47,7 +67,7 @@
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "minio"
         docker_app_container_name: "minio/minio"
-        docker_app_extra_params: "-v /srv/minio:/data --user {{ getent_passwd.minio[1] }}:{{ getent_passwd.minio[2] }}"
+        docker_app_extra_params: "-v /srv/minio:/data -v /home/minio/certs:/.minio/certs --user {{ getent_passwd.minio[1] }}:{{ getent_passwd.minio[2] }}"
         docker_app_container_params: "server /data"
         docker_app_ports:
           - 9000:9000
