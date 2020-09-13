@@ -1,0 +1,57 @@
+---
+#
+# Playbook that sets up MinIO server on minio.chacal.fi
+#
+- hosts: minio.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+
+  tasks:
+    - name: Creat minio user
+      user: name=minio system=yes
+      tags: minio
+
+    - name: Get minio uid & gid
+      getent:
+        database: passwd
+        key: minio
+      tags: minio
+
+    - name: Create MinIO data directory
+      file:
+        path: /srv/minio
+        state: directory
+        owner: minio
+        group: minio
+        mode: 0750
+      tags: minio
+
+    - name: Add MinIO docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "minio"
+        docker_app_container_name: "minio/minio"
+        docker_app_extra_params: "-v /srv/minio:/data --user {{ getent_passwd.minio[1] }}:{{ getent_passwd.minio[2] }}"
+        docker_app_container_params: "server /data"
+        docker_app_ports:
+          - 9000:9000
+        docker_app_env:
+          - "MINIO_ACCESS_KEY={{ chacal.minio.admin.access_key }}"
+          - "MINIO_SECRET_KEY={{ chacal.minio.admin.secret_key }}"
+      tags: minio
