@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1587070007869,
+  "iteration": 1600356491455,
   "links": [],
   "panels": [
     {
@@ -44,6 +44,12 @@
       ],
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "s",
       "gauge": {
         "maxValue": 100,
@@ -94,7 +100,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "",
+      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
       "targets": [
         {
           "expr": "node_time_seconds{instance=~\"$host.*\"} - node_boot_time_seconds{instance=~\"$host.*\"}",
@@ -132,6 +138,12 @@
       "datasource": "Prometheus",
       "decimals": 0,
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percentunit",
       "gauge": {
         "maxValue": 100,
@@ -183,7 +195,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "",
+      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
       "targets": [
         {
           "expr": "node_load1{instance=~\"$host.*\"} / custom_cpu_count",
@@ -223,6 +235,12 @@
       "datasource": "Prometheus",
       "decimals": 0,
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percentunit",
       "gauge": {
         "maxValue": 100,
@@ -274,7 +292,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "",
+      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
       "targets": [
         {
           "expr": "node_load5{instance=~\"$host.*\"} / custom_cpu_count",
@@ -314,6 +332,12 @@
       "datasource": "Prometheus",
       "decimals": 0,
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percentunit",
       "gauge": {
         "maxValue": 100,
@@ -363,7 +387,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "",
+      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
       "targets": [
         {
           "expr": "node_load15{instance=~\"$host.*\"} / custom_cpu_count",
@@ -393,6 +417,40 @@
     {
       "cacheTimeout": null,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "displayName": "",
+          "mappings": [
+            {
+              "$$hashKey": "object:5085",
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 3,
@@ -402,48 +460,18 @@
       "id": 35,
       "links": [],
       "options": {
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "mappings": [
-              {
-                "$$hashKey": "object:5085",
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "max": 100,
-            "min": 0,
-            "nullValueMode": "connected",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "title": "",
-            "unit": "percent"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "horizontal",
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "6.7.2",
+      "pluginVersion": "7.1.5",
       "targets": [
         {
           "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
@@ -469,6 +497,12 @@
         "#d44a3a"
       ],
       "datasource": "Elasticsearch",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -577,6 +611,12 @@
         "#d44a3a"
       ],
       "datasource": "Elasticsearch",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -686,6 +726,12 @@
       ],
       "datasource": null,
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -736,7 +782,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "",
+      "tableColumn": "{instance=\"fujari.chacal.fi:9100\"}",
       "targets": [
         {
           "expr": "sum by (instance) (apt_upgrades_pending{instance=~\"$host.*\"})",
@@ -776,10 +822,9 @@
       "repeat": "host",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "title": "Metrics",
@@ -795,6 +840,13 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 5,
       "fillGradient": 0,
       "gridPos": {
@@ -818,19 +870,16 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -959,6 +1008,13 @@
       "datasource": "Prometheus",
       "decimals": 2,
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 3,
       "fillGradient": 0,
       "gridPos": {
@@ -988,19 +1044,16 @@
       "links": [],
       "maxPerRow": 6,
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -1157,6 +1210,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -1180,19 +1240,16 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1265,6 +1322,13 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1290,19 +1354,16 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1369,6 +1430,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1394,19 +1462,16 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1472,6 +1537,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1497,19 +1569,16 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1580,6 +1649,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -1604,19 +1680,16 @@
       "linewidth": 0,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1693,6 +1766,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -1717,19 +1797,16 @@
       "linewidth": 0,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [
@@ -1810,6 +1887,13 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1832,19 +1916,16 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -1909,6 +1990,13 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1931,19 +2019,16 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "scopedVars": {
         "host": {
-          "$$hashKey": "object:439",
           "selected": true,
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         }
       },
       "seriesOverrides": [],
@@ -2009,7 +2094,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 150
+        "y": 100
       },
       "id": 39,
       "panels": [],
@@ -2024,13 +2109,20 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Elasticsearch",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 151
+        "y": 101
       },
       "hiddenSeries": false,
       "id": 37,
@@ -2053,10 +2145,8 @@
         }
       ],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2146,7 +2236,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 159
+        "y": 109
       },
       "id": 27,
       "panels": [],
@@ -2195,13 +2285,20 @@
       "dashes": false,
       "datasource": null,
       "decimals": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 2,
       "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 160
+        "y": 110
       },
       "hiddenSeries": false,
       "id": 29,
@@ -2220,10 +2317,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.5",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2291,10 +2386,155 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                1
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "3m",
+        "frequency": "30s",
+        "handler": 1,
+        "name": "Systemd status alert",
+        "noDataState": "alerting",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 119
+      },
+      "hiddenSeries": false,
+      "id": 43,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.5",
+      "pointradius": 0.5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "node_systemd_system_running",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "lt",
+          "value": 1
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Systemd status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:215",
+          "decimals": 0,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:216",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 22,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -2302,15 +2542,14 @@
       {
         "allValue": null,
         "current": {
-          "tags": [],
-          "text": "azure-agent1.chacal.fi",
-          "value": "azure-agent1.chacal.fi"
+          "selected": true,
+          "text": "fujari.chacal.fi",
+          "value": "fujari.chacal.fi"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_boot_time_seconds, instance)",
         "hide": 0,
         "includeAll": false,
-        "index": -1,
         "label": "Host:",
         "multi": false,
         "name": "host",
@@ -2329,7 +2568,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -2337,7 +2576,6 @@
         "definition": "label_values(node_disk_read_bytes_total, device)",
         "hide": 2,
         "includeAll": true,
-        "index": -1,
         "label": "Regex for block devices",
         "multi": false,
         "name": "blk_devices",
@@ -2356,7 +2594,10 @@
       {
         "allValue": null,
         "current": {
-          "text": "All",
+          "selected": true,
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2365,7 +2606,6 @@
         "definition": "label_values(node_network_iface_id, device)",
         "hide": 2,
         "includeAll": true,
-        "index": -1,
         "label": "Regex for network devices",
         "multi": true,
         "name": "net_devices",
@@ -2415,8 +2655,5 @@
   "timezone": "",
   "title": "Servers",
   "uid": "BNPNIxUik",
-  "variables": {
-    "list": []
-  },
-  "version": 14
+  "version": 15
 }
