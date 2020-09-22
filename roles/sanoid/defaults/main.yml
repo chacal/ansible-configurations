@@ -1,0 +1,4 @@
+---
+sanoid_clean_empty_snapshots: False
+sanoid_clean_empty_snapshots_cron_minutes: "15"
+sanoid_clean_empty_snapshots_cron_hours: "*"

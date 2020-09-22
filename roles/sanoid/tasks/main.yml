@@ -48,3 +48,16 @@
     dest: /etc/sanoid/sanoid.conf
     content: "{{ sanoid_config }}"
   tags: sanoid
+
+- name: Clean 0 byte ZFS snapshots to make snapshot handling faster
+  cron:
+    name: "Clean 0 byte ZFS snapshots"
+    job: >
+      /usr/sbin/zfs list -t snapshot -o name,used -H
+      | grep -v __base__
+      | /usr/bin/awk '/autosnap.*\\t0B$/ { print $1 }'
+      | xargs -I{} /usr/sbin/zfs destroy {} 2>&1 | /usr/bin/logger -t zfs-snapshot-cleanup
+    minute: "{{ sanoid_clean_empty_snapshots_cron_minutes }}"
+    hour: "{{ sanoid_clean_empty_snapshots_cron_hours }}"
+  when: sanoid_clean_empty_snapshots
+  tags: sanoid

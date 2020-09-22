@@ -133,6 +133,7 @@
     - name: Setup Sanoid
       include_role: name=sanoid
       vars:
+        sanoid_clean_empty_snapshots: True
         sanoid_config: |
           [rpool]
                   use_template = pve_system
