@@ -43,6 +43,15 @@
   when: kibana_ssl_cert_path != "" and kibana_ssl_key_path != ""
   tags: kibana
 
+- name: Ensure Kibana private key has correct owner
+  file:
+    path: "{{ kibana_ssl_key_path }}"
+    owner: kibana
+    group: kibana
+    mode: '0600'
+  when: kibana_ssl_key_path != ""
+  tags: kibana
+
 - name: Enable and start Kibana
   service: name=kibana state=started enabled=yes
   tags: kibana
