@@ -183,8 +183,8 @@
 
           [template_backups]
                   frequently = 0
-                  hourly = 48
-                  daily = 180
+                  hourly = 168
+                  daily = 365
                   monthly = 36
                   yearly = 5
                   autoprune = yes
