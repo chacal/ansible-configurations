@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1600356491455,
+  "iteration": 1601205384500,
   "links": [],
   "panels": [
     {
@@ -100,7 +100,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "node_time_seconds{instance=~\"$host.*\"} - node_boot_time_seconds{instance=~\"$host.*\"}",
@@ -195,7 +195,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "node_load1{instance=~\"$host.*\"} / custom_cpu_count",
@@ -292,7 +292,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "node_load5{instance=~\"$host.*\"} / custom_cpu_count",
@@ -387,7 +387,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "{instance=\"fujari.chacal.fi:9100\", job=\"nodes\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "node_load15{instance=~\"$host.*\"} / custom_cpu_count",
@@ -471,7 +471,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "targets": [
         {
           "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
@@ -782,7 +782,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "{instance=\"fujari.chacal.fi:9100\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "sum by (instance) (apt_upgrades_pending{instance=~\"$host.*\"})",
@@ -831,6 +831,41 @@
       "type": "row"
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.5
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "F",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "CPU Usage alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
       "aliasColors": {
         "idle": "#7eb26d",
         "user": "#e24d42"
@@ -870,8 +905,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -935,9 +973,26 @@
           "intervalFactor": 1,
           "legendFormat": "idle",
           "refId": "E"
+        },
+        {
+          "expr": "custom_cpu_usage{instance=~\".*\",mode=\"idle\"}",
+          "format": "time_series",
+          "hide": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "F"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "lt",
+          "value": 0.5
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -981,6 +1036,41 @@
       }
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.1
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "Memory alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
       "aliasColors": {
         "Apps": "#ea6460",
         "Buffers": "#c15c17",
@@ -1044,8 +1134,11 @@
       "links": [],
       "maxPerRow": 6,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1154,9 +1247,27 @@
           "legendFormat": "Corrupted",
           "refId": "O",
           "step": 240
+        },
+        {
+          "expr": "(node_memory_MemFree_bytes{instance=~\".*\"} + node_memory_Buffers_bytes{instance=~\".*\"} + node_memory_Cached_bytes{instance=~\".*\"}) / node_memory_MemTotal_bytes{instance=~\".*\"}",
+          "format": "time_series",
+          "hide": true,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 240
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "lt",
+          "value": 0.1
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -1240,8 +1351,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1316,6 +1430,41 @@
       }
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.8
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "Disk Usage % alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -1354,8 +1503,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1378,9 +1530,24 @@
           "intervalFactor": 1,
           "legendFormat": "{{mountpoint}}",
           "refId": "B"
+        },
+        {
+          "expr": "(node_filesystem_size_bytes{instance=~\".*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\".*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) / node_filesystem_size_bytes{instance=~\".*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "gt",
+          "value": 0.8
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -1462,8 +1629,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1569,8 +1739,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1680,8 +1853,11 @@
       "linewidth": 0,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1797,8 +1973,11 @@
       "linewidth": 0,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1916,8 +2095,11 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1984,6 +2166,41 @@
       }
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.8
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "Used Zpool Capacity alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -2019,8 +2236,11 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2041,9 +2261,24 @@
           "interval": "",
           "legendFormat": "{{pool}}",
           "refId": "B"
+        },
+        {
+          "expr": "(zfs_pool_size_bytes{instance=~\".*\"} - zfs_pool_free_bytes{instance=~\".*\"})/zfs_pool_size_bytes{instance=~\".*\"}",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "gt",
+          "value": 0.8
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -2094,7 +2329,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 100
+        "y": 150
       },
       "id": 39,
       "panels": [],
@@ -2122,7 +2357,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 101
+        "y": 151
       },
       "hiddenSeries": false,
       "id": 37,
@@ -2145,8 +2380,11 @@
         }
       ],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2236,7 +2474,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 109
+        "y": 159
       },
       "id": 27,
       "panels": [],
@@ -2298,7 +2536,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 110
+        "y": 160
       },
       "hiddenSeries": false,
       "id": 29,
@@ -2317,8 +2555,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2442,7 +2683,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 169
       },
       "hiddenSeries": false,
       "id": 43,
@@ -2461,8 +2702,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.2.0",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2531,6 +2775,97 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 178
+      },
+      "id": 45,
+      "panels": [],
+      "title": "Alerts",
+      "type": "row"
+    },
+    {
+      "dashboardFilter": "",
+      "dashboardTags": [],
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 179
+      },
+      "id": 47,
+      "limit": 10,
+      "nameFilter": "",
+      "onlyAlertsOnDashboard": false,
+      "pluginVersion": "7.2.0",
+      "show": "current",
+      "sortOrder": 3,
+      "stateFilter": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Alerts",
+      "type": "alertlist"
+    },
+    {
+      "dashboardFilter": "",
+      "dashboardTags": [],
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 179
+      },
+      "id": 49,
+      "limit": "5",
+      "nameFilter": "",
+      "onlyAlertsOnDashboard": false,
+      "pluginVersion": "7.2.0",
+      "show": "changes",
+      "sortOrder": 1,
+      "stateFilter": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Alert history",
+      "type": "alertlist"
     }
   ],
   "refresh": "10s",
@@ -2655,5 +2990,5 @@
   "timezone": "",
   "title": "Servers",
   "uid": "BNPNIxUik",
-  "version": 15
+  "version": 18
 }
