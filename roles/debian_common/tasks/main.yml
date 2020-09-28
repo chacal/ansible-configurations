@@ -97,3 +97,19 @@
   tags:
     - debian_common
     - unattended_upgrades
+
+- name: Create journald config override dir
+  file:
+    path: "/etc/systemd/journald.conf.d"
+    state: directory
+  tags: debian_common
+
+- name: Use persistent journal by default
+  copy:
+    dest: "/etc/systemd/journald.conf.d/10-persist.conf"
+    content: |
+      [Journal]
+      Storage=persistent
+  notify: Restart journald
+  tags: debian_common
+
