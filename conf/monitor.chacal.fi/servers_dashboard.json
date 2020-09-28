@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1601205384500,
+  "iteration": 1601310263382,
   "links": [],
   "panels": [
     {
@@ -2329,7 +2329,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 150
+        "y": 200
       },
       "id": 39,
       "panels": [],
@@ -2344,6 +2344,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Elasticsearch",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2357,7 +2358,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 151
+        "y": 201
       },
       "hiddenSeries": false,
       "id": 37,
@@ -2428,7 +2429,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Log Lines",
+      "title": "Log Lines ($host)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2468,13 +2469,146 @@
       }
     },
     {
+      "aliasColors": {
+        "Log lines": "semi-dark-blue"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 209
+      },
+      "hiddenSeries": false,
+      "id": 50,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Show logs",
+          "url": "https://monitor.chacal.fi/d/QQYMWn3Wz/logs?orgId=1&var-host=${host}&${__url_time_range}"
+        }
+      ],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Log lines",
+          "bucketAggs": [
+            {
+              "$$hashKey": "object:201",
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "$$hashKey": "object:199",
+              "field": "select metric",
+              "id": "1",
+              "meta": {},
+              "pipelineAgg": "select metric",
+              "settings": {},
+              "type": "count"
+            }
+          ],
+          "query": "",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Log Lines (all)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:344",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 10,
+          "max": "100000",
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:345",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 159
+        "y": 219
       },
       "id": 27,
       "panels": [],
@@ -2536,7 +2670,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 160
+        "y": 220
       },
       "hiddenSeries": false,
       "id": 29,
@@ -2683,7 +2817,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 169
+        "y": 229
       },
       "hiddenSeries": false,
       "id": 43,
@@ -2783,7 +2917,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 178
+        "y": 238
       },
       "id": 45,
       "panels": [],
@@ -2801,11 +2935,12 @@
         },
         "overrides": []
       },
+      "folderId": null,
       "gridPos": {
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 179
+        "y": 239
       },
       "id": 47,
       "limit": 10,
@@ -2848,14 +2983,15 @@
         },
         "overrides": []
       },
+      "folderId": null,
       "gridPos": {
-        "h": 11,
+        "h": 18,
         "w": 12,
         "x": 12,
-        "y": 179
+        "y": 239
       },
       "id": 49,
-      "limit": "5",
+      "limit": "10",
       "nameFilter": "",
       "onlyAlertsOnDashboard": false,
       "pluginVersion": "7.2.0",
@@ -2990,5 +3126,5 @@
   "timezone": "",
   "title": "Servers",
   "uid": "BNPNIxUik",
-  "version": 18
+  "version": 20
 }
