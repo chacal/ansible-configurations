@@ -94,6 +94,7 @@
     name: unattended_upgrades
   vars:
     unattended_upgrades_email: "{{ chacal.unattended_upgrades.to_email }}"
+    unattended_upgrades_from_email: "root@{{ inventory_hostname }}"
     unattended_upgrades_reboot_immediately: False
   tags:
     - debian_common
