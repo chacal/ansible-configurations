@@ -33,7 +33,7 @@
     - role: sendgrid_with_dma
       sendgrid_api_key: "{{ chacal.sendgrid.buster_base }}"
     - role: debian_common
-      unattended_upgrades_origins: '"o=Docker";'
+      unattended_upgrades_origins: '"o=Docker"; "o=Raspbian"; "o=Raspberry Pi Foundation";'
     - role: docker-app
       docker_app_name: "wpantund"
       docker_app_container_name: "jihartik/wpantund-armv6"
