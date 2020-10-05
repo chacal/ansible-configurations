@@ -286,12 +286,10 @@
 
     - name: Set bridge interfaces up again to get the ZT interface connected to the bridges
       cron:
-        name: "Setup {{ item }}"
+        name: "Setup interface bridges"
         special_time: reboot
-        job: "/usr/sbin/ifup {{ item }}"
-      loop:
-        - vmbr0
-        - mgmtbr0
+        job: "/usr/sbin/ifup mgmtbr0; /usr/sbin/ifup vmbr0;"
+      tags: cron
 
     - name: Set zfs_zevent_len_max
       import_role:
