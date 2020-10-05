@@ -62,7 +62,7 @@
 
           auto lo
           iface lo inet loopback
-              dns-nameservers {{ lan_ip_address }} 1.1.1.1 8.8.8.8
+              dns-nameservers {{ router_ip_address }} 1.1.1.1 8.8.8.8
               dns-search chacal.fi
 
           auto eth0
