@@ -22,6 +22,8 @@
 
   roles:
     - common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
     - role: wificlient
       wificlient_interface: wlan0
       wificlient_networks:
