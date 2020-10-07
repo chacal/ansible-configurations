@@ -1,6 +1,7 @@
 ---
 - name: Populate service facts
   service_facts:
+  tags: debian_common
 
 # Suppress cron default logging
 - name: Decrease cron logging
