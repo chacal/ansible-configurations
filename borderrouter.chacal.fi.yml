@@ -80,7 +80,6 @@
             address {{ lan_ipv6_address }}/64
             gateway {{ router_ipv6_address }}
 
-          auto wpan0
           allow-hotplug wpan0
           iface wpan0 inet6 static
             address {{ wpan_ipv6_address }}/64
