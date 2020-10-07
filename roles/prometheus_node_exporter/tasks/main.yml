@@ -12,12 +12,22 @@
 # See:
 # - https://github.com/prometheus/node_exporter/issues/1462
 # - https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/pull/8
-- name: Install prometheus-node-exporter
+- name: Install prometheus-node-exporter for x86 Debian
   apt:
     deb: "{{ item }}"
   loop:
     - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.0.1+ds-1_amd64.deb
     - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200718.57d05ce-1_all.deb
+  when: ansible_lsb.id != "Raspbian"
+  tags: prometheus_node_exporter
+
+- name: Install prometheus-node-exporter for Raspbian
+  apt:
+    deb: "{{ item }}"
+  loop:
+    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.0.1+ds-1_armhf.deb
+    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200718.57d05ce-1_all.deb
+  when: ansible_lsb.id == "Raspbian"
   tags: prometheus_node_exporter
 
 - name: Create systemd override directory for prometheus-node-exporter-apt.timer

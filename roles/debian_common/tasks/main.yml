@@ -72,13 +72,13 @@
   when: rpcbind_service.stat.exists
   tags: debian_common
 
-- name: Stop & disable smartd on VMs
+- name: Stop & disable smartd on VMs & Raspberry Pis
   service:
     name: smartd
     state: stopped
     enabled: no
   notify: Reset smartd systemd fail state
-  when: ansible_virtualization_role == "guest" and ansible_facts.services['smartd.service'] is defined
+  when: (ansible_virtualization_role == "guest" or ansible_lsb.id == "Raspbian") and ansible_facts.services['smartd.service'] is defined
   tags: debian_common
 
 - name: Run fstrim periodically
