@@ -1,6 +1,6 @@
 ---
 #
-# Playbook that sets up mosquitto, InfluxDD, ClickHouse and 2 x mqtt-to-db-sender on sensor-backend.chacal.fi
+# Playbook that sets up mosquitto, InfluxDB, ClickHouse and 2 x mqtt-to-db-sender on sensor-backend.chacal.fi
 #
 - hosts: sensor-backend.chacal.fi
   remote_user: jihartik
