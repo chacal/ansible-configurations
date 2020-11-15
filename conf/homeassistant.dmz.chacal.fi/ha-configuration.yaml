@@ -16,8 +16,6 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 
 http:
-  # Update this line to be your domain
-  base_url: https://ha.chacal.fi
   use_x_forwarded_for: true
   # You must set the trusted proxy IP address so that Home Assistant will properly accept connections
   # Set this to your NGINX machine IP, or localhost if hosted on the same machine.
@@ -30,6 +28,7 @@ recorder:
   db_retry_wait: 10
 
 homeassistant:
+  external_url: https://ha.chacal.fi
   customize_glob:
     binary_sensor.p*:
       device_class: motion
@@ -41,7 +40,6 @@ mqtt:
   username: !secret mqtt_username
   password: !secret mqtt_password
   certificate: /etc/ssl/certs/ca-certificates.crt
-  tls_version: '1.2'
 
 notify:
   - name: Slack

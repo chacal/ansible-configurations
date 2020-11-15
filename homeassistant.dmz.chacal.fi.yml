@@ -119,8 +119,9 @@
         docker_app_extra_params: "--net=host -v /srv/home-assistant:/config --init"
         docker_app_env:
           - TZ=Europe/Helsinki
+      tags: home-assistant
 
     - name: Restart Home Assistant
       service: name=home-assistant state=restarted enabled=yes
       when: mount_kelvin_git_pull.changed
-
+      tags: home-assistant
