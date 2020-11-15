@@ -1,0 +1,79 @@
+---
+#
+# Playbook that sets up Docker registry pull through cache on docker-registry.chacal.fi
+#
+- hosts: docker-registry.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    - aws_cli_user: root
+    - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+
+  tasks:
+    - name: Create registry user
+      user: name=registry system=yes
+      tags: docker-registry
+
+    - name: Get registry uid & gid
+      getent:
+        database: passwd
+        key: registry
+      tags: docker-registry
+
+    - name: Create Docker registry data directory
+      file:
+        path: /srv/docker-registry
+        state: directory
+        owner: registry
+        group: registry
+        mode: 0750
+      tags: docker-registry
+
+    - name: Setup Letsencrypt certificates
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Restarting Docker Registry due to updated certificates.."
+          mkdir -p /home/registry/certs
+          cp /etc/letsencrypt/live/docker-registry.chacal.fi/fullchain.pem /home/registry/certs/
+          cp /etc/letsencrypt/live/docker-registry.chacal.fi/privkey.pem /home/registry/certs/
+          chown -R registry:registry /home/registry/certs
+          systemctl restart docker-registry || true
+      tags: certbot
+
+    - name: Add Docker Registry docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "docker-registry"
+        docker_app_container_name: "registry"
+        docker_app_extra_params: "-v /srv/docker-registry:/var/lib/registry -v /home/registry/certs:/certs --user {{ getent_passwd.registry[1] }}:{{ getent_passwd.registry[2] }}"
+        docker_app_ports:
+          - 443:5000
+        docker_app_env:
+          - "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/fullchain.pem"
+          - "REGISTRY_HTTP_TLS_KEY=/certs/privkey.pem"
+          - "REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io"
+          - "REGISTRY_PROXY_USERNAME=jihartik"
+          - "REGISTRY_PROXY_PASSWORD={{ chacal.docker_registry.access_token }}"
+          - "REGISTRY_LOG_LEVEL=warn"
+          - "REGISTRY_LOG_ACCESSLOG_DISABLED=true"
+      tags: docker-registry
