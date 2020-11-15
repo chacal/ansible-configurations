@@ -13,6 +13,7 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+    - docker_custom_registry: "https://docker-registry.chacal.fi"
 
   roles:
     - role: filebeat

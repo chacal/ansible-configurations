@@ -16,6 +16,7 @@
     - influx_cli_auth_params: '-username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}'
     - influx_cmd: 'influx -ssl -host sensor-backend.chacal.fi'
     - chproxy_listen_port: 9443
+    - docker_custom_registry: "https://docker-registry.chacal.fi"
 
   handlers:
     - name: Restart InfluxDB

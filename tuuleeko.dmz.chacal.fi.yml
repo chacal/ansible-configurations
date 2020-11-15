@@ -10,6 +10,7 @@
     - secrets.yml
 
   vars:
+    - docker_custom_registry: "https://docker-registry.chacal.fi"
 
   handlers:
 
