@@ -229,6 +229,7 @@
         - ./conf/monitor.chacal.fi/clickhouse_dashboard.json
         - ./conf/monitor.chacal.fi/logs_dashboard.json
         - ./conf/monitor.chacal.fi/all_logs_dashboard.json
+        - ./conf/monitor.chacal.fi/server_summary_dashboard.json
       notify: Restart Grafana
       tags: grafana
 
