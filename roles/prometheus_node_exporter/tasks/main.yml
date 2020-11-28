@@ -17,7 +17,7 @@
     deb: "{{ item }}"
   loop:
     - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.0.1+ds-1_amd64.deb
-    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200718.57d05ce-1_all.deb
+    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20201003.8db38d1-1_all.deb
   when: ansible_lsb.id != "Raspbian"
   tags: prometheus_node_exporter
 
