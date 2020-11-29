@@ -332,10 +332,15 @@
           alert_time_limit:
             days: 3
           alert_text: |-
-            LogTrail: <https://elastic.chacal.fi:5601/app/logtrail#/?h={0}&t={1}&i=filebeat-*&_g=()|{0}>
+            Host: {0}
+
+            Kibana: <https://elastic.chacal.fi:5601/app/logs/stream?logFilter=(expression:%27host.name:{0}%27,kind:kuery)&logPosition=(start:%27{1}%27,end:now,position:(tiebreaker:0,time:{2}),streamLive:!f)>
+
+            Grafana: <https://monitor.chacal.fi/d/BNPNIxUik/servers?orgId=1&var-host={0}&from=now-24h&to=now>
           alert_text_args:
             - host.name
-            - "@timestamp"
+            - timestamp_utc
+            - timestamp_unix_ms
           slack_webhook_url: {{ chacal.monitor.elastalert.slack_hook }}
           slack_username_override: ElastAlert
         owner: elastalert
@@ -360,8 +365,6 @@
             hours: 1
           scan_entire_timeframe: true
 
-          doc_type: _doc
-          use_terms_query: true
           query_key: host.name
 
           alert:
