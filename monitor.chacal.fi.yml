@@ -396,6 +396,60 @@
       when: elastalert_index.status == 404
       tags: elastalert
 
+    - name: Add ElasticSearch ingest pipeline to add extra timestamps
+      uri:
+        url: "https://elastic.chacal.fi:9200/_ingest/pipeline/add_custom_timestamps"
+        method: PUT
+        user: elastic
+        password: "{{ chacal.elastic.es.passwords.elastic }}"
+        force_basic_auth: true
+        body: |
+          {
+            "description" : "Add UNIX and UTC timestamps to documents",
+            "processors" : [
+              {
+                "date" : {
+                  "field" : "@timestamp",
+                  "target_field" : "timestamp_unix_ms",
+                  "formats" : ["iso8601"],
+                  "output_format": "epoch_millis"
+                }
+              },
+              {
+                "date" : {
+                  "field" : "@timestamp",
+                  "target_field" : "timestamp_utc",
+                  "formats" : ["iso8601"],
+                  "output_format": "iso8601"
+                }
+              }
+            ]
+          }
+        status_code: 200
+        body_format: json
+      tags: elastalert
+
+    - name: Add ElasticSearch index template to apply custom index pipeline for filebeat indices
+      uri:
+        url: "https://elastic.chacal.fi:9200/_template/filebeat_extra_timestamps"
+        method: PUT
+        user: elastic
+        password: "{{ chacal.elastic.es.passwords.elastic }}"
+        force_basic_auth: true
+        body: |
+          {
+            "order": 1,
+            "index_patterns": [
+              "filebeat-*"
+            ],
+            "settings": {
+              "final_pipeline": "add_custom_timestamps"
+            }
+          }
+        status_code: 200
+        body_format: json
+      tags: elastalert
+
     - name: Install ElastAlert systemd unit file
       copy:
         dest: /etc/systemd/system/elastalert.service
