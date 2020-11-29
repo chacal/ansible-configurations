@@ -345,6 +345,7 @@
           slack_username_override: ElastAlert
         owner: elastalert
         group: elastalert
+        mode: 0400
       notify: Restart ElastAlert
       tags: elastalert
 
@@ -369,6 +370,8 @@
 
           alert:
             - slack
+        owner: elastalert
+        group: elastalert
       tags: elastalert
 
     - name: Install ElastAlert
