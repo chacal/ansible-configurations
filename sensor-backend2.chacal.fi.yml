@@ -139,6 +139,8 @@
         docker_app_extra_params: "-v /srv/zookeeper/data:/data -v /srv/zookeeper/datalog:/datalog"
         docker_app_env:
           - ZOO_AUTOPURGE_PURGEINTERVAL=1
+          - ZOO_CFG_EXTRA=\"preAllocSize=4000\"
         docker_app_ports:
           - "0.0.0.0:2181:2181"
-
+      tags:
+        - zookeeper
