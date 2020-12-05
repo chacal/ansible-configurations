@@ -383,6 +383,14 @@
         - elastalert
       tags: elastalert
 
+    # ElastAlert is patched to not disable rules if connection to ElasticSearch fails. Patch is
+    # taken from https://github.com/Yelp/elastalert/pull/2707
+    - name: Patch ElastAlert
+      patch:
+        src: conf/monitor.chacal.fi/elastalert.diff
+        dest: /usr/local/lib/python3.7/dist-packages/elastalert/elastalert.py
+      tags: elastalert
+
     - name: Check ElastAlert index
       uri:
         url: https://elastic.chacal.fi:9200/elastalert_status
