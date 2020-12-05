@@ -325,7 +325,7 @@
           es_password: {{ chacal.elastic.es.passwords.elastalert }}
           rules_folder: /srv/elastalert/rules
           run_every:
-            minutes: 2
+            minutes: 1
           buffer_time:
             minutes: 5
           writeback_index: elastalert_status
@@ -343,6 +343,7 @@
             - timestamp_unix_ms
           slack_webhook_url: {{ chacal.monitor.elastalert.slack_hook }}
           slack_username_override: ElastAlert
+          disable_rules_on_error: false
         owner: elastalert
         group: elastalert
         mode: 0400
@@ -359,14 +360,12 @@
           index: filebeat-*
 
           threshold_cur: 80
-          spike_height: 7
-          alert_on_new_data: true
+          spike_height: 6
 
           timeframe:
             hours: 1
-          scan_entire_timeframe: true
 
-          query_key: host.name
+          query_key: agent.hostname
 
           alert:
             - slack
