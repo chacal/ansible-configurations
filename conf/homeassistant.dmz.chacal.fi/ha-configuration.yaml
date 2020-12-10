@@ -80,6 +80,14 @@ switch:
     body_off: '{"state":false}'
     headers:
       Content-Type: application/json
+  - platform: rest
+    resource: http://esp-433-gateway.chacal.fi/transmit/b/1/1
+    name: Children Christmas light
+    is_on_template: '{{ value_json.state }}'
+    body_on: '{"state":true}'
+    body_off: '{"state":false}'
+    headers:
+      Content-Type: application/json
 
 light:
   - platform: switch
@@ -94,6 +102,9 @@ light:
   - platform: switch
     name: Guest Room Table Light
     entity_id: switch.guest_room_table_light
+  - platform: switch
+    name: Children Christmas Light
+    entity_id: switch.children_christmas_light
   - platform: mount_kelvin
     api_key: !secret houm_api_key
 
