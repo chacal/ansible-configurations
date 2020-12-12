@@ -157,5 +157,11 @@ binary_sensor:
     value_template: '{{ value_json.motionDetected }}'
     payload_on: true
     payload_off: false
+  - platform: mqtt
+    name: "P310"
+    state_topic: '/sensor/P310/k/state'
+    value_template: '{{ value_json.motionDetected }}'
+    payload_on: true
+    payload_off: false
 
 ios:
