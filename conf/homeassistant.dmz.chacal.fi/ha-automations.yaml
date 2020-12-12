@@ -36,3 +36,17 @@
     - data:
         message: Test test
       service: notify.mobile_app_iphone
+- id: '1607631764556'
+  alias: Toggle Children Christmas Light on P310
+  description: ''
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.p310
+      from: 'off'
+      to: 'on'
+  condition: []
+  action:
+    - service: light.toggle
+      data: {}
+      entity_id: light.children_christmas_light
+  mode: single
