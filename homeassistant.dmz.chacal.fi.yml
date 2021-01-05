@@ -33,6 +33,8 @@
         +srv/home-assistant/*
         -*
       duplicacy_backup_hours: "1,13"
+      duplicacy_prune_hours: "1,13"
+      duplicacy_prune_minutes: "45"
       duplicacy_encryption_key: "{{ chacal.ha.duplicacy.encryption_key }}"
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.ha.duplicacy.b2_id }}"

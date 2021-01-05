@@ -6,3 +6,18 @@ duplicacy_storage: "b2://chacal-backups/{{ duplicacy_backup_id }}"
 duplicacy_filters: ""
 duplicacy_backup_hours: "*/12"
 duplicacy_backup_minutes: "0"
+duplicacy_prune_hours: "*/12"
+duplicacy_prune_minutes: "45"
+
+# These must be in order from least frequently kept to most frequently kept
+# Defaults mean:
+# - All backups for last two weeks
+# - Dailies: 2 weeks -> 1 month for backups between 2 weeks and one month
+# - Weeklies: 1 month -> 3 months
+# - Monthlies: 3 months -> 1 year
+# - No backups: older than 1 year
+duplicacy_prune_retentions:
+  - "0:365"
+  - "30:90"
+  - "7:30"
+  - "1:14"

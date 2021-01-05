@@ -41,6 +41,7 @@
         +srv/unifi/*
         -*
       duplicacy_backup_hours: "1,13"
+      duplicacy_prune_hours: "2,14"
       duplicacy_encryption_key: "{{ chacal.haukkakallio.duplicacy.encryption_key }}"
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.haukkakallio.duplicacy.b2_id }}"

@@ -52,6 +52,7 @@
         +srv/elastic_snapshots/*
         -*
       duplicacy_backup_hours: "1"
+      duplicacy_prune_hours: "3"
       duplicacy_encryption_key: "{{ chacal.elastic.duplicacy.encryption_key }}"
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.elastic.duplicacy.b2_id }}"
