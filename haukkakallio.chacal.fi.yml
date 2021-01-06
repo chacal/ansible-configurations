@@ -149,7 +149,7 @@
         path: /srv/unifi
         state: directory
         mode: 0750
-        owner: 1000
+        owner: "1000"
       tags: unifi
 
     - name: Install Unifi controller
@@ -159,7 +159,7 @@
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "unifi"
         docker_app_container_name: "jacobalberty/unifi:stable"
-        docker_app_extra_params: "-v /srv/unifi:/unifi"
+        docker_app_extra_params: "-v /srv/unifi:/unifi --health-interval 5m"
         docker_app_env:
           - "RUNAS_UID0=false"
           - "UNIFI_UID=1000"
