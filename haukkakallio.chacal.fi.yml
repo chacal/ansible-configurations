@@ -188,5 +188,9 @@
         docker_app_container_name: "ghcr.io/chacal/thread-mgmt-server"
         docker_app_extra_params: "--network host -v /srv/thread-mgmt-server:/data"
         docker_app_container_params: "-p 8000 -f /data/devices.db"
+        docker_app_env:
+          - "MQTT_BROKER=ssl://mqtt-home.chacal.fi:8883"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[5].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[5].password }}"
       tags: thread-mgmt-server
 
