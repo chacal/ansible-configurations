@@ -70,7 +70,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -180,7 +180,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -382,7 +382,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -525,7 +525,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -680,7 +680,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -857,7 +857,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1009,7 +1009,9 @@
       "type": "row"
     },
     {
-      "aliasColors": {},
+      "aliasColors": {
+        "Outside (S222)": "semi-dark-green"
+      },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
@@ -1048,7 +1050,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1064,13 +1066,34 @@
           "dateTimeColDataType": "dt",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
+          "extrapolate": true,
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'thread_avgRssi')]) AS \"RSSI (avg)\" FROM default.measurements WHERE     dt >= toDateTime(1586202301)     AND instance = 'D104' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869951)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869951)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true,
           "table": "measurements",
           "tableLoading": false
         }
@@ -1095,6 +1118,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:146",
           "decimals": null,
           "format": "celsius",
           "label": null,
@@ -1104,6 +1128,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:147",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1119,7 +1144,8 @@
     },
     {
       "aliasColors": {
-        "Outside (S213)": "light-purple"
+        "Outside (S213)": "light-purple",
+        "Outside (S222)": "semi-dark-purple"
       },
       "bars": false,
       "dashLength": 10,
@@ -1159,7 +1185,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1175,13 +1201,34 @@
           "dateTimeColDataType": "dt",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
+          "extrapolate": true,
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Kids room (S201)\" FROM default.measurements WHERE     dt >= toDateTime(1586186215)     AND instance = 'S201' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869981)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869981)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true,
           "table": "measurements",
           "tableLoading": false
         }
@@ -1206,6 +1253,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:301",
           "decimals": null,
           "format": "humidity",
           "label": null,
@@ -1215,6 +1263,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:302",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1230,7 +1279,8 @@
     },
     {
       "aliasColors": {
-        "Outside (S213)": "semi-dark-blue"
+        "Outside (S213)": "semi-dark-blue",
+        "Outside (S222)": "dark-blue"
       },
       "bars": false,
       "dashLength": 10,
@@ -1270,7 +1320,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1286,13 +1336,34 @@
           "dateTimeColDataType": "dt",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
+          "extrapolate": true,
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT     (intDiv(toUInt32(dt), 120) * 120) * 1000 as t,     avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Kids room (S201)\" FROM default.measurements WHERE     dt >= toDateTime(1586186335)     AND instance = 'S201' GROUP BY t ORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870011)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870011)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true,
           "table": "measurements",
           "tableLoading": false
         }
@@ -1317,6 +1388,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:444",
           "decimals": 1,
           "format": "pressurehpa",
           "label": null,
@@ -1326,6 +1398,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:445",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1393,7 +1466,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1523,7 +1596,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1663,7 +1736,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1869,7 +1942,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1890,7 +1963,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -1909,7 +1982,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
           "refId": "C",
           "round": "0s",
           "skip_comments": true,
@@ -1928,7 +2001,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
           "refId": "D",
           "round": "0s",
           "skip_comments": true,
@@ -1947,7 +2020,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
           "refId": "E",
           "round": "0s",
           "skip_comments": true,
@@ -1966,7 +2039,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
           "refId": "F",
           "round": "0s",
           "skip_comments": true,
@@ -1985,7 +2058,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -2004,7 +2077,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
           "refId": "G",
           "round": "0s",
           "skip_comments": true,
@@ -2023,8 +2096,27 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620057)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
           "refId": "H",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S222\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S222\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "refId": "I",
           "round": "0s",
           "skip_comments": true,
           "table": "measurements",
@@ -2051,6 +2143,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:817",
           "decimals": null,
           "format": "volt",
           "label": null,
@@ -2060,6 +2153,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:818",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2113,7 +2207,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2395,7 +2489,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2589,7 +2683,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2610,7 +2704,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S208\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -2629,7 +2723,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S209\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
           "refId": "C",
           "round": "0s",
           "skip_comments": true,
@@ -2648,7 +2742,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S210\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
           "refId": "D",
           "round": "0s",
           "skip_comments": true,
@@ -2667,7 +2761,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S211\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
           "refId": "E",
           "round": "0s",
           "skip_comments": true,
@@ -2686,7 +2780,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S212\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
           "refId": "F",
           "round": "0s",
           "skip_comments": true,
@@ -2705,7 +2799,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S213\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -2724,7 +2818,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S214\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
           "refId": "G",
           "round": "0s",
           "skip_comments": true,
@@ -2743,8 +2837,27 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S215\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607619947)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
           "refId": "H",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S222\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'rssi')]) AS \"S222\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870101)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "refId": "I",
           "round": "0s",
           "skip_comments": true,
           "table": "measurements",
@@ -2771,6 +2884,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1135",
           "decimals": null,
           "format": "dBm",
           "label": null,
@@ -2780,6 +2894,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:1136",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2833,7 +2948,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -3116,7 +3231,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3290,7 +3405,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3456,7 +3571,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3626,7 +3741,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3800,7 +3915,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.5",
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3944,5 +4059,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "755FHtCWk",
-  "version": 19
+  "version": 20
 }
