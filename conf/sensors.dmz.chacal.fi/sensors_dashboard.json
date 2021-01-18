@@ -1963,7 +1963,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S208\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S208'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -1982,7 +1982,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S209\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S209'\nGROUP BY t\nORDER BY t",
           "refId": "C",
           "round": "0s",
           "skip_comments": true,
@@ -2001,7 +2001,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S210\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S210'\nGROUP BY t\nORDER BY t",
           "refId": "D",
           "round": "0s",
           "skip_comments": true,
@@ -2020,7 +2020,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S211\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S211'\nGROUP BY t\nORDER BY t",
           "refId": "E",
           "round": "0s",
           "skip_comments": true,
@@ -2039,7 +2039,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S212\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S212'\nGROUP BY t\nORDER BY t",
           "refId": "F",
           "round": "0s",
           "skip_comments": true,
@@ -2058,7 +2058,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S213\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -2077,7 +2077,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S214\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S214'\nGROUP BY t\nORDER BY t",
           "refId": "G",
           "round": "0s",
           "skip_comments": true,
@@ -2096,7 +2096,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S215\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S215'\nGROUP BY t\nORDER BY t",
           "refId": "H",
           "round": "0s",
           "skip_comments": true,
@@ -2115,7 +2115,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S222\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S222\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870081)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"S222\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610916626)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
           "refId": "I",
           "round": "0s",
           "skip_comments": true,
@@ -3881,6 +3881,183 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "decimals": 1,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 73
+      },
+      "hiddenSeries": false,
+      "id": 40,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Link quality.*/",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_avgRssi')]) AS \"RSSI (avg)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'thread_avgRssi')]) AS \"RSSI (avg)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611491128)\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_latestRssi')]) AS \"RSSI (latest)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'thread_latestRssi')]) AS \"RSSI (latest)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611491128)\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityIn')]) AS \"Link quality in\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityIn')]) AS \"Link quality in\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611491128)\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "refId": "C",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityOut')]) AS \"Link quality out\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'thread_linkQualityOut')]) AS \"Link quality out\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611491128)\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "refId": "D",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Thread Display D109",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:212",
+          "decimals": null,
+          "format": "dBm",
+          "label": null,
+          "logBase": 1,
+          "max": "-40",
+          "min": "-95",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:213",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "3",
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -3893,8 +4070,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 24,
-        "x": 0,
+        "w": 12,
+        "x": 12,
         "y": 73
       },
       "hiddenSeries": false,
@@ -3936,7 +4113,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D101\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D101\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620147)\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D101\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611508861)\n    AND instance = 'D101'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -3955,7 +4132,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D104\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D104'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D104\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620147)\n    AND instance = 'D104'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D104\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611508861)\n    AND instance = 'D104'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -3974,7 +4151,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D107\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D107'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D107\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620147)\n    AND instance = 'D107'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D107\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611508861)\n    AND instance = 'D107'\nGROUP BY t\nORDER BY t",
           "refId": "C",
           "round": "0s",
           "skip_comments": true,
@@ -3993,8 +4170,27 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D108\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D108'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D108\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1607620147)\n    AND instance = 'D108'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D108\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611508861)\n    AND instance = 'D108'\nGROUP BY t\nORDER BY t",
           "refId": "D",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D109\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'sensorVoltage')]) AS \"D109\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1611508861)\n    AND instance = 'D109'\nGROUP BY t\nORDER BY t",
+          "refId": "E",
           "round": "0s",
           "skip_comments": true,
           "table": "measurements",
@@ -4021,6 +4217,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:198",
           "decimals": null,
           "format": "volt",
           "label": null,
@@ -4030,6 +4227,320 @@
           "show": true
         },
         {
+          "$$hashKey": "object:199",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                4.9
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          },
+          {
+            "evaluator": {
+              "params": [
+                4.9
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "or"
+            },
+            "query": {
+              "params": [
+                "B",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          },
+          {
+            "evaluator": {
+              "params": [
+                4.9
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "or"
+            },
+            "query": {
+              "params": [
+                "C",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "2m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "Lock Voltages alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "InfluxDB",
+      "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 80
+      },
+      "hiddenSeries": false,
+      "id": 39,
+      "interval": "20s",
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Front door (V500)",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "sensorVoltage",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "instance",
+              "operator": "=",
+              "value": "V500"
+            }
+          ]
+        },
+        {
+          "alias": "Storage door (V501)",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "sensorVoltage",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "instance",
+              "operator": "=",
+              "value": "V501"
+            }
+          ]
+        },
+        {
+          "alias": "Terrace door (V502)",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "sensorVoltage",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "instance",
+              "operator": "=",
+              "value": "V502"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "lt",
+          "value": 4.9
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Lock Voltages",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:261",
+          "decimals": 2,
+          "format": "volt",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "4",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:262",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -4059,5 +4570,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "755FHtCWk",
-  "version": 20
+  "version": 25
 }
