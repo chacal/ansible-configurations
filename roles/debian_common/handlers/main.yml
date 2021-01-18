@@ -11,3 +11,8 @@
   service:
     name: systemd-journald.service
     state: restarted
+
+- name: Restart zed
+  service:
+    name: zed.service
+    state: restarted

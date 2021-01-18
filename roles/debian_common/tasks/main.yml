@@ -28,6 +28,17 @@
     regex: '^ZED_SYSLOG_SUBCLASS_EXCLUDE'
     line: 'ZED_SYSLOG_SUBCLASS_EXCLUDE="history_event"'
     insertafter: '^#ZED_SYSLOG_SUBCLASS_EXCLUDE'
+  notify: Restart zed
+  when: zed_rc.stat.exists
+  tags: debian_common
+
+- name: Set ZED alert email address
+  lineinfile:
+    dest: /etc/zfs/zed.d/zed.rc
+    state: present
+    regex: '^ZED_EMAIL_ADDR'
+    line: 'ZED_EMAIL_ADDR="{{ chacal.admin.email }}"'
+  notify: Restart zed
   when: zed_rc.stat.exists
   tags: debian_common
 
