@@ -43,17 +43,26 @@
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/fullchain.pem /etc/influxdb/
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /etc/influxdb/
         chown influxdb:influxdb /etc/influxdb/*.pem
+
         mkdir -p /etc/clickhouse-server
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/fullchain.pem /etc/clickhouse-server/server.crt
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /etc/clickhouse-server/server.key
         chown clickhouse:clickhouse /etc/clickhouse-server/server.crt
         chown clickhouse:clickhouse /etc/clickhouse-server/server.key
+
         mkdir -p /srv/chproxy/certs
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/fullchain.pem /srv/chproxy/certs/server.crt
         cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /srv/chproxy/certs/server.key
         chown 1000:1000 /srv/chproxy/certs/server.crt
         chown 1000:1000 /srv/chproxy/certs/server.key
-        systemctl restart mosquitto || true
+
+        cp /etc/letsencrypt/live/sensor-backend.chacal.fi/chain.pem /etc/mosquitto/certs/chain.pem
+        cp /etc/letsencrypt/live/sensor-backend.chacal.fi/cert.pem /etc/mosquitto/certs/cert.pem
+        cp /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem /etc/mosquitto/certs/privkey.pem
+        chown mosquitto:mosquitto /etc/mosquitto/certs/*.pem
+        chmod 0600 /etc/mosquitto/certs/*.pem
+        pkill -HUP -x mosquitto || true
+
         systemctl restart influxdb || true
         systemctl restart clickhouse-server || true
         systemctl restart chproxy || true
@@ -76,9 +85,9 @@
         listener 1883 localhost
 
         listener 8883
-        cafile /etc/letsencrypt/live/sensor-backend.chacal.fi/chain.pem
-        certfile /etc/letsencrypt/live/sensor-backend.chacal.fi/cert.pem
-        keyfile /etc/letsencrypt/live/sensor-backend.chacal.fi/privkey.pem
+        cafile /etc/mosquitto/certs/chain.pem
+        certfile /etc/mosquitto/certs/cert.pem
+        keyfile /etc/mosquitto/certs/privkey.pem
         tls_version tlsv1.2
       mqtt_server_users: "{{ chacal.sensor_backend.mqtt_users }}"
       mqtt_server_acl_config: |
