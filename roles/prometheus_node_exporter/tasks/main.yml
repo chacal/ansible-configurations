@@ -16,8 +16,8 @@
   apt:
     deb: "{{ item }}"
   loop:
-    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.0.1+ds-1_amd64.deb
-    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20201003.8db38d1-1_all.deb
+    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.1.1+ds-1_amd64.deb
+    - http://deb.debian.org/debian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20210115.7d89f19-1_all.deb
   when: ansible_lsb.id != "Raspbian"
   tags: prometheus_node_exporter
 
@@ -25,8 +25,8 @@
   apt:
     deb: "{{ item }}"
   loop:
-    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.0.1+ds-1_armhf.deb
-    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20200718.57d05ce-1_all.deb
+    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter/prometheus-node-exporter_1.1.0+ds-2_armhf.deb
+    - http://archive.raspbian.org/raspbian/pool/main/p/prometheus-node-exporter-collectors/prometheus-node-exporter-collectors_0+git20210115.7d89f19-1_all.deb
   when: ansible_lsb.id == "Raspbian"
   tags: prometheus_node_exporter
 
