@@ -1,14 +1,14 @@
 ---
-- name: Reload systemd
-  systemd:
-    daemon_reload: yes
-
 - name: Start apt exporter
-  service:
+  systemd:
     name: prometheus-node-exporter-apt.service
+    daemon-reload: yes
+    enabled: yes
     state: started
 
-- name: Start smartmon exporter
-  service:
-    name: prometheus-node-exporter-smartmon.service
+- name: Start apt timer
+  systemd:
+    name: prometheus-node-exporter-apt.timer
+    daemon-reload: yes
+    enabled: yes
     state: started
