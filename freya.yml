@@ -84,18 +84,6 @@
       docker_app_env:
         - MQTT_BROKER=mqtt://{{lan_ip_address}}
     - role: docker-app
-      docker_app_name: "rfm69-sensor-mqtt-decoder"
-      docker_app_container_name: "jihartik/rfm69-sensor-mqtt-decoder"
-      docker_app_env:
-        - MQTT_BROKER=mqtt://{{lan_ip_address}}
-    - role: docker-app
-      docker_app_name: "rfm69-mqtt-gateway"
-      docker_app_container_name: "jihartik/rfm69-mqtt-gateway"
-      docker_app_extra_params: "--privileged"
-      docker_app_env:
-        - MQTT_BROKER={{lan_ip_address}}
-        - SPI_DEVICE=0
-    - role: docker-app
       docker_app_name: "wpantund"
       docker_app_container_name: "jihartik/wpantund-armv6"
       docker_app_extra_params: "--network host --cap-add=NET_ADMIN --device=/dev/nrf52840"
