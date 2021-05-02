@@ -43,7 +43,8 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "weatherapp"
-        docker_app_container_name: "jihartik/weatherapp"
+        docker_app_container_name: "ghcr.io/chacal/weatherapp"
         docker_app_extra_params: "--init"
         docker_app_ports:
           - 8005:8005
+      tags: weatherapp
