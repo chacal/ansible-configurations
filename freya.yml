@@ -40,6 +40,8 @@
         persistent_client_expiration 3m
         log_timestamp true
         connection_messages true
+        # TODO: Restrict listening 1883 only to localhost when using MQTTS only
+        allow_anonymous true
 
         # TODO: Restrict listening 1883 only to localhost when using MQTTS only
         listener 1883
