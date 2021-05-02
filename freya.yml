@@ -66,15 +66,11 @@
       tags: mqtt-server
     - role: docker-app
       docker_app_name: "freya-server-docker"
-      docker_app_container_name: "jihartik/freya-server"
+      docker_app_container_name: "ghcr.io/chacal/freya-server"
       docker_app_extra_params: >-
         --init --privileged --net=host
         -v /dev:/dev
-        -v /opt/freya-nmealogs:/opt/freya-nmealogs
       docker_app_env:
-        - NMEA_DEVICE_1=/dev/ngw-1
-        - NMEA_DEVICE_2=/dev/tacktick
-        - NMEA_LOG_DIR=/opt/freya-nmealogs
         - MQTT_BROKER=mqtt://{{lan_ip_address}}
         - TZ=Europe/Helsinki
       tags: freya-server-docker
@@ -181,5 +177,3 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="cafe", ATTRS{idVendor}=="1915", SYMLINK+="nrf52840"'
-    - name: Periodically backup NMEA logs to S3
-      cron: name="Backup to S3" minute="0" hour="3,9,15,21" job="(echo Start `date` && nice /usr/local/bin/aws s3 sync /opt/freya-nmealogs s3://freyalogs/2020; echo Done `date`) >> /home/pi/aws.log 2>&1" user="pi"
