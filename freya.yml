@@ -118,6 +118,12 @@
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.freya.duplicacy.b2_id }}"
         DUPLICACY_B2_KEY: "{{ chacal.freya.duplicacy.b2_key }}"
+    - role: docker-app
+      docker_app_name: "thread-discovery-server"
+      docker_app_container_name: "ghcr.io/chacal/thread-discovery-server"
+      docker_app_extra_params: "--network host"
+      docker_app_container_params: "-p 8000 -m fdcc:28cc:6dba:0000:cadd:909b:2f66:a759"
+      tags: thread_discovery_server
 
   tasks:
     - name: Configure eth0 as static interface
