@@ -186,3 +186,25 @@
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
         create=yes
         line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{idProduct}=="cafe", ATTRS{idVendor}=="1915", SYMLINK+="nrf52840"'
+
+    - name: Create Thread management server data directory
+      file:
+        path: /srv/thread-mgmt-server
+        state: directory
+        mode: 0750
+      tags: thread-mgmt-server
+
+    - name: Install Thread management server
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "thread-mgmt-server"
+        docker_app_container_name: "ghcr.io/chacal/thread-mgmt-server"
+        docker_app_extra_params: "--network host -v /srv/thread-mgmt-server:/data"
+        docker_app_container_params: "-p 8000 -f /data/devices.db"
+        docker_app_env:
+          - "MQTT_BROKER=mqtt://{{ lan_ip_address }}:1883"
+          - "MQTT_USERNAME=''"
+          - "MQTT_PASSWORD=''"
+      tags: thread-mgmt-server
