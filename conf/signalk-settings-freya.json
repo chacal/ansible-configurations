@@ -37,5 +37,22 @@
       "id": "u-blox",
       "enabled": true
     }
-  ]
+  ],
+  "interfaces": {},
+  "sourcePriorities": {
+    "navigation.position": [
+      {
+        "sourceRef": "canboatjs-can0.1",
+        "timeout": ""
+      },
+      {
+        "sourceRef": "canboatjs-can0.3",
+        "timeout": "3000"
+      },
+      {
+        "sourceRef": "u-blox.GN",
+        "timeout": "6000"
+      }
+    ]
+  }
 }
