@@ -25,6 +25,7 @@
   loop:
     - { key: server.host, value: "\"{{ ansible_default_ipv4.address }}\"" }
     - { key: server.name, value: "\"{{ inventory_hostname }}\"" }
+    - { key: server.publicBaseUrl, value: "\"https://{{ inventory_hostname }}:5601\"" }
     - { key: logging.quiet, value: "true" }
     - { key: elasticsearch.hosts, value: "[\"{{ kibana_elasticsearch_url }}\"]" }
     - { key: elasticsearch.username, value: "{{ kibana_elasticsearch_username }}" }
