@@ -32,10 +32,11 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "fmiproxy"
-        docker_app_container_name: "jihartik/fmiproxy"
+        docker_app_container_name: "ghcr.io/chacal/fmiproxy"
         docker_app_extra_params: "--init"
         docker_app_ports:
           - 8000:8000
+      tags: fmiproxy
 
     - name: Install Weather App
       include_role:
