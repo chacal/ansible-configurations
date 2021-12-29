@@ -65,7 +65,7 @@
         </yandex>
       clickhouse_user_config: |
         <?xml version="1.0"?>
-        <yandex>
+        <clickhouse>
           <users>
             <default>
               <!-- Restrict default (passwordless) user to local access -->
@@ -101,7 +101,7 @@
               <quota>default</quota>
             </{{ chacal.sensor_backend.clickhouse.ro_user.username }}>
           </users>
-        </yandex>
+        </clickhouse>
 
     - name: certbot-dns-route53
       certbot_email: "{{ chacal.certbot.email }}"

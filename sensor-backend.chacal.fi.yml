@@ -113,7 +113,7 @@
     - name: clickhouse
       clickhouse_custom_config: |
         <?xml version="1.0"?>
-        <yandex>
+        <clickhouse>
           <logger>
             <level>notice</level>
           </logger>
@@ -142,7 +142,7 @@
             <shard>01</shard>
             <replica>{{ inventory_hostname }}</replica>
           </macros>
-        </yandex>
+        </clickhouse>
       clickhouse_user_config: |
         <?xml version="1.0"?>
         <yandex>
