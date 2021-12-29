@@ -10,7 +10,53 @@
     - secrets.yml
 
   vars:
-    - docker_custom_registry: "https://docker-registry.chacal.fi"
+    docker_custom_registry: "https://docker-registry.chacal.fi"
+    ha_environment_sensors:
+      - tag: S201
+        name: Kids room
+      - tag: S202
+        name: Study
+      - tag: S203
+        name: Master bedroom
+      - tag: S204
+        name: Bathroom
+      - tag: S206
+        name: Livingroom
+      - tag: S208
+        name: Storage
+      - tag: S209
+        name: Guestroom
+      - tag: S210
+        name: Ventilation, outside air
+      - tag: S211
+        name: Ventilation, pre-heated air
+      - tag: S212
+        name: WC, downstairs
+      - tag: S213
+        name: Outside, balcony
+      - tag: S214
+        name: Sauna
+      - tag: S215
+        name: Car
+      - tag: S222
+        name: Outside, backyard
+    ha_motion_sensors:
+      - tag: P301
+        name: Storage
+      - tag: P302
+        name: WC, downstairs
+      - tag: P303
+        name: WC, downstairs
+      - tag: P304
+        name: WC, downstairs
+      - tag: P306
+        name: WC, downstairs
+      - tag: P307
+        name: WC, upstairs
+      - tag: P308
+        name: WC, upstairs
+      - tag: P309
+        name: Storage
 
   handlers:
     - name: Restart Home Assistant
@@ -77,7 +123,11 @@
       tags: home-assistant
 
     - name: Copy Home Assistant configuration file
-      copy: src=./conf/homeassistant.dmz.chacal.fi/ha-configuration.yaml dest=/srv/home-assistant/configuration.yaml
+      template:
+        src: ./conf/homeassistant.dmz.chacal.fi/ha-configuration.yaml
+        dest: /srv/home-assistant/configuration.yaml
+        variable_start_string: '[['
+        variable_end_string: ']]'
       notify: Restart Home Assistant
       tags: home-assistant
 
@@ -88,6 +138,15 @@
 
     - name: Copy Home Assistant scenes file
       copy: src=./conf/homeassistant.dmz.chacal.fi/ha-scenes.yaml dest=/srv/home-assistant/scenes.yaml
+      notify: Restart Home Assistant
+      tags: home-assistant
+
+    - name: Copy Home Assistant Kiosk dashboard file
+      template:
+        src: ./conf/homeassistant.dmz.chacal.fi/ha-dashboard-kiosk2.yaml
+        dest: /srv/home-assistant/dashboard-kiosk2.yaml
+        variable_start_string: '[['
+        variable_end_string: ']]'
       notify: Restart Home Assistant
       tags: home-assistant
 
