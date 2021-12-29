@@ -163,7 +163,7 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "unifi"
-        docker_app_container_name: "jacobalberty/unifi:stable"
+        docker_app_container_name: "jacobalberty/unifi:latest"
         docker_app_extra_params: "-v /srv/unifi:/unifi --health-interval 5m"
         docker_app_env:
           - "RUNAS_UID0=false"
