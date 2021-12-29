@@ -73,6 +73,6 @@
         docker_app_ports:
           - 9000:9000
         docker_app_env:
-          - "MINIO_ACCESS_KEY={{ chacal.minio.admin.access_key }}"
-          - "MINIO_SECRET_KEY={{ chacal.minio.admin.secret_key }}"
+          - "MINIO_ROOT_USER={{ chacal.minio.admin.access_key }}"
+          - "MINIO_ROOT_PASSWORD={{ chacal.minio.admin.secret_key }}"
       tags: minio
