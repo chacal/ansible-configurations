@@ -9,17 +9,29 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -69,7 +81,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -178,7 +190,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -252,10 +264,6 @@
       "cacheTimeout": null,
       "columns": [],
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -327,6 +335,10 @@
     {
       "collapsed": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -377,7 +389,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -519,7 +531,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -624,6 +636,10 @@
     },
     {
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -673,7 +689,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -849,7 +865,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -989,6 +1005,10 @@
     {
       "collapsed": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1041,7 +1061,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1061,8 +1081,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869951)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside, balcony (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside, balcony (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973249) AND dt <= toDateTime(1635059649)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -1080,8 +1100,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869951)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside, backyard (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Outside, backyard (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973249) AND dt <= toDateTime(1635059649)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -1175,7 +1195,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1195,8 +1215,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869981)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside, balcony (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside, balcony (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973272) AND dt <= toDateTime(1635059672)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -1214,8 +1234,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610869981)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside, backyard (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'humidity')]) AS \"Outside, backyard (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973272) AND dt <= toDateTime(1635059672)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -1309,7 +1329,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1329,8 +1349,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870011)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside, balcony (S213)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside, balcony (S213)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973290) AND dt <= toDateTime(1635059690)\n    AND instance = 'S213'\nGROUP BY t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -1348,8 +1368,8 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1610870011)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside, backyard (S222)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'pressure')]) AS \"Outside, backyard (S222)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1634973290) AND dt <= toDateTime(1635059690)\n    AND instance = 'S222'\nGROUP BY t\nORDER BY t",
           "refId": "B",
           "round": "0s",
           "skip_comments": true,
@@ -1404,6 +1424,10 @@
     {
       "collapsed": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1454,7 +1478,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1583,7 +1607,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1672,6 +1696,10 @@
     {
       "collapsed": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1722,7 +1750,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1927,7 +1955,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2191,7 +2219,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2472,7 +2500,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2665,7 +2693,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2929,7 +2957,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -3211,7 +3239,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3384,7 +3412,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3549,7 +3577,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3718,7 +3746,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3892,7 +3920,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4068,7 +4096,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4325,7 +4353,7 @@
         "alertThreshold": false
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4556,7 +4584,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4727,7 +4755,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 27,
+  "schemaVersion": 31,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4741,5 +4769,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "755FHtCWk",
-  "version": 27
+  "version": 31
 }
