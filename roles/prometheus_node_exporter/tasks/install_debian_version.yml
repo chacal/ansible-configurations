@@ -1,0 +1,70 @@
+---
+- name: Install Debian version of node exporter
+  apt:
+    state: latest
+    pkg:
+      - prometheus-node-exporter
+      - prometheus-node-exporter-collectors
+  tags: prometheus_node_exporter
+
+- name: Create systemd override directory for prometheus-node-exporter-apt.timer
+  file:
+    path: /etc/systemd/system/prometheus-node-exporter-apt.timer.d
+    state: directory
+  tags: prometheus_node_exporter
+
+- name: Create systemd override file for prometheus-node-exporter-apt.timer
+  copy:
+    dest: /etc/systemd/system/prometheus-node-exporter-apt.timer.d/override.conf
+    content: |
+      [Unit]
+      Description=
+      Description=Run apt metrics collection on boot and every 6 hours
+
+      [Timer]
+      OnBootSec=0
+      OnUnitActiveSec=
+      OnCalendar=*-*-* 00/6:00:00
+      AccuracySec=5m
+  notify:
+    - Reload systemd
+    - Start apt exporter
+  tags: prometheus_node_exporter
+
+- name: Create systemd override directory for /etc/systemd/system/prometheus-node-exporter-smartmon.timer
+  file:
+    path: /etc/systemd/system/prometheus-node-exporter-smartmon.timer.d
+    state: directory
+  when: ansible_virtualization_role != "guest"
+  tags: prometheus_node_exporter
+
+- name: Create systemd override file for prometheus-node-exporter-smartmon.timer
+  copy:
+    dest: /etc/systemd/system/prometheus-node-exporter-smartmon.timer.d/override.conf
+    content: |
+      [Timer]
+      OnBootSec=0
+      OnUnitActiveSec=
+      OnCalendar=*-*-* 00/6:00:00
+      AccuracySec=5m
+  notify:
+    - Reload systemd
+    - Start smartmon exporter
+  when: ansible_virtualization_role != "guest"
+  tags: prometheus_node_exporter
+
+- name: Disable prometheus-node-exporter-smartmon.timer on VMs
+  systemd:
+    name: prometheus-node-exporter-smartmon.timer
+    state: stopped
+    enabled: false
+    daemon_reload: yes
+  when: ansible_virtualization_role == "guest"
+  tags: prometheus_node_exporter
+
+- name: Remove existing smartmon run data
+  file:
+    path: /var/lib/prometheus/node-exporter/smartmon.prom
+    state: absent
+  when: ansible_virtualization_role == "guest"
+  tags: prometheus_node_exporter

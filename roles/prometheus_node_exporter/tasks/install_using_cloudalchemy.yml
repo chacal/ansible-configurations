@@ -1,0 +1,65 @@
+---
+- name: Install dependencies
+  apt:
+    state: latest
+    cache_valid_time: 3600
+    pkg:
+      - moreutils
+  tags: prometheus_node_exporter
+
+- name: Install prometheus-node-exporter
+  include_role:
+    name: cloudalchemy.node-exporter
+    apply:
+      tags:
+        - prometheus_node_exporter
+  vars:
+    node_exporter_version: 1.1.1
+  tags: prometheus_node_exporter
+
+- name: Create directory for text collector scripts
+  file:
+    path: /usr/local/share/prometheus-text-collectors
+    state: directory
+    mode: 0750
+  tags: prometheus_node_exporter
+
+- name: Install apt text collector script
+  get_url:
+    url: https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/master/apt.sh
+    dest: /usr/local/share/prometheus-text-collectors/apt.sh
+    mode: 0755
+  tags: prometheus_node_exporter
+
+- name: Add systemd service for apt text collector
+  copy:
+    dest: /etc/systemd/system/prometheus-node-exporter-apt.service
+    content: |
+      [Unit]
+      Description=Collect apt metrics for prometheus-node-exporter
+
+      [Service]
+      Type=oneshot
+      Environment=TMPDIR=/var/lib/node_exporter
+      ExecStart=/bin/bash -c "/usr/local/share/prometheus-text-collectors/apt.sh | sponge /var/lib/node_exporter/apt.prom"
+  notify:
+    - Start apt exporter
+  tags: prometheus_node_exporter
+
+- name: Add systemd timer for apt text collector
+  copy:
+    dest: /etc/systemd/system/prometheus-node-exporter-apt.timer
+    content: |
+      [Unit]
+      Description=Run apt metrics collection on boot and every 6 hours
+
+      [Timer]
+      OnBootSec=0
+      OnCalendar=*-*-* 00/6:00:00
+      AccuracySec=5m
+
+      [Install]
+      WantedBy=timers.target
+  notify:
+    - Start apt timer
+  tags: prometheus_node_exporter

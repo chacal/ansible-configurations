@@ -1,4 +1,8 @@
 ---
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
 - name: Start apt exporter
   systemd:
     name: prometheus-node-exporter-apt.service
