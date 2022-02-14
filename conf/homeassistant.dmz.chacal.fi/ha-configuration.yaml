@@ -237,7 +237,7 @@ sensor:
     entity_id: sensor.energy_consumption
     filters:
       - filter: time_throttle
-        window_size: '00:01:00'
+        window_size: '00:05:00'
         precision: 4
   - platform: statistics
     name: "Energy use in last 2 minutes"
