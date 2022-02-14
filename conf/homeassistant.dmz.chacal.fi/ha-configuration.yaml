@@ -34,6 +34,7 @@ recorder:
     entities:
       - sensor.energy_use_in_last_2_minutes
       - sensor.energy_consumption
+      - sensor.electric_power
 
 homeassistant:
   external_url: https://ha.chacal.fi
