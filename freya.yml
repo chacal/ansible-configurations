@@ -103,6 +103,9 @@
        - plugin_name: "@signalk/aisreporter"
          plugin_config_src: conf/signalk-aisreporter-conf.json
          plugin_config_dst: aisreporter.json
+       - plugin_name: "@signalk/signalk-autopilot"
+         plugin_config_src: conf/signalk-autopilot-conf.json
+         plugin_config_dst: autopilot.json
     - role: duplicacy
       duplicacy_filters: |
         +opt/

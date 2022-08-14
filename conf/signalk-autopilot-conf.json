@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "configuration": {
+    "outputEvent": "seatalkOut",
+    "deviceid": "204",
+    "controlHead": false,
+    "type": "raymarineN2K"
+  }
+}
