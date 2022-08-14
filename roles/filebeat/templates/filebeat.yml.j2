@@ -1,6 +1,8 @@
 filebeat.inputs:
-- type: log
+- type: filestream
+  id: {{ inventory_hostname }}
   enabled: true
+  ignore_older: 24h
 
   paths:
 {% for path in filebeat_input_paths %}
@@ -8,8 +10,9 @@ filebeat.inputs:
 {% endfor %}
 
 # /var/log/messages, /var/log/syslog, /var/log/auth.log and /var/log/secure are handled by system module
-  exclude_files:
+  prospector.scanner.exclude_files:
     - /var/log/wtmp
+    - /var/log/btmp
     - /var/log/lastlog
     - /var/log/faillog
     - /var/log/messages*

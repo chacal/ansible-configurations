@@ -12,8 +12,9 @@
 
 - name: Add Elastic apt repository
   apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    repo: deb https://artifacts.elastic.co/packages/8.x/apt stable main
     update_cache: yes
+  notify: Restart Filebeat
   tags: filebeat
 
 - name: Install Filebeat
@@ -22,23 +23,13 @@
     cache_valid_time: 3600
     pkg:
       - filebeat
-  tags: filebeat
-
-- name: Enable Filebeat system module
-  command:
-    cmd: filebeat modules enable system
-    creates: /etc/filebeat/modules.d/system.yml
   notify: Restart Filebeat
   tags: filebeat
 
-- name: Disable reading /var/log/messages in order to avoid duplicate lines from /var/log/syslog
-  lineinfile:
-    dest: /etc/filebeat/modules.d/system.yml
-    state: present
-    regexp: "^    var.paths"
-    line: '    var.paths: ["/var/log/syslog*"]'
-    insertafter: "^    #var.paths"
-    firstmatch: true
+- name: Install custom Filebeat system module configuration file
+  copy:
+    src: system-custom.yml
+    dest: /etc/filebeat/modules.d/system-custom.yml
   notify: Restart Filebeat
   tags: filebeat
 
