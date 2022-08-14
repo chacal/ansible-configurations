@@ -108,8 +108,6 @@
          plugin_config_dst: autopilot.json
     - role: duplicacy
       duplicacy_filters: |
-        +opt/
-        +opt/freya-nmealogs/*
         +home/
         +home/pi/
         +home/pi/.signalk/
@@ -170,16 +168,6 @@
       notify: Restart dhcpcd
       tags: networking
 
-    - name: Create device link for NGW-1 serial port
-      lineinfile:
-        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
-        create=yes
-        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{serial}=="A900DJRK", SYMLINK+="ngw-1"'
-    - name: Create device link for TackTick NMEA gateway
-      lineinfile:
-        dest=/etc/udev/rules.d/99-freya-usb-devices.rules
-        create=yes
-        line='SUBSYSTEM=="tty", ACTION=="add", ATTRS{serial}=="A900DPSJ", SYMLINK+="tacktick"'
     - name: Create device link for U-Blox GPS
       lineinfile:
         dest=/etc/udev/rules.d/99-freya-usb-devices.rules
