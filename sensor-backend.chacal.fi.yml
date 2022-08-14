@@ -117,6 +117,13 @@
           <logger>
             <level>notice</level>
           </logger>
+          <metric_log remove="remove"/>
+          <query_log remove="remove"/>
+          <query_thread_log remove="remove"/>
+          <asynchronous_metric_log remove="remove"/>
+          <trace_log remove="remove"/>
+          <text_log remove="remove"/>
+    
           <https_port>8443</https_port>
           <tcp_port_secure>9440</tcp_port_secure>
           <interserver_https_port>9009</interserver_https_port>
