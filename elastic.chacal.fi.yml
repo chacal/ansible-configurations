@@ -16,7 +16,7 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
-    - elastic_version: 7.17.0
+    - elastic_version: 8.3.3
 
   roles:
     - role: filebeat
@@ -96,10 +96,6 @@
               roles:
                 - filebeat_writer
                 - ingest_admin
-            elastalert:
-              password: "{{ chacal.elastic.es.passwords.elastalert }}"
-              roles:
-                - elastalert
             grafana:
               password: "{{ chacal.elastic.es.passwords.grafana }}"
               roles:
@@ -120,21 +116,12 @@
               cluster:
                 - monitor
                 - read_ilm
+                - manage_ilm
               indices:
                 - names: 'filebeat-*'
                   privileges:
                     - create_doc
                     - manage
-            elastalert:
-              cluster:
-                - monitor
-              indices:
-                - names: 'filebeat-*'
-                  privileges:
-                    - read
-                - names: 'elastalert_status*'
-                  privileges:
-                    - all
         es_api_host: "{{ inventory_hostname }}"
         es_api_basic_auth_username: elastic
         es_api_basic_auth_password: "{{ chacal.elastic.es.passwords.elastic }}"
@@ -142,6 +129,12 @@
         es_enable_transport_ssl: true
         es_ssl_certificate: conf/elastic.chacal.fi/fullchain.pem
         es_ssl_key: conf/elastic.chacal.fi/privkey.pem
+
+    - name: Ensure certs are copied for the first time
+      command:
+        cmd: /etc/letsencrypt/renewal-hooks/deploy/10-default.sh
+        creates: /etc/kibana/fullchain.pem
+      tags: kibana
 
     - name: Install Kibana
       include_role:
@@ -153,11 +146,6 @@
         kibana_elasticsearch_username: kibana
         kibana_elasticsearch_password: "{{ chacal.elastic.es.passwords.kibana }}"
       tags: kibana
-
-    - name: Ensure certs are copied for the first time
-      command:
-        cmd: /etc/letsencrypt/renewal-hooks/deploy/10-default.sh
-        creates: /etc/kibana/fullchain.pem
 
     - name: Create /srv
       file:

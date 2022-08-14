@@ -5,7 +5,7 @@
 
 - name: Add Elastic apt repository
   apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    repo: deb https://artifacts.elastic.co/packages/8.x/apt stable main
     update_cache: yes
   tags: kibana
 
@@ -26,7 +26,7 @@
     - { key: server.host, value: "\"{{ ansible_default_ipv4.address }}\"" }
     - { key: server.name, value: "\"{{ inventory_hostname }}\"" }
     - { key: server.publicBaseUrl, value: "\"https://{{ inventory_hostname }}:5601\"" }
-    - { key: logging.quiet, value: "true" }
+    - { key: logging.root.level, value: "warn" }
     - { key: elasticsearch.hosts, value: "[\"{{ kibana_elasticsearch_url }}\"]" }
     - { key: elasticsearch.username, value: "{{ kibana_elasticsearch_username }}" }
     - { key: elasticsearch.password, value: "{{ kibana_elasticsearch_password }}" }
