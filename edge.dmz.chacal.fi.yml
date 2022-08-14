@@ -51,7 +51,7 @@
 
     - name: Remove default gateway from eth0
       lineinfile:
-        dest: /etc/network/interfaces.d/50-cloud-init.cfg
+        dest: /etc/network/interfaces.d/50-cloud-init
         state: absent
         regexp: "gateway"
       notify:
