@@ -118,6 +118,7 @@
       duplicacy_backup_hours: "6,18"
       duplicacy_encryption_key: "{{ chacal.freya.duplicacy.encryption_key }}"
       duplicacy_backup_id: freya-raspi
+      duplicacy_storage: freya-raspi
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.freya.duplicacy.b2_id }}"
         DUPLICACY_B2_KEY: "{{ chacal.freya.duplicacy.b2_key }}"

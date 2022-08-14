@@ -1,8 +1,8 @@
 ---
 duplicacy_version: "2.7.2"
-duplicacy_backup_id: "{{ inventory_hostname }}"
+duplicacy_backup_id: "{{ inventory_hostname | replace('.','-') }}"
 duplicacy_repository: "/"
-duplicacy_storage: "b2://chacal-backups/{{ duplicacy_backup_id }}"
+duplicacy_storage: "b2://chacal-backups/{{ inventory_hostname }}"
 duplicacy_filters: ""
 duplicacy_backup_hours: "*/12"
 duplicacy_backup_minutes: "0"
