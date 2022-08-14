@@ -110,14 +110,6 @@
       tags: mosquitto
 
   tasks:
-    - name: Create mqtt-houm-gw data directory
-      file:
-        path: /srv/mqtt-houm-gw
-        state: directory
-        mode: 0750
-        owner: 1000       # Node user has UID 1000 in the  container
-      tags: mqtt-houm-gw
-
     - name: Install mqtt-houm-gw docker service
       include_role:
         name: docker-app
@@ -125,14 +117,11 @@
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "mqtt-houm-gw"
         docker_app_container_name: "ghcr.io/chacal/mqtt-houm-gw"
-        docker_app_extra_params: "--network host --init -v /srv/mqtt-houm-gw:/state"
+        docker_app_extra_params: "--network host --init"
         docker_app_ports:
           - 5555:5555/udp
-          - 4000:4000
         docker_app_env:
           - "HOUM_SITE_KEY={{ chacal.houm.site_key }}"
-          - "CAR_HEATER_STATE_FILE=/state/car_heater_state.json"
-          - "CAR_HEATER_PUBLIC_DIR=/opt/app/public"
           - "MQTT_BROKER=mqtts://mqtt-home.chacal.fi"
           - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[5].username }}"
           - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[5].password }}"
