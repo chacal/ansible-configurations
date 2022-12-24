@@ -51,6 +51,7 @@
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.haukkakallio.duplicacy.b2_id }}"
         DUPLICACY_B2_KEY: "{{ chacal.haukkakallio.duplicacy.b2_key }}"
+      tags: duplicacy
 
     - name: mqtt-server
       mqtt_server_config: |
