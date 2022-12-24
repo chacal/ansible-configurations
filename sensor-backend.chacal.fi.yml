@@ -138,13 +138,6 @@
             <password>{{ chacal.sensor_backend.clickhouse.interserver_user.password }}</password>
           </interserver_http_credentials>
 
-          <zookeeper>
-            <node index="1">
-              <host>sensor-backend2.chacal.fi</host>
-              <port>2181</port>
-            </node>
-          </zookeeper>
-
           <macros>
             <shard>01</shard>
             <replica>{{ inventory_hostname }}</replica>
@@ -409,8 +402,7 @@
             - name: "sensors-cluster"
               scheme: "http"
               nodes: [
-                "sensor-backend.chacal.fi:8123",
-                "sensor-backend2.chacal.fi:8123"
+                "sensor-backend.chacal.fi:8123"
               ]
               users:
                 - name: "{{ chacal.sensor_backend.clickhouse.ro_user.username }}"
