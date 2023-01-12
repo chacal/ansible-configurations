@@ -10,6 +10,13 @@
     enabled: yes
     state: started
 
+- name: Start smartmon exporter
+  systemd:
+    name: prometheus-node-exporter-smartmon.timer
+    daemon-reload: yes
+    enabled: yes
+    state: started
+
 - name: Start apt timer
   systemd:
     name: prometheus-node-exporter-apt.timer
