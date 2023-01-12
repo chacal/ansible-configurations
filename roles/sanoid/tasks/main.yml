@@ -15,6 +15,7 @@
   loop:
     - /etc/systemd/system/sanoid.service.d
     - /etc/systemd/system/sanoid-prune.service.d
+    - /etc/systemd/system/sanoid.timer.d
   tags: sanoid
 
 - name: Create systemd override file for sanoid.service
@@ -34,6 +35,17 @@
       [Service]
       ExecStart=
       ExecStart=/usr/sbin/sanoid --prune-snapshots
+  notify: Reload systemd
+  tags: sanoid
+
+- name: Create systemd override file for sanoid.timer
+  copy:
+    dest: /etc/systemd/system/sanoid.timer.d/override.conf
+    content: |
+      [Timer]
+      OnCalendar=
+      OnBootSec=5min
+      OnUnitActiveSec=1h
   notify: Reload systemd
   tags: sanoid
 
