@@ -9,12 +9,12 @@
 
 - name: Install prometheus-node-exporter
   include_role:
-    name: cloudalchemy.node-exporter
+    name: ansible-node-exporter
     apply:
       tags:
         - prometheus_node_exporter
   vars:
-    node_exporter_version: 1.1.1
+    node_exporter_version: 1.5.0
   tags: prometheus_node_exporter
 
 - name: Create directory for text collector scripts
@@ -26,7 +26,7 @@
 
 - name: Install apt text collector script
   get_url:
-    url: https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/master/apt.sh
+    url: https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/23b0aa0d5b0db999795c752685b8b38d7a61e91a/apt.sh
     dest: /usr/local/share/prometheus-text-collectors/apt.sh
     mode: 0755
   tags: prometheus_node_exporter
