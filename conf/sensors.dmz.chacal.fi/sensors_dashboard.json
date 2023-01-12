@@ -4,7 +4,10 @@
       {
         "$$hashKey": "object:104",
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,16 +24,14 @@
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": null,
   "graphTooltip": 0,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -39,6 +40,15 @@
         "y": 0
       },
       "id": 31,
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Electricity",
       "type": "row"
     },
@@ -47,7 +57,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -81,7 +94,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -92,6 +105,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -110,9 +127,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Electricity",
       "tooltip": {
         "shared": true,
@@ -121,34 +136,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "kwatt",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -156,7 +161,10 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -190,7 +198,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -201,6 +209,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -219,9 +231,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Electricity",
       "tooltip": {
         "shared": true,
@@ -230,40 +240,32 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "kwatth",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "cacheTimeout": null,
       "columns": [],
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -274,7 +276,6 @@
       "hideTimeOverride": false,
       "id": 35,
       "links": [],
-      "pageSize": null,
       "pluginVersion": "6.7.2",
       "showHeader": true,
       "sort": {
@@ -292,7 +293,6 @@
         {
           "alias": "",
           "align": "right",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -308,6 +308,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -326,18 +330,15 @@
           "tableLoading": false
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Electricity",
       "transform": "timeseries_to_columns",
       "type": "table-old"
     },
     {
       "collapsed": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -347,6 +348,15 @@
       },
       "id": 4,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Upstairs",
       "type": "row"
     },
@@ -355,7 +365,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -389,7 +402,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -400,6 +413,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -417,6 +434,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -434,6 +455,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -451,9 +476,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Temperature",
       "tooltip": {
         "shared": true,
@@ -462,17 +485,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "celsius",
-          "label": null,
           "logBase": 1,
           "max": "26",
           "min": "18",
@@ -480,16 +499,12 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -497,7 +512,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -531,7 +549,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -542,6 +560,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -559,6 +581,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -576,6 +602,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -593,9 +623,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Humidity",
       "tooltip": {
         "shared": true,
@@ -604,41 +632,30 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "humidity",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -647,6 +664,15 @@
         "y": 18
       },
       "id": 7,
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Downstairs",
       "type": "row"
     },
@@ -655,7 +681,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -689,7 +718,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -700,6 +729,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -717,6 +750,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -734,6 +771,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -751,6 +792,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -768,6 +813,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -785,9 +834,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Temperature",
       "tooltip": {
         "shared": true,
@@ -796,17 +843,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "celsius",
-          "label": null,
           "logBase": 1,
           "max": "26",
           "min": "18",
@@ -814,16 +857,12 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -831,7 +870,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -865,7 +907,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.2",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -876,6 +918,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -893,6 +939,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -910,6 +960,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -927,6 +981,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -944,6 +1002,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -961,9 +1023,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Humidity",
       "tooltip": {
         "shared": true,
@@ -972,42 +1032,31 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "humidity",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -1017,6 +1066,15 @@
       },
       "id": 11,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Outside",
       "type": "row"
     },
@@ -1027,7 +1085,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -1072,6 +1133,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1091,6 +1156,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1110,9 +1179,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Temperature",
       "tooltip": {
         "shared": true,
@@ -1121,36 +1188,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:146",
-          "decimals": null,
           "format": "celsius",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:147",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1161,7 +1218,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -1206,6 +1266,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1225,6 +1289,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1244,9 +1312,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Humidity",
       "tooltip": {
         "shared": true,
@@ -1255,36 +1321,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:301",
-          "decimals": null,
           "format": "humidity",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:302",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1295,7 +1351,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -1340,6 +1399,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1359,6 +1422,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1378,9 +1445,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Pressure",
       "tooltip": {
         "shared": true,
@@ -1389,9 +1454,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1400,33 +1463,25 @@
           "$$hashKey": "object:444",
           "decimals": 1,
           "format": "pressurehpa",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:445",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -1436,6 +1491,15 @@
       },
       "id": 16,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Ventilation",
       "type": "row"
     },
@@ -1444,7 +1508,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -1489,6 +1556,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1506,6 +1577,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1523,9 +1598,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Temperature",
       "tooltip": {
         "shared": true,
@@ -1534,34 +1607,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "celsius",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1573,7 +1636,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -1618,6 +1684,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1635,6 +1705,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1652,9 +1726,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Humidity",
       "tooltip": {
         "shared": true,
@@ -1663,42 +1735,31 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "humidity",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
       },
       "gridPos": {
         "h": 1,
@@ -1708,6 +1769,15 @@
       },
       "id": 20,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Sensor health",
       "type": "row"
     },
@@ -1716,7 +1786,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -1761,6 +1834,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1780,6 +1857,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1799,6 +1880,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1818,6 +1903,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1837,6 +1926,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1856,6 +1949,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1875,9 +1972,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Voltage",
       "tooltip": {
         "shared": true,
@@ -1886,34 +1981,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "volt",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1921,7 +2006,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -1966,6 +2054,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -1985,6 +2077,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2004,6 +2100,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2023,6 +2123,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2042,6 +2146,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2061,6 +2169,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2080,6 +2192,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2099,6 +2215,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2118,6 +2238,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2137,9 +2261,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Voltage",
       "tooltip": {
         "shared": true,
@@ -2148,36 +2270,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:817",
-          "decimals": null,
           "format": "volt",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:818",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2185,7 +2297,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -2230,6 +2345,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2249,6 +2368,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2268,6 +2391,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2287,6 +2414,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2306,6 +2437,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2325,6 +2460,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2344,6 +2483,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2363,6 +2506,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2382,6 +2529,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2401,6 +2552,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2420,9 +2575,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Voltage",
       "tooltip": {
         "shared": true,
@@ -2431,34 +2584,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "volt",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2466,7 +2609,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -2511,6 +2657,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2528,6 +2678,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2545,6 +2699,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2562,6 +2720,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2579,6 +2741,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2596,6 +2762,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2613,9 +2783,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RSSI",
       "tooltip": {
         "shared": true,
@@ -2624,34 +2792,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2659,7 +2817,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -2704,6 +2865,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2723,6 +2888,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2742,6 +2911,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2761,6 +2934,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2780,6 +2957,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2799,6 +2980,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2818,6 +3003,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2837,6 +3026,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2856,6 +3049,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2875,9 +3072,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RSSI",
       "tooltip": {
         "shared": true,
@@ -2886,36 +3081,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:1135",
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1136",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2923,7 +3108,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -2968,6 +3156,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -2987,6 +3179,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3006,6 +3202,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3025,6 +3225,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3044,6 +3248,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3063,6 +3271,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3082,6 +3294,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3101,6 +3317,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3120,6 +3340,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3139,6 +3363,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3158,9 +3386,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RSSI",
       "tooltip": {
         "shared": true,
@@ -3169,34 +3395,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3204,7 +3420,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "description": "",
       "fieldConfig": {
@@ -3255,6 +3474,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3274,6 +3497,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3293,6 +3520,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3312,6 +3543,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3331,9 +3566,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D101",
       "tooltip": {
         "shared": true,
@@ -3342,26 +3575,20 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -3369,8 +3596,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3378,7 +3604,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -3428,6 +3657,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3445,6 +3678,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3462,6 +3699,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3479,6 +3720,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3496,9 +3741,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D104",
       "tooltip": {
         "shared": true,
@@ -3507,26 +3750,20 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -3534,8 +3771,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3543,7 +3779,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -3593,6 +3832,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3611,6 +3854,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3629,6 +3876,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3647,6 +3898,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3665,9 +3920,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D107",
       "tooltip": {
         "shared": true,
@@ -3676,26 +3929,20 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -3703,8 +3950,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3712,7 +3958,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "fieldConfig": {
         "defaults": {
@@ -3762,6 +4011,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3781,6 +4034,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3800,6 +4057,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3819,6 +4080,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3838,9 +4103,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D108",
       "tooltip": {
         "shared": true,
@@ -3849,26 +4112,20 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -3876,8 +4133,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3885,7 +4141,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "description": "",
       "fieldConfig": {
@@ -3936,6 +4195,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3955,6 +4218,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3974,6 +4241,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -3993,6 +4264,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4012,9 +4287,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D109",
       "tooltip": {
         "shared": true,
@@ -4023,18 +4296,14 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:212",
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
@@ -4042,9 +4311,7 @@
         },
         {
           "$$hashKey": "object:213",
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -4052,8 +4319,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4061,7 +4327,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 1,
       "description": "",
       "fieldConfig": {
@@ -4112,6 +4381,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4131,6 +4404,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4150,6 +4427,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4169,6 +4450,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4188,9 +4473,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display D110",
       "tooltip": {
         "shared": true,
@@ -4199,18 +4482,14 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:212",
-          "decimals": null,
           "format": "dBm",
-          "label": null,
           "logBase": 1,
           "max": "-40",
           "min": "-95",
@@ -4218,9 +4497,7 @@
         },
         {
           "$$hashKey": "object:213",
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "3",
           "min": "0",
@@ -4228,8 +4505,7 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4318,7 +4594,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -4364,6 +4643,10 @@
       "targets": [
         {
           "alias": "Front door (V500)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
           "groupBy": [
             {
               "params": [
@@ -4407,6 +4690,10 @@
         },
         {
           "alias": "Storage door (V501)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
           "groupBy": [
             {
               "params": [
@@ -4450,6 +4737,10 @@
         },
         {
           "alias": "Terrace door (V502)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
           "groupBy": [
             {
               "params": [
@@ -4502,9 +4793,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Lock Voltages",
       "tooltip": {
         "shared": true,
@@ -4513,9 +4802,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4524,25 +4811,19 @@
           "$$hashKey": "object:261",
           "decimals": 2,
           "format": "volt",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "4",
           "show": true
         },
         {
           "$$hashKey": "object:262",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4550,7 +4831,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -4595,6 +4879,10 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4614,6 +4902,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4633,6 +4925,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4652,6 +4948,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4671,6 +4971,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4690,6 +4994,10 @@
         },
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
           "dateColDataType": "",
           "dateLoading": false,
           "dateTimeColDataType": "dt",
@@ -4710,9 +5018,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Thread Display Voltage",
       "tooltip": {
         "shared": true,
@@ -4721,18 +5027,14 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:198",
-          "decimals": null,
           "format": "volt",
-          "label": null,
           "logBase": 1,
           "max": "4.1",
           "min": "2.4",
@@ -4741,21 +5043,17 @@
         {
           "$$hashKey": "object:199",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 31,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4767,7 +5065,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Home",
+  "title": "Haukkakallio",
   "uid": "755FHtCWk",
-  "version": 31
+  "version": 1,
+  "weekStart": ""
 }

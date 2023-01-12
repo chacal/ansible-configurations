@@ -728,6 +728,237 @@
     },
     {
       "aliasColors": {
+        "Aft cabin (S205)": "dark-green",
+        "C400": "semi-dark-red",
+        "Fwd cabin (S218)": "light-green",
+        "Mast (S217)": "super-light-green",
+        "Outside (S219)": "rgb(171, 252, 0)",
+        "Saloon (S216)": "semi-dark-green"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDF61E9E97939C7ED"
+      },
+      "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Living room (S205)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Living room (S205)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
+          "refId": "E",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs bathroom (S216)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs bathroom (S216)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Downstairs closet (S218)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Downstairs closet (S218)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs closet (S217)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs closet (S217)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
+          "refId": "C",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "hide": false,
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Small storage (S219)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Small storage (S219)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
+          "refId": "D",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        },
+        {
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDF61E9E97939C7ED"
+          },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "dt",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "hide": false,
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Big storage (S220)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S220'\nGROUP BY t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Big storage (S220)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S220'\nGROUP BY t\nORDER BY t",
+          "refId": "F",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "measurements",
+          "tableLoading": false
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Temperatures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:397",
+          "format": "celsius",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:398",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {
         "Aft cabin (S205)": "dark-purple",
         "C400": "semi-dark-red",
         "Fwd cabin (S218)": "super-light-purple",
@@ -754,7 +985,7 @@
       "gridPos": {
         "h": 9,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 4
       },
       "hiddenSeries": false,
@@ -978,8 +1209,8 @@
       "gridPos": {
         "h": 9,
         "w": 12,
-        "x": 12,
-        "y": 4
+        "x": 0,
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 6,
@@ -1202,7 +1433,7 @@
       "gridPos": {
         "h": 9,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 13
       },
       "hiddenSeries": false,
@@ -1404,237 +1635,6 @@
       "yaxis": {
         "align": false
       }
-    },
-    {
-      "aliasColors": {
-        "Aft cabin (S205)": "dark-green",
-        "C400": "semi-dark-red",
-        "Fwd cabin (S218)": "light-green",
-        "Mast (S217)": "super-light-green",
-        "Outside (S219)": "rgb(171, 252, 0)",
-        "Saloon (S216)": "semi-dark-green"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDF61E9E97939C7ED"
-      },
-      "decimals": 1,
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 13
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.3.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Living room (S205)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Living room (S205)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S205'\nGROUP BY t\nORDER BY t",
-          "refId": "E",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs bathroom (S216)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs bathroom (S216)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S216'\nGROUP BY t\nORDER BY t",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Downstairs closet (S218)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Downstairs closet (S218)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S218'\nGROUP BY t\nORDER BY t",
-          "refId": "B",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs closet (S217)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Upstairs closet (S217)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S217'\nGROUP BY t\nORDER BY t",
-          "refId": "C",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Small storage (S219)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Small storage (S219)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S219'\nGROUP BY t\nORDER BY t",
-          "refId": "D",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        },
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDF61E9E97939C7ED"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "dt",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Big storage (S220)\"\nFROM $table\nWHERE\n    $timeFilter\n    AND instance = 'S220'\nGROUP BY t\nORDER BY t",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(dt), 60) * 60) * 1000 as t,\n    avg(metric_values[indexOf(metric_names, 'temperature')]) AS \"Big storage (S220)\"\nFROM default.measurements\nWHERE\n    dt >= toDateTime(1671796472) AND dt <= toDateTime(1671882872)\n    AND instance = 'S220'\nGROUP BY t\nORDER BY t",
-          "refId": "F",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "measurements",
-          "tableLoading": false
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Temperatures",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:397",
-          "format": "celsius",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:398",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
     }
   ],
   "refresh": "10s",
@@ -1652,6 +1652,6 @@
   "timezone": "",
   "title": "Nihtimäki",
   "uid": "wNtMm-5Vk",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
