@@ -47,7 +47,7 @@
       docker_app_name: "thread-discovery-server"
       docker_app_container_name: "ghcr.io/chacal/thread-discovery-server"
       docker_app_extra_params: "--network host"
-      docker_app_container_params: "-p 8000 -m fddd:eeee:ffff:a100:6411:98ff:fe0c:62d"
+      docker_app_container_params: "-p 8000 -m fddd:eeee:ffff:a100:6414:d8ff:fe60:a283"
       tags: thread_discovery_server
 
   tasks:
