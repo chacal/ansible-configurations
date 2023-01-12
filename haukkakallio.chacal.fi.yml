@@ -44,6 +44,7 @@
       duplicacy_filters: |
         +srv/
         +srv/unifi/*
+        +srv/thread-mgmt-server/*
         -*
       duplicacy_backup_hours: "1,13"
       duplicacy_prune_hours: "2,14"
