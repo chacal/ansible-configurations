@@ -1,0 +1,10 @@
+[Unit]
+Description=Syncoid timer
+
+[Timer]
+# Run after boot and after an interval from the end of the last run
+OnBootSec={{ syncoid_run_interval }}
+OnUnitInactiveSec={{ syncoid_run_interval }}
+
+[Install]
+WantedBy=timers.target

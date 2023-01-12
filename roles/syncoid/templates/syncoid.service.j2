@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup ZFS filesystems with Syncoid
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/syncoid -r --sshkey=/root/.ssh/id_rsa_syncoid {{ syncoid_excludes_str }} {{ syncoid_source }} {{ syncoid_dst_user }}@{{ syncoid_dst_host }}:{{ syncoid_dst_dir }}
+
+[Install]
+WantedBy=multi-user.target

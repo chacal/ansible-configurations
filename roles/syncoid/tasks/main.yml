@@ -3,12 +3,14 @@
   import_role:
     name: sanoid
     tasks_from: install.yml
+  tags: syncoid
 
 - name: Install private key
   copy:
     dest: /root/.ssh/id_rsa_syncoid
     content: "{{ syncoid_private_key }}"
     mode: 0600
+  tags: syncoid
 
 - name: Install public key
   authorized_key:
@@ -17,15 +19,32 @@
     key: "{{ syncoid_public_key }}"
   delegate_to: "{{ syncoid_dst_host }}"
   remote_user: "{{ syncoid_dst_user }}"
+  tags: syncoid
 
 
 - name: Generate excludes list
   set_fact:
     syncoid_excludes_str: "{{ syncoid_excludes | map('regex_replace', '^(.*)$', '--exclude=\\1') | join(' ') }}"
+  tags: syncoid
 
-- name: Add syncoid to cron
-  cron:
-    name: "Syncoid"
-    minute: "{{ syncoid_cron_minutes }}"
-    hour: "*/2"
-    job: "/usr/sbin/syncoid -r --sshkey=/root/.ssh/id_rsa_syncoid {{ syncoid_excludes_str }} {{ syncoid_source }} {{ syncoid_dst_user }}@{{ syncoid_dst_host }}:{{ syncoid_dst_dir }} 2>&1 | logger -t syncoid"
+- name: Create systemd service for syncoid
+  template:
+    src: syncoid.service.j2
+    dest: /etc/systemd/system/syncoid.service
+  notify: Reload systemd
+  tags: syncoid
+
+- name: Create systemd timer for syncoid
+  template:
+    src: syncoid.timer.j2
+    dest: /etc/systemd/system/syncoid.timer
+  notify: Reload systemd
+  tags: syncoid
+
+- name: Enable and start syncoid timer
+  systemd:
+    name: syncoid.timer
+    daemon_reload: yes
+    enabled: yes
+    state: started
+  tags: syncoid

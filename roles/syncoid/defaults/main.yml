@@ -1,4 +1,4 @@
 ---
 syncoid_dst_user: root
 syncoid_excludes: []
-syncoid_cron_minutes: "10"
+syncoid_run_interval: "2h"
