@@ -33,12 +33,12 @@
         ifup vmbr0 || true
 
   roles:
+    - role: pve_common
     - role: sendgrid_with_dma
       sendgrid_api_key: "{{ chacal.sendgrid.fujari }}"
     - role: arc_size
       arc_cache_size: 3221225472
     - role: disable_log_compression
-    - role: pve_common
     - role: filebeat
       filebeat_elasticsearch_hosts:
         - "elastic.chacal.fi"
@@ -48,12 +48,24 @@
       unattended_upgrades_origins: '"o=Proxmox";"o=elastic";'
 
   tasks:
-    - name: Enable IOMMU
+    - name: Enable IOMMU & serial console
       copy:
         dest: /etc/kernel/cmdline
-        content: root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on
+        content: root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on console=tty0 console=ttyS0,115200n8
       notify: Update boot parameters
 
+    - name: Enable serial console on HW serial port
+      service: name=serial-getty@ttyS0.service  enabled=yes
+
+    - name: Install prometheus self reporting for node exporter
+      include_role:
+        name: self_monitoring
+
+    - name: Install prometheus self reporting for zfs exporter
+      include_role:
+        name: self_monitoring
+      vars:
+        self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134
 
     ######################################################
     #
@@ -114,6 +126,7 @@
           - { name: hddpool/backups, mountpoint: /hddpool/backups, canmount: on }
           - { name: hddpool/backups/wario, mountpoint: /hddpool/backups/wario, canmount: on }
           - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+      tags: storagepools
 
     - name: Setup PVE storage pools
       include_role: name=pve_storagepools
@@ -121,6 +134,7 @@
         pve_storagepools:
           - { name: "hdd-zfs-nonbackupped", dataset: hddpool/nonbackupped }
           - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
+      tags: pve_storage_pools
 
     - name: Add PVE admin user
       include_role:
@@ -134,6 +148,7 @@
       include_role: name=sanoid
       vars:
         sanoid_clean_empty_snapshots: True
+        sanoid_clean_empty_snapshots_cron_hours: "*/6"
         sanoid_config: |
           [rpool]
                   use_template = pve_system
@@ -161,8 +176,7 @@
 
           [template_pve_system]
                   frequent_period = 30
-                  # 6h worth of 30min snapshots
-                  frequently = 12
+                  frequently = 0
                   hourly = 48
                   daily = 21
                   monthly = 3
@@ -172,8 +186,7 @@
 
           [template_vm_disks]
                   frequent_period = 30
-                  # 24h worth of 30min snapshots
-                  frequently = 48
+                  frequently = 0
                   hourly = 48
                   daily = 21
                   monthly = 12
@@ -283,13 +296,16 @@
           #MGMT
 
       notify: Restart vmbr0
+      tags: networking
 
     - name: Set bridge interfaces up again to get the ZT interface connected to the bridges
       cron:
         name: "Setup interface bridges"
         special_time: reboot
         job: "/usr/sbin/ifup mgmtbr0; /usr/sbin/ifup vmbr0;"
-      tags: cron
+      tags:
+        - cron
+        - networking
 
     - name: Set zfs_zevent_len_max
       import_role:
