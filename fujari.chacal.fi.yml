@@ -125,6 +125,7 @@
           - { name: hddpool/nonbackupped, mountpoint: /hddpool/nonbackupped, canmount: on }
           - { name: hddpool/backups, mountpoint: /hddpool/backups, canmount: on }
           - { name: hddpool/backups/wario, mountpoint: /hddpool/backups/wario, canmount: on }
+          - { name: hddpool/backups/hessu, mountpoint: /hddpool/backups/hessu, canmount: on }
           - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
       tags: storagepools
 
@@ -217,8 +218,8 @@
         syncoid_private_key: "{{ chacal.fujari.syncoid.private_key }}"
         syncoid_public_key: "{{ chacal.fujari.syncoid.public_key }}"
         syncoid_source: rpool
-        syncoid_dst_host: wario.internal.chacal.fi
-        syncoid_dst_dir: rpool/backups/fujari/rpool  # Parents of this dataset has to exist on fujari
+        syncoid_dst_host: hessu.chacal.fi
+        syncoid_dst_dir: rpool/backups/fujari/rpool  # Parents of this dataset has to exist on Hessu
         syncoid_excludes:
           - nonbackupped
       tags: syncoid

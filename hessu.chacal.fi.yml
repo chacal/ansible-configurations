@@ -1,0 +1,214 @@
+---
+#
+# This playbook is used to provision Hessu after base Proxmox installation using Proxmox installation ISO (see OneNote for instructions)
+# Assumptions:
+#  - Passwordless SSH connection with "root"
+#
+
+- hosts: hessu.chacal.fi
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: Reload networking
+      shell: ifreload -a
+    - name: reload_sysctl
+      shell: "sysctl -p"
+
+  roles:
+    - role: pve_common
+      tags: pve_common
+    - role: sendgrid_with_dma
+      sendgrid_api_key: "{{ chacal.sendgrid.hessu }}"
+      tags: sendgrid_with_dma
+    - role: disable_log_compression
+    - role: zfs_datasets
+      zfs_datasets:
+        - { name: rpool/data, mountpoint: /rpool/data, canmount: on }
+        - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
+        - { name: rpool/backups, mountpoint: /rpool/backups, canmount: on }
+        - { name: rpool/backups/fujari, mountpoint: /rpool/backups/fujari, canmount: on }
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - "elastic.chacal.fi"
+      filebeat_exclude_files:
+        - "/var/log/pveproxy/*"
+
+    - role: debian_common
+      unattended_upgrades_origins: '"o=Proxmox";"o=elastic";'
+    - role: sanoid
+      sanoid_clean_empty_snapshots: True
+      sanoid_clean_empty_snapshots_cron_hours: "*/6"
+      sanoid_config: |
+        [rpool]
+                use_template = pve_system
+                recursive = yes
+
+        [rpool/data]
+                use_template = vm_disks
+                recursive = yes
+
+        [rpool/nonbackupped]
+                use_template = ignore
+                recursive = yes
+
+        [rpool/backups]
+                use_template = prune_only
+                recursive = yes
+
+        [template_pve_system]
+                frequent_period = 30
+                # 6h worth of 30min snapshots
+                frequently = 12
+                hourly = 48
+                daily = 21
+                monthly = 3
+                yearly = 0
+                autosnap = yes
+                autoprune = yes
+
+        [template_vm_disks]
+                # frequent_period = 30
+                frequently = 0
+                hourly = 24
+                daily = 14
+                monthly = 1
+                yearly = 0
+                autosnap = yes
+                autoprune = yes
+
+        [template_prune_only]
+                autoprune = yes
+                autosnap = no
+                monitor = no
+
+        [template_ignore]
+                autoprune = no
+                autosnap = no
+                monitor = no
+      tags: sanoid
+
+    - role: wireguard
+      wireguard_address: 10.10.0.1
+      wireguard_private_key: "{{ chacal.wireguard.hessu.private_key }}"
+      wireguard_peers:
+        - name: Fujari
+          public_key: "{{ chacal.wireguard.fujari.public_key }}"
+          allowed_ips: 10.10.0.2/32,10.50.0.0/16,10.90.99.0/24
+        - name: iPhone
+          public_key: "{{ chacal.wireguard.iphone.public_key }}"
+          allowed_ips: 10.10.0.4/32
+      tags: wireguard
+
+    - role: syncoid
+      syncoid_private_key: "{{ chacal.hessu.syncoid.private_key }}"
+      syncoid_public_key: "{{ chacal.hessu.syncoid.public_key }}"
+      syncoid_source: rpool
+      syncoid_dst_host: fujari.chacal.fi
+      syncoid_dst_dir: hddpool/backups/hessu/rpool  # Parents of this dataset have to exist on fujari
+      syncoid_excludes:
+        - nonbackupped
+        - backups
+      tags: syncoid
+
+  tasks:
+    - name: Install prometheus self reporting for node exporter
+      include_role:
+        name: self_monitoring
+      tags: self_monitoring
+
+    - name: Install prometheus self reporting for zfs exporter
+      include_role:
+        name: self_monitoring
+      vars:
+        self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134
+      tags: self_monitoring
+
+    - name: Add PVE admin user
+      include_role:
+        name: pve_admin_user
+      vars:
+        pve_admin_username: pve_admin
+        pve_admin_pw_hash: "{{ chacal.hessu.proxmox_user_pw_hash }}"
+      tags: pve_admin_user
+
+    - name: Setup PVE storage pools
+      include_role: name=pve_storagepools
+      vars:
+        pve_storagepools:
+          - { name: "local-zfs", dataset: rpool/data }
+          - { name: "local-zfs-nonbackupped", dataset: rpool/nonbackupped }
+
+    - name: TRIM rpool periodically
+      cron:
+        name: "Run zfs trim"
+        minute: "50"
+        hour: "*/6"
+        job: "/usr/sbin/zpool trim rpool 2>&1 | /usr/bin/logger -t zfs-trim"
+
+    - name: Setup networks
+      copy:
+        dest: /etc/network/interfaces
+        content: |
+          auto lo
+          iface lo inet loopback
+          iface lo inet6 loopback
+
+          iface eno1 inet manual
+
+          auto wanbr0
+          iface wanbr0 inet static
+            address 95.217.192.89/26
+            gateway 95.217.192.65
+            bridge-ports eno1
+            bridge-stp off
+            bridge-fd 0
+            dns-nameservers 185.12.64.1 185.12.64.2
+          # Hessu WAN
+
+          iface wanbr0 inet6 static
+            address 2a01:4f9:4a:4f71::2
+            netmask 64
+            gateway fe80::1
+            dns-nameservers 2a01:4ff:ff00::add:1 2a01:4ff:ff00::add:2
+          # Hessu WAN IPv6
+
+          auto vmbr0
+          iface vmbr0 inet static
+            address 10.40.0.1
+            netmask 255.255.255.0
+            bridge_ports none
+            bridge_stp off
+            bridge_fd 0
+            post-up /usr/sbin/ip route add 10.40.0.0/16 via 10.40.0.2
+            pre-down /usr/sbin/ip route del 10.40.0.0/16 via 10.40.0.2
+            post-up /usr/sbin/iptables -t nat -A POSTROUTING -s 10.40.0.0/16 -o wanbr0 -j MASQUERADE
+            pre-down /usr/sbin/iptables -t nat -A POSTROUTING -s 10.40.0.0/16 -o wanbr0 -j MASQUERADE
+          # OPNSense WAN & management UI
+          
+          auto vmbr1
+          iface vmbr1 inet manual
+            bridge_ports none
+            bridge_stp off
+            bridge_fd 0
+            bridge-vlan-aware yes
+          # OPNSense LAN
+
+          source /etc/network/interfaces.d/*
+      notify: Reload networking
+      tags: networking
+
+    - name: Enable IPv4 forwarding
+      lineinfile: dest=/etc/sysctl.conf regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward=1'
+      notify: reload_sysctl
+      tags: networking
+
+    - name: Enable IPv6 forwarding
+      lineinfile: dest=/etc/sysctl.conf regexp='.*net.ipv6.conf.all.forwarding.*' line='net.ipv6.conf.all.forwarding=1'
+      notify: reload_sysctl
+      tags: networking
