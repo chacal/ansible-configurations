@@ -1,26 +1,16 @@
 ---
-- name: Remove PVE Enterprise APT repository
-  file:
-    path: /etc/apt/sources.list.d/pve-enterprise.list
-    state: absent
+- name: Remove Proxmox Enterprise repository
+  file: path=/etc/apt/sources.list.d/pve-enterprise.list state=absent
 
-- name: Add PVE no-subscription APT repository
+- name: Add Proxmox No-Subscription repository
   apt_repository:
-    repo: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+    repo: deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
     state: present
 
 - name: Create directory for cloud-init userdata files
   file:
     path: /var/lib/vz/snippets
     state: directory
-
-# Stop storage replication systemd timer to prevent it from polluting logs
-- name: Stop PVE storage replication timer
-  systemd:
-    name: "pvesr.timer"
-    daemon_reload: yes
-    enabled: no
-    state: stopped
 
 - name: Load required modules for IOMMU
   lineinfile:
