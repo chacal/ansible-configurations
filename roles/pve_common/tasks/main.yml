@@ -40,13 +40,3 @@
 - name: Install prometheus zfs exporter
   import_role:
     name: prometheus_zfs_exporter
-
-- name: Install prometheus self reporting for node exporter
-  include_role:
-    name: self_monitoring
-
-- name: Install prometheus self reporting for zfs exporter
-  include_role:
-    name: self_monitoring
-  vars:
-    self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134

@@ -101,10 +101,19 @@
       syncoid_excludes:
         - nonbackupped
         - backups
-      syncoid_cron_minutes: "40"   # Override default to avoid syncing at the same time than fujari
       tags: syncoid
 
   tasks:
+    - name: Install prometheus self reporting for node exporter
+      include_role:
+        name: self_monitoring
+
+    - name: Install prometheus self reporting for zfs exporter
+      include_role:
+        name: self_monitoring
+      vars:
+        self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134
+
     - name: Add PVE apt key
       apt_key:
         url: http://download.proxmox.com/debian/proxmox-ve-release-6.x.gpg
@@ -175,11 +184,10 @@
         dest: /etc/network/interfaces
         content: |
           ### Hetzner Online GmbH installimage
-
           auto lo
           iface lo inet loopback
           iface lo inet6 loopback
-
+          
           auto wanbr0
           iface wanbr0 inet static
             address 95.216.42.125
@@ -187,13 +195,15 @@
             gateway 95.216.42.65
             bridge_ports enp0s31f6
             dns-nameservers 213.133.98.98 213.133.99.99 213.133.100.100
-
+          # Wario WAN
+          
           iface wanbr0 inet6 static
             address 2a01:4f9:2a:2882::2
             netmask 64
             gateway fe80::1
             dns-nameservers 2a01:4f8:0:a0a1::add:1010 2a01:4f8:0:a102::add:9999 2a01:4f8:0:a111::add:9898
-
+          # Wario WAN IPv6
+          
           auto vmbr0
           iface vmbr0 inet manual
             bridge_ports ztzlgndbao
@@ -203,8 +213,8 @@
             bridge-vids 2-4094
 
           source /etc/network/interfaces.d/*
-
       notify: Restart vmbr0
+      tags: networking
 
     - name: Set vmbr0 up again to get the ZT interface connected to the bridge
       cron:
