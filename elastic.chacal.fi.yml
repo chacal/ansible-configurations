@@ -11,12 +11,14 @@
   handlers:
     - name: Restart Kibana
       service: name=kibana state=restarted
+    - name: Restart Elasticsearch
+      service: name=elasticsearch state=restarted
 
   vars:
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
-    - elastic_version: 8.3.3
+    - elastic_version: 8.6.0
 
   roles:
     - role: filebeat
@@ -76,7 +78,6 @@
         es_heap_size: 3g
         es_config:
           network.host: 0.0.0.0
-          discovery.seed_hosts: "{{ ansible_default_ipv4.address }}"
           cluster.initial_master_nodes: "{{ ansible_default_ipv4.address }}"
         es_path_repo: /srv/elastic_snapshots
         es_jvm_custom_parameters:
@@ -84,6 +85,8 @@
         es_users:
           native:
             kibana:
+              password: "{{ chacal.elastic.es.passwords.kibana }}"
+            kibana_system:
               password: "{{ chacal.elastic.es.passwords.kibana }}"
             jihartik:
               password: "{{ chacal.elastic.es.passwords.jihartik }}"
@@ -130,6 +133,15 @@
         es_ssl_certificate: conf/elastic.chacal.fi/fullchain.pem
         es_ssl_key: conf/elastic.chacal.fi/privkey.pem
 
+    - name: Disable Elastic JVM GC logging
+      copy:
+        dest: /etc/elasticsearch/jvm.options.d/gc.options
+        content: |
+          # Turn off all previous logging configuratons
+          -Xlog:disable
+      notify: Restart Elasticsearch
+      tags: elasticsearch
+
     - name: Ensure certs are copied for the first time
       command:
         cmd: /etc/letsencrypt/renewal-hooks/deploy/10-default.sh
@@ -143,7 +155,7 @@
         kibana_ssl_cert_path: "/etc/kibana/fullchain.pem"
         kibana_ssl_key_path: "/etc/kibana/privkey.pem"
         kibana_elasticsearch_url: "https://{{ inventory_hostname }}:9200"
-        kibana_elasticsearch_username: kibana
+        kibana_elasticsearch_username: kibana_system
         kibana_elasticsearch_password: "{{ chacal.elastic.es.passwords.kibana }}"
       tags: kibana
 
