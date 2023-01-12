@@ -1,0 +1,44 @@
+---
+#
+# This playbook is used to provision wg-endpoint after manual VM creation in Proxmox
+# Assumptions:
+#  - Passwordless SSH connection with "jihartik", passwordless sudo
+#
+
+- hosts: all
+  become: true
+  remote_user: jihartik
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: reload_sysctl
+      shell: "sysctl -p"
+
+  roles:
+    - role: wireguard
+      wireguard_address: 10.10.0.2
+      wireguard_private_key: "{{ chacal.wireguard.wg_endpoint.private_key }}"
+      wireguard_peers:
+        - name: Hessu
+          public_key: "{{ chacal.wireguard.hessu.public_key }}"
+          allowed_ips: 10.10.0.1/32,10.40.0.0/16
+          endpoint: 95.217.192.89
+          persistent_keepalive: 25
+      tags: wireguard
+
+  tasks:
+    - name: Enable IPv4 forwarding
+      lineinfile: dest=/etc/sysctl.conf regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward=1'
+      notify: reload_sysctl
+      tags: networking
+
+    - name: Enable IPv6 forwarding
+      lineinfile: dest=/etc/sysctl.conf regexp='.*net.ipv6.conf.all.forwarding.*' line='net.ipv6.conf.all.forwarding=1'
+      notify: reload_sysctl
+      tags: networking
+
