@@ -4,6 +4,7 @@
   register: zfs_mounts
   changed_when: False
   check_mode: no
+  tags: storagepools
 
 - name: Create datasets
   zfs:
@@ -14,3 +15,4 @@
     state: present
   when: "zfs_mounts.stdout_lines | select('search', item.name) | list | count == 0"
   loop: "{{ zfs_datasets }}"
+  tags: storagepools
