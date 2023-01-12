@@ -1,4 +1,11 @@
 ---
+- name: Install Apt version
+  apt:
+    state: latest
+    pkg: sanoid
+  when: ansible_distribution_major_version | int > 10
+  tags: sanoid
+
 - name: Install/update sanoid dependencies
   apt:
     state: latest
@@ -10,11 +17,13 @@
       - mbuffer
       - perl
       - pv
+  when: ansible_distribution_major_version | int < 11
   tags: sanoid
+
 
 # Sanoid is installed from Sid .deb as it is not available for Buster
-- name: Install sanoid
+- name: Install .deb version
   apt:
     deb: http://deb.debian.org/debian/pool/main/s/sanoid/sanoid_2.0.3-4_all.deb
+  when: ansible_distribution_major_version | int < 11
   tags: sanoid
-
