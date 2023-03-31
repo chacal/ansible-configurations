@@ -105,9 +105,16 @@
         user {{ chacal.haukkakallio.mqtt_users[4].username }}
         topic read /sensor/#
         topic read /nordpool/#
+        topic readwrite /zigbee2mqtt/#
+        topic readwrite homeassistant/#
         user {{ chacal.haukkakallio.mqtt_users[5].username }}
         topic readwrite /sensor/#
         topic readwrite /nordpool/#
+        user {{ chacal.haukkakallio.mqtt_users[6].username }}
+        topic readwrite /zigbee2mqtt/#
+        topic readwrite homeassistant/#
+        user {{ chacal.haukkakallio.mqtt_users[7].username }}
+        topic readwrite homeassistant/#
       tags: mosquitto
 
   tasks:
