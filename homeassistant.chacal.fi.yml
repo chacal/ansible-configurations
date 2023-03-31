@@ -1,0 +1,324 @@
+---
+#
+# Playbook that sets up Zigbee2Mqtt, PostgreSQL, HAProxy and Home Assistant on homeassistant.chacal.fi
+#
+- hosts: homeassistant.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    docker_custom_registry: "https://docker-registry.chacal.fi"
+    aws_cli_user: root
+    aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+    ha_environment_sensors:
+      - tag: S209
+        name: Sauna
+        temperature: true
+      - tag: S215
+        name: Car
+        temperature: true
+      - tag: S218
+        name: Freezer
+        temperature: true
+      - tag: S222
+        name: Outside
+        temperature: true
+        pressure: true
+    ha_motion_sensors:
+      - tag: P302
+      - tag: P303
+      - tag: P304
+      - tag: P306
+      - tag: P307
+      - tag: P308
+      - tag: P309
+      - tag: P310
+      - tag: P311
+
+  handlers:
+    - name: Restart Home Assistant
+      service: name=home-assistant state=restarted
+    - name: Restart HAProxy
+      service: name=haproxy state=restarted
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: ouroboros
+      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
+    - role: duplicacy
+      duplicacy_filters: |
+        +srv/
+        +srv/zigbee2mqtt/*
+        +srv/postgres/*
+        +srv/home-assistant/*
+        -*
+      duplicacy_backup_hours: "1,13"
+      duplicacy_prune_hours: "1,13"
+      duplicacy_prune_minutes: "45"
+      duplicacy_encryption_key: "{{ chacal.ha.duplicacy.encryption_key }}"
+      duplicacy_environment:
+        DUPLICACY_B2_ID: "{{ chacal.ha.duplicacy.b2_id }}"
+        DUPLICACY_B2_KEY: "{{ chacal.ha.duplicacy.b2_key }}"
+      tags: duplicacy
+
+  tasks:
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_certificate_domains:
+          - homeassistant.chacal.fi
+          - ha.chacal.fi
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Updating haproxy certificates with certbot deploy-hook.."
+          cat /etc/letsencrypt/live/homeassistant.chacal.fi/fullchain.pem /etc/letsencrypt/live/homeassistant.chacal.fi/privkey.pem > \
+          /etc/haproxy/letsencrypt-chain.pem
+          chmod 600 /etc/haproxy/letsencrypt-chain.pem
+          systemctl restart haproxy
+          echo "Certificates updated"
+      tags: certbot
+
+    #
+    #  Install Zigbee2Mqtt
+    #
+    - name: Create Zigbee2MQTT data directory
+      file: path=/srv/zigbee2mqtt state=directory
+      tags: zigbee2mqtt
+
+    - name: Install Zigbee2MQTT configuration
+      copy:
+        dest: /srv/zigbee2mqtt/configuration.yaml
+        force: false
+        content: |
+          # Let new devices join our zigbee network
+          permit_join: true
+          # Docker Compose makes the MQTT-Server available using "mqtt" hostname
+          mqtt:
+            base_topic: /zigbee2mqtt
+            server: mqtts://mqtt-home.chacal.fi
+            user: {{ chacal.haukkakallio.mqtt_users[6].username }}
+            password: {{ chacal.haukkakallio.mqtt_users[6].password }}
+            client_id: zigbee2mqtt
+          # Zigbee Adapter path
+          serial:
+            port: /dev/ttyUSB0
+          # Enable the Zigbee2MQTT frontend
+          frontend:
+            port: 8080
+            auth_token: {{ chacal.ha.zigbee2mqtt.auth_token }}
+            ssl_cert: /certs/live/homeassistant.chacal.fi/fullchain.pem
+            ssl_key: /certs/live/homeassistant.chacal.fi/privkey.pem
+            url: https://homeassistant.chacal.fi:8080
+          # Let Zigbee2MQTT generate a new network key on first start
+          advanced:
+            network_key: GENERATE
+          homeassistant:
+            discovery_topic: /zigbee2mqtt/homeassistant
+            status_topic: /zigbee2mqtt/homeassistant/status
+            legacy_entity_attributes: false
+            legacy_triggers: false
+      tags: zigbee2mqtt
+
+    - name: Install Zigbee2MQTT
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "zigbee2mqtt"
+        docker_app_container_name: "koenkk/zigbee2mqtt"
+        docker_app_extra_params: >-
+          -v /srv/zigbee2mqtt:/app/data
+          -v /etc/letsencrypt:/certs
+          -v /run/udev:/run/udev:ro
+          --device /dev/ttyUSB0:/dev/ttyUSB0
+        docker_app_ports:
+          - "8080:8080"
+        docker_app_env:
+          - "TZ=Europe/Helsinki"
+      tags: zigbee2mqtt
+
+    #
+    #  Install PostgreSQL
+    #
+    - name: Create PostgreSQL data directory
+      file: path=/srv/postgres state=directory
+      tags: postgres
+
+    - name: Install PostgreSQL
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "postgres"
+        docker_app_container_name: "postgres:15"
+        docker_app_extra_params: "-v /srv/postgres:/var/lib/postgresql/data"
+        docker_app_ports:
+          - "127.0.0.1:5432:5432"
+        docker_app_env:
+          - "POSTGRES_USER=ha"
+          - "POSTGRES_DB=ha"
+          - "POSTGRES_PASSWORD={{ chacal.ha.postgres.password }}"
+      tags: postgres
+
+    #
+    #  Install Home Assistant
+    #
+    - name: Create Home Assistant data directory
+      file: path=/srv/home-assistant state=directory
+      tags: homeassistant
+
+    - name: Provision HA secrets
+      template: src=./conf/homeassistant.chacal.fi/secrets.yaml.j2 dest=/srv/home-assistant/secrets.yaml mode=0600
+      notify: Restart Home Assistant
+      tags: homeassistant
+
+    - name: Copy Home Assistant configuration file
+      template:
+        src: ./conf/homeassistant.chacal.fi/ha-configuration.yaml
+        dest: /srv/home-assistant/configuration.yaml
+        block_start_string: '[%'
+        block_end_string: '%]'
+        variable_start_string: '[['
+        variable_end_string: ']]'
+      notify: Restart Home Assistant
+      tags: homeassistant
+
+    - name: Copy Home Assistant blueprints
+      copy: src=./conf/homeassistant.chacal.fi/blueprints dest=/srv/home-assistant
+      tags: homeassistant
+
+    - name: Copy Home Assistant static assets
+      copy: src=./conf/homeassistant.chacal.fi/www dest=/srv/home-assistant
+      tags: homeassistant
+
+    - name: Install Home Assistant
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "home-assistant"
+        docker_app_container_name: "ghcr.io/home-assistant/home-assistant:stable"
+        docker_app_extra_params: >-
+          --privileged
+          --net=host
+          -e TZ=Europe/Helsinki
+          -v /srv/home-assistant:/config
+        docker_app_env:
+          - TZ=Europe/Helsinki
+      tags: homeassistant
+
+    - name: Install HACS dependencies
+      apt:
+        state: latest
+        pkg:
+          - unzip
+      tags: homeassistant
+
+    - name: Install HACS
+      shell:
+        cmd: "wget -O - https://get.hacs.xyz | bash -"
+        chdir: /srv/home-assistant
+        creates: /srv/home-assistant/custom_components/hacs
+      notify: Restart Home Assistant
+      tags: homeassistant
+
+    #
+    #  Install HAProxy
+    #
+    - name: Install HAProxy
+      apt:
+        state: latest
+        pkg:
+          - haproxy
+      tags: haproxy
+
+    - name: Create HAProxy configuration
+      copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              log /dev/log    local0
+              log /dev/log    local1 notice
+              chroot /var/lib/haproxy
+              user haproxy
+              group haproxy
+              daemon
+
+              # Default SSL material locations
+              ca-base /etc/ssl/certs
+              crt-base /etc/ssl/private
+
+              # See: https://ssl-config.mozilla.org/#server=haproxy&version=2.1&config=intermediate&openssl=1.1.1n&guideline=5.6
+              ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+              ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+              ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+          
+              ssl-default-server-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+              ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+              ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+
+              ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+              ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+              ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+              tune.ssl.default-dh-param 2048
+
+          defaults
+              mode http
+              timeout connect 5s
+              timeout client 10s
+              timeout client-fin 30s
+              timeout server 30s
+              timeout tunnel  1h    # timeout to use with WebSocket and CONNECT
+
+              errorfile 400 /etc/haproxy/errors/400.http
+              errorfile 403 /etc/haproxy/errors/403.http
+              errorfile 408 /etc/haproxy/errors/408.http
+              errorfile 500 /etc/haproxy/errors/500.http
+              errorfile 502 /etc/haproxy/errors/502.http
+              errorfile 503 /etc/haproxy/errors/503.http
+              errorfile 504 /etc/haproxy/errors/504.http
+
+          frontend http-in
+              bind *:80
+              bind *:443 ssl crt /etc/haproxy/letsencrypt-chain.pem alpn h2,http/1.1
+              redirect scheme https code 301 if !{ ssl_fc }
+              http-response set-header Strict-Transport-Security max-age=63072000
+
+              default_backend homeassistant
+
+          backend homeassistant
+              option httpchk GET /
+              server homeassistant1 localhost:8123 check
+      notify: Restart HAProxy
+      tags: haproxy
+
+    #
+    #  free@home MQTT bridge
+    #
+    - name: Install free@home MQTT bridge
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "free-at-home-mqtt-bridge"
+        docker_app_container_name: "ghcr.io/chacal/free-at-home-mqtt-bridge:latest"
+        docker_app_env:
+          - "SYS_AP_HOSTNAME=abb.chacal.fi"
+          - "SYS_AP_USERNAME={{ chacal.sys_ap.username }}"
+          - "SYS_AP_PASSWORD={{ chacal.sys_ap.password }}"
+          - "MQTT_BROKER_URL=mqtts://mqtt-home.chacal.fi"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[7].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[7].password }}"
+      tags: free-at-home-mqtt-bridge
