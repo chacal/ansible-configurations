@@ -1,0 +1,52 @@
+---
+- hosts: minecraft.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: filebeat
+      filebeat_elasticsearch_hosts:
+        - elastic.chacal.fi
+    - role: debian_common
+      unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+
+  tasks:
+    - name: Create minecraft user
+      user: name=minecraft system=yes
+      tags: minecraft-server
+
+    - name: Get minecraft uid & gid
+      getent:
+        database: passwd
+        key: minecraft
+      tags: minecraft-server
+
+    - name: Create Minecraft server data directory
+      file:
+        path: /srv/minecraft
+        state: directory
+        owner: minecraft
+        group: minecraft
+        mode: 0750
+      tags: minecraft-server
+
+    - name: Add Minecraft server service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "minecraft-server"
+        docker_app_container_name: "itzg/minecraft-server"
+        docker_app_extra_params: "-v /srv/minecraft:/data --user {{ getent_passwd.minecraft[1] }}:{{ getent_passwd.minecraft[2] }}"
+        docker_app_ports:
+          - 25565:25565
+        docker_app_env:
+          - "EULA=TRUE"
+          - "ONLINE_MODE=FALSE"
+          - "OVERRIDE_SERVER_PROPERTIES=true"
+      tags: minecraft-server
