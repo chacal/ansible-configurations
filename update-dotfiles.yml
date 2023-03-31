@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: dotfiles
+      github_token: "{{ chacal.github.access_tokens.https_cloning }}"
