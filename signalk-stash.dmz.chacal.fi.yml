@@ -26,32 +26,23 @@
       unattended_upgrades_origins: '"o=elastic";'
     - role: prometheus_node_exporter
     - role: self_monitoring
-    - role: frr_ospf
-      frr_config: |
-        log syslog informational
-        router ospf
-          ospf router-id {{ ansible_eth0.ipv4.address }}
-          network {{ ansible_eth0.ipv4.network }}/24 area 0.0.0.0
 
   tasks:
-    # Flush handlers to trigger frr restart
-    - meta: flush_handlers
-
-    - name: Wait until ospf route to MGMT net is present
-      shell: ip r | grep -q "10.90.99.0"
-      register: cmd_res
-      until: cmd_res.rc == 0
-      retries: 10
-      failed_when: cmd_res.rc == 1
-      changed_when: False
-      check_mode: no
-      tags: network
 
     - name: Remove default gateway from eth0
       lineinfile:
-        dest: /etc/network/interfaces.d/50-cloud-init.cfg
+        dest: /etc/network/interfaces.d/50-cloud-init
         state: absent
         regexp: "gateway"
+      notify:
+        - Restart network
+      tags: network
+
+    - name: Add route to private networks via eth0
+      lineinfile:
+        dest: /etc/network/interfaces.d/50-cloud-init
+        line: "    post-up /usr/sbin/ip route add 10.0.0.0/8 via 10.40.102.1"
+        insertafter: 'address'
       notify:
         - Restart network
       tags: network
@@ -62,10 +53,10 @@
         content: |
           auto ens19
           iface ens19 inet static
-              address 95.216.233.247
-              netmask 255.255.255.240
-              gateway 95.216.233.241
-              213.133.98.98 213.133.99.99 213.133.100.100
+              address 95.217.192.78
+              netmask 255.255.255.192
+              gateway 95.217.192.65
+              dns-nameservers 185.12.64.1 185.12.64.2
       notify:
         - Restart network
       tags: network
