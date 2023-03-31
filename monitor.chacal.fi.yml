@@ -299,3 +299,4 @@
               volumes:
                 - "/srv/haproxy:/usr/local/etc/haproxy:ro"
               restart: always
+      tags: docker_compose

@@ -123,7 +123,7 @@
           <asynchronous_metric_log remove="remove"/>
           <trace_log remove="remove"/>
           <text_log remove="remove"/>
-    
+
           <https_port>8443</https_port>
           <tcp_port_secure>9440</tcp_port_secure>
           <interserver_https_port>9009</interserver_https_port>
@@ -187,6 +187,7 @@
     - name: Install prometheus self monitoring for OS
       include_role:
         name: self_monitoring
+      tags: self_monitoring
 
     - name: Install prometheus self monitoring for chproxy
       include_role:
@@ -194,6 +195,7 @@
       vars:
         self_monitoring_target_port: "{{ chproxy_listen_port }}"
         self_monitoring_use_https: True
+      tags: self_monitoring
 
     - name: Configure InfluxDB to use HTTPS
       lineinfile:
@@ -271,7 +273,7 @@
         state: present
         regexp: '^  wal-fsync-delay ='
         insertafter: '^  # wal-fsync-delay = "0s"'
-        line: '  wal-fsync-delay = "1s"'
+        line: '  wal-fsync-delay = "5s"'
       notify: Restart InfluxDB
       tags: influxdb
 
@@ -350,6 +352,7 @@
           - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
           - MQTT_CLIENT_ID=sensor-backend-influxdb-sender
+      tags: mqtt-to-db-sender-influxdb
 
     - name: Install mqtt-to-db-sender for writing to ClickHouse
       include_role:
@@ -370,6 +373,7 @@
           - MQTT_USERNAME={{ chacal.sensor_backend.mqtt_users[0].username }}
           - MQTT_PASSWORD={{ chacal.sensor_backend.mqtt_users[0].password }}
           - MQTT_CLIENT_ID=sensor-backend-clickhouse-sender
+      tags: mqtt-to-db-sender-clickhouse
 
     - name: Create data directory for chproxy
       file:
@@ -388,7 +392,7 @@
             https:
                 listen_addr: ":{{ chproxy_listen_port }}"
                 # Allow queries to chproxy only from DMZ
-                allowed_networks: ["10.50.102.0/24"]
+                allowed_networks: ["10.40.102.0/24"]
                 cert_file: /etc/certs/server.crt
                 key_file: /etc/certs/server.key
 
@@ -421,3 +425,4 @@
         docker_app_extra_params: "-v /srv/chproxy/config.yml:/opt/config.yml -v /srv/chproxy/certs:/etc/certs -v /etc/ssl/certs:/etc/ssl/certs"
         docker_app_ports:
           - "0.0.0.0:{{ chproxy_listen_port }}:{{ chproxy_listen_port }}"
+      tags: chproxy
