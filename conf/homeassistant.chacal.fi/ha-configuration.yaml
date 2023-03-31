@@ -1,0 +1,224 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+http:
+  use_x_forwarded_for: true
+  # You must set the trusted proxy IP address so that Home Assistant will properly accept connections
+  # Set this to your NGINX machine IP, or localhost if hosted on the same machine.
+  trusted_proxies: 127.0.0.1
+  server_host: 127.0.0.1
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+recorder:
+  purge_keep_days: 180
+  db_url: !secret recorder_db_url
+  db_max_retries: 30
+  db_retry_wait: 10
+  exclude:
+    entity_globs:
+      - sensor.rssi_*
+      - sensor.vcc_*
+      - sun.*
+    entities:
+      - sensor.energy_use_in_last_2_minutes
+      - sensor.energy_consumption
+      - sensor.electric_power
+
+home_connect_alt:
+  client_id: !secret home_connect_client_id
+  client_secret: !secret home_connect_client_secret
+
+sonos:
+  media_player:
+    hosts:
+      - 10.50.1.10
+
+homeassistant:
+  external_url: https://ha.chacal.fi
+  customize:
+[% for sensor in ha_environment_sensors %]
+[% if sensor.temperature | default(false) %]
+    sensor.temperature_[[ sensor.tag | lower ]]:
+      friendly_name: "[[ sensor.name ]] ([[ sensor.tag ]])"
+[% endif %]
+[% if sensor.humidity | default(false) %]
+    sensor.humidity_[[ sensor.tag | lower ]]:
+      friendly_name: "[[ sensor.name ]] ([[ sensor.tag ]])"
+[% endif %]
+[% if sensor.pressure | default(false) %]
+    sensor.pressure_[[ sensor.tag | lower ]]:
+      friendly_name: "[[ sensor.name ]] ([[ sensor.tag ]])"
+[% endif %]
+    sensor.vcc_[[ sensor.tag | lower ]]:
+      friendly_name: "[[ sensor.name ]] ([[ sensor.tag ]])"
+    sensor.rssi_[[ sensor.tag | lower ]]:
+      friendly_name: "[[ sensor.name ]] ([[ sensor.tag ]])"
+[% endfor %]
+
+mqtt:
+  sensor:
+[% for sensor in ha_environment_sensors %]
+[% if sensor.temperature | default(false) %]
+    - name: "temperature_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/m/state"
+      unique_id: "temperature_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "°C"
+      value_template: "{{ value_json.temperature | round(1) }}"
+      expire_after: 180
+      device_class: temperature
+[% endif %]
+[% if sensor.humidity | default(false) %]
+    - name: "humidity_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/m/state"
+      unique_id: "humidity_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "%"
+      value_template: "{{ value_json.humidity | round(0) }}"
+      expire_after: 180
+      device_class: humidity
+[% endif %]
+[% if sensor.pressure | default(false) %]
+    - name: "pressure_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/m/state"
+      unique_id: "pressure_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "mbar"
+      value_template: "{{ value_json.pressure | round(0) }}"
+      expire_after: 180
+      device_class: pressure
+[% endif %]
+    - name: "vcc_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/m/state"
+      unique_id: "vcc_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "V"
+      value_template: "{{ value_json.vcc / 1000 }}"
+      icon: "mdi:battery-outline"
+      expire_after: 180
+      device_class: voltage
+    - name: "rssi_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/m/state"
+      unique_id: "rssi_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "dBm"
+      value_template: "{{ value_json.rssi }}"
+      expire_after: 180
+      device_class: signal_strength
+[% endfor %]
+    - name: "Energy consumption"
+      state_topic: "/sensor/I100/e/state"
+      unit_of_measurement: "kWh"
+      unique_id: "energy_i100"
+      value_template: "{{ value_json.energyAmount / 1000 }}"
+      device_class: "energy"
+      state_class: "total_increasing"
+    - name: "Electricity price"
+      state_topic: "/nordpool/current_price"
+      unique_id: "electricity_price"
+      unit_of_measurement: "c/kWh"
+      value_template: "{{ value_json.price | round(1) }}"
+      device_class: "monetary"
+    - name: "Electricity price"
+      state_topic: "/nordpool/current_price"
+      unique_id: "electricity_price_eur_kwh"
+      unit_of_measurement: "EUR/kWh"
+      value_template: "{{ (value_json.price / 100) | round(3) }}"
+      device_class: "monetary"
+  binary_sensor:
+[% for sensor in ha_motion_sensors %]
+    - name: "motion_[[ sensor.tag | lower ]]"
+      unique_id: "motion_[[ sensor.tag | lower ]]"
+      state_topic: '/sensor/[[ sensor.tag ]]/k/state'
+      value_template: '{{ value_json.motionDetected }}'
+      payload_on: true
+      payload_off: false
+      device_class: motion
+      expire_after: 180
+[% endfor %]
+
+
+sensor:
+  - platform: filter
+    name: "Energy consumption throttled"
+    entity_id: sensor.energy_consumption
+    filters:
+      - filter: time_throttle
+        window_size: '00:05:00'
+        precision: 4
+  - platform: statistics
+    name: "Energy use in last 2 minutes"
+    entity_id: sensor.energy_consumption
+    state_characteristic: change
+    max_age:
+      minutes: 2
+    sampling_size: 400
+    precision: 4
+  - platform: filter
+    name: "Electric power 1min avg"
+    entity_id: sensor.electric_power
+    filters:
+      - filter: time_simple_moving_average
+        window_size: "00:01:00"
+        precision: 4
+      - filter: time_throttle
+        window_size: '00:01:00'
+        precision: 4
+
+template:
+  - sensor:
+      - name: Sunrise
+        unique_id: sunrise_time
+        state: "{{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}"
+        icon: mdi:weather-sunset-up
+      - name: Sunset
+        unique_id: sunset_time
+        state: "{{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}"
+        icon: mdi:weather-sunset-down
+      - name: "Electric power"
+        unit_of_measurement: kW
+        device_class: power
+        state: "{{ (states('sensor.energy_use_in_last_2_minutes') | float(0) * 30) | round(1) }}"
+      - name: Cheapest 3 hours for night
+        device_class: timestamp
+        state: >
+          {%- set numberOfSequentialHours = 3 -%}
+          {%- set lastHour = 6 -%}
+          {%- set firstHour = now().hour + 1 -%}
+          
+          {%- if state_attr("sensor.nordpool", "tomorrow_valid") == true and state_attr("sensor.nordpool", "tomorrow")[1] is number == true -%}
+            {%- set ns = namespace(counter=0, list=[], cheapestHour=today_at("00:00") + timedelta( hours = (24)), cheapestPrice=999.00) -%}
+            {%- for i in range(firstHour + numberOfSequentialHours, lastHour +25 ) -%}
+              {%- set ns.counter = 0.0 -%}
+              {%- for j in range(i-numberOfSequentialHours, i) -%}
+                {%- if j < 24 -%}
+                  {%- set ns.counter = ns.counter + state_attr("sensor.nordpool", "today")[j] -%}
+                {%- else -%}
+                  {%- set ns.counter = ns.counter + state_attr("sensor.nordpool", "tomorrow")[j-24] -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- set ns.list = ns.list + [ns.counter] -%}
+              {%- if ns.counter < ns.cheapestPrice -%}
+                {%- set ns.cheapestPrice = ns.counter -%}
+                {%- set ns.cheapestHour = today_at("00:00") + timedelta( hours = (i - numberOfSequentialHours )) -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ ns.cheapestHour }}
+            {%- set ns.cheapestPrice = (ns.cheapestPrice / numberOfSequentialHours) -%}
+          {%- endif -%}
+
+utility_meter:
+  daily_energy:
+    name: Electricity used (daily)
+    source: sensor.energy_consumption_throttled
+    cycle: daily
+  monthly_energy:
+    name: Electricity used (monthly)
+    source: sensor.energy_consumption_throttled
+    cycle: monthly

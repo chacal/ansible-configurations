@@ -1,0 +1,156 @@
+blueprint:
+  name: Motion-activated light with evening and night mode support
+  description: Turn on a light when motion is detected. Use different light settings during configurable evening & night period.
+  domain: automation
+  input:
+    motion_entity:
+      name: Motion Sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+          multiple: true
+    no_motion_wait:
+      name: Wait time
+      description: Time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    light_target:
+      name: Light
+      selector:
+        target:
+          entity:
+            domain: light
+    day_mode_brightness:
+      name: Day brightness
+      description: Light brightness during day mode.
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    day_mode_color_temp:
+      name: Day color temperature
+      description: Light color temperature during day mode.
+      default: 5000
+      selector:
+        number:
+          min: 2800
+          max: 6000
+          unit_of_measurement: "K"
+    evening_mode_brightness:
+      name: Evening brightness
+      description: Light brightness during evening mode.
+      default: 20
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    evening_mode_color_temp:
+      name: Evening color temperature
+      description: Light color temperature during evening mode.
+      default: 5000
+      selector:
+        number:
+          min: 2800
+          max: 6000
+          unit_of_measurement: "K"
+    night_mode_brightness:
+      name: Night brightness
+      description: Light brightness during night mode.
+      default: 1
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    night_mode_color_temp:
+      name: Night color temperature
+      description: Light color temperature during night mode.
+      default: 3000
+      selector:
+        number:
+          min: 2800
+          max: 6000
+          unit_of_measurement: "K"
+    day_mode_start_time:
+      name: Day mode start time
+      description: Start time for the day mode
+      default: "07:00:00"
+      selector:
+        time:
+    evening_mode_start_time:
+      name: Evening mode start time
+      description: Start time for the evening mode
+      default: "19:00:00"
+      selector:
+        time:
+    night_mode_start_time:
+      name: Night mode start time
+      description: Start time for the night mode
+      default: "23:00:00"
+      selector:
+        time:
+
+variables:
+  motion_sensors: !input motion_entity
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+trigger:
+  platform: state
+  entity_id: !input motion_entity
+  from: "off"
+  to: "on"
+
+action:
+  - choose:
+    - conditions:
+        - condition: time
+          after: !input day_mode_start_time
+          before: !input evening_mode_start_time
+      sequence:
+        - alias: "Turn light on in day mode"
+          service: light.turn_on
+          target: !input light_target
+          data:
+            kelvin: !input day_mode_color_temp
+            brightness_pct: !input day_mode_brightness
+    - conditions:
+        - condition: time
+          after: !input evening_mode_start_time
+          before: !input night_mode_start_time
+      sequence:
+        - alias: "Turn light on in evening mode"
+          service: light.turn_on
+          target: !input light_target
+          data:
+            kelvin: !input evening_mode_color_temp
+            brightness_pct: !input evening_mode_brightness
+    - conditions:
+        - condition: time
+          after: !input night_mode_start_time
+          before: !input day_mode_start_time
+      sequence:
+        - alias: "Turn light on in night mode"
+          service: light.turn_on
+          target: !input light_target
+          data:
+            kelvin: !input night_mode_color_temp
+            brightness_pct: !input night_mode_brightness
+  - alias: "Wait until there is no motion from any device"
+    wait_template: "{{ motion_sensors | select('is_state', 'on') | list | length == 0 }}"
+  - alias: "Wait the number of seconds that has been set"
+    delay: !input no_motion_wait
+  - alias: "Turn off the light"
+    service: light.turn_off
+    target: !input light_target

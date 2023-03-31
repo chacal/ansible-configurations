@@ -1,0 +1,70 @@
+blueprint:
+  name: Motion-activated light with enable/disable schedule
+  description: Turn on a light when motion is detected during a scheduled active period.
+  domain: automation
+  input:
+    motion_entity:
+      name: Motion Sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+          multiple: true
+    no_motion_wait:
+      name: Wait time
+      description: Time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    light_target:
+      name: Light
+      selector:
+        target:
+          entity:
+            domain: light
+    active_period_start_time:
+      name: Active period start time
+      description: Time after which detecting motion turns on the light
+      default: "06:30:00"
+      selector:
+        time:
+    active_period_end_time:
+      name: Active period end time
+      description: Time after which detecting motion doesn't change the light state
+      default: "23:00:00"
+      selector:
+        time:
+
+variables:
+  motion_sensors: !input motion_entity
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+trigger:
+  platform: state
+  entity_id: !input motion_entity
+  from: "off"
+  to: "on"
+
+condition:
+  - condition: time
+    after: !input active_period_start_time
+    before: !input active_period_end_time
+
+action:
+  - alias: "Turn light on"
+    service: light.turn_on
+    target: !input light_target
+  - alias: "Wait until there is no motion from any device"
+    wait_template: "{{ motion_sensors | select('is_state', 'on') | list | length == 0 }}"
+  - alias: "Wait the number of seconds that has been set"
+    delay: !input no_motion_wait
+  - alias: "Turn off the light"
+    service: light.turn_off
+    target: !input light_target
