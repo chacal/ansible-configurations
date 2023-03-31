@@ -97,12 +97,15 @@
       wireguard_address: 10.10.0.1
       wireguard_private_key: "{{ chacal.wireguard.hessu.private_key }}"
       wireguard_peers:
-        - name: Fujari
-          public_key: "{{ chacal.wireguard.fujari.public_key }}"
-          allowed_ips: 10.10.0.2/32,10.50.0.0/16,10.90.99.0/24
         - name: iPhone
           public_key: "{{ chacal.wireguard.iphone.public_key }}"
           allowed_ips: 10.10.0.4/32
+        - name: Macbook
+          public_key: "{{ chacal.wireguard.macbook.public_key }}"
+          allowed_ips: 10.10.0.5/32
+        - name: muuri
+          public_key: "{{ chacal.wireguard.muuri.public_key }}"
+          allowed_ips: 10.10.0.6/32,10.50.0.0/16
       tags: wireguard
 
     - role: syncoid
