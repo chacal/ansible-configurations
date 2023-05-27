@@ -33,6 +33,7 @@
         - { name: rpool/nonbackupped, mountpoint: /rpool/nonbackupped, canmount: on }
         - { name: rpool/backups, mountpoint: /rpool/backups, canmount: on }
         - { name: rpool/backups/fujari, mountpoint: /rpool/backups/fujari, canmount: on }
+        - { name: rpool/backups/mini, mountpoint: /rpool/backups/mini, canmount: on }
     - role: filebeat
       filebeat_elasticsearch_hosts:
         - "elastic.chacal.fi"
