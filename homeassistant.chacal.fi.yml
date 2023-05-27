@@ -15,6 +15,18 @@
     aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
     ha_environment_sensors:
+      - tag: S202
+        name: "Venla's room"
+        temperature: true
+      - tag: S203
+        name: "Oona's room"
+        temperature: true
+      - tag: S204
+        name: "Elias' room"
+        temperature: true
+      - tag: S205
+        name: "Livingroom"
+        temperature: true
       - tag: S209
         name: Sauna
         temperature: true
