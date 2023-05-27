@@ -112,6 +112,23 @@ mqtt:
       expire_after: 180
       device_class: signal_strength
 [% endfor %]
+[% for sensor in ha_motion_sensors %]
+    - name: "vcc_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/k/state"
+      unique_id: "vcc_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "V"
+      value_template: "{{ value_json.vcc / 1000 }}"
+      icon: "mdi:battery-outline"
+      expire_after: 180
+      device_class: voltage
+    - name: "rssi_[[ sensor.tag | lower ]]"
+      state_topic: "/sensor/[[ sensor.tag ]]/k/state"
+      unique_id: "rssi_[[ sensor.tag | lower ]]"
+      unit_of_measurement: "dBm"
+      value_template: "{{ value_json.rssi }}"
+      expire_after: 180
+      device_class: signal_strength
+[% endfor %]
     - name: "Energy consumption"
       state_topic: "/sensor/I100/e/state"
       unit_of_measurement: "kWh"
