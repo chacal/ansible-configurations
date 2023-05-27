@@ -239,3 +239,7 @@ utility_meter:
     name: Electricity used (monthly)
     source: sensor.energy_consumption_throttled
     cycle: monthly
+  daily_ac_energy:
+    name: ILP energy used (daily)
+    source: sensor.haori_nihtimaki_power_consumption
+    cycle: daily
