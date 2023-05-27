@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<vito>
+    <devices>
+        <device ID="204D" name="Vitocal333-G" protocol="P300"/>
+    </devices>
+    <commands>
+        <command name="DeviceType" protocmd="getaddr">
+            <addr>00F8</addr>
+            <len>2</len>
+            <unit>DT</unit>
+            <description>Get device ID and type.</description>
+        </command>
+        <command name="OpMode" protocmd="getaddr">
+            <addr>B000</addr>
+            <len>1</len>
+            <unit>OM</unit>
+            <description>Get operation mode.</description>
+        </command>
+        <command name="RoomTempNormal" protocmd="getaddr">
+            <addr>2000</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Room temperature.</description>
+        </command>
+        <command name="RoomTempReduced" protocmd="getaddr">
+            <addr>2001</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Room temperature.</description>
+        </command>
+        <command name="RoomTempPartyMode" protocmd="getaddr">
+            <addr>2022</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Party mode temperature.</description>
+        </command>
+        <command name="HeatingCurveLevel" protocmd="getaddr">
+            <addr>2006</addr>
+            <len>2</len>
+            <unit>UN</unit>
+            <description>Heating curve level.</description>
+        </command>
+        <command name="HeatingCurveSlope" protocmd="getaddr">
+            <addr>2007</addr>
+            <len>2</len>
+            <unit>UN</unit>
+            <description>Heating curve slope.</description>
+        </command>
+        <command name="TempOutdoor" protocmd="getaddr">
+            <addr>0101</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Outdoor temperature [°C]</description>
+        </command>
+        <command name="PrimaryCircuitFlowTemp" protocmd="getaddr">
+            <addr>0103</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Primary circuit flow temp [°C]</description>
+        </command>
+        <command name="PrimaryCircuitReturnTemp" protocmd="getaddr">
+            <addr>0104</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Primary circuit return temp [°C]</description>
+        </command>
+        <command name="SecondaryCircuitFlowTemp" protocmd="getaddr">
+            <addr>0105</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Secondary circuit flow temp [°C]</description>
+        </command>
+        <command name="SecondaryCircuitReturnTemp" protocmd="getaddr">
+            <addr>0106</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Secondary circuit return temp [°C]</description>
+        </command>
+        <command name="DHW-TopTemp" protocmd="getaddr">
+            <addr>010D</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>DHW cylinder top temp [°C]</description>
+        </command>
+        <command name="DHW-Setpoint" protocmd="getaddr">
+            <addr>6000</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>DHW setpoint temp [°C]</description>
+        </command>
+        <command name="DHW-Setpoint2" protocmd="getaddr">
+            <addr>600C</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>DHW setpoint 2 temp [°C]</description>
+        </command>
+        <command name="Compressor" protocmd="getaddr">
+            <addr>0480</addr>
+            <len>1</len>
+            <unit>RT</unit>
+            <description>Compressor mode.</description>
+        </command>
+        <command name="FrostProtection" protocmd="getaddr">
+            <addr>041C</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>Frost protection mode.</description>
+        </command>
+        <command name="PrimaryPump" protocmd="getaddr">
+            <addr>0482</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>Primary circuit pump mode.</description>
+        </command>
+        <command name="PrimaryPumpSpeed" protocmd="getaddr">
+            <addr>B420</addr>
+            <len>2</len>
+            <unit>PC</unit>
+            <description>Primary circuit pump speed in %.</description>
+        </command>
+        <command name="SecondaryPump" protocmd="getaddr">
+            <addr>0484</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>Secondary circuit pump mode.</description>
+        </command>
+        <command name="SecondaryPumpSpeed" protocmd="getaddr">
+            <addr>B421</addr>
+            <len>2</len>
+            <unit>PC</unit>
+            <description>Secondary circuit pump speed in %.</description>
+        </command>
+        <command name="DHWPump" protocmd="getaddr">
+            <addr>0496</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>DHW cylinder loading pump mode.</description>
+        </command>
+        <command name="DHWCirculationPump" protocmd="getaddr">
+            <addr>0490</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>DHW Circulation pump mode.</description>
+        </command>
+        <command name="HeatingStage1" protocmd="getaddr">
+            <addr>0588</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>Electric heating stage 1 mode.</description>
+        </command>
+        <command name="HeatingStage2" protocmd="getaddr">
+            <addr>0589</addr>
+            <len>1</len>
+            <unit>OO</unit>
+            <description>Electric heating stage 2 mode.</description>
+        </command>
+        <command name="SCOP" protocmd="getaddr">
+            <addr>1680</addr>
+            <len>1</len>
+            <unit>SCOP</unit>
+            <description>SCOP.</description>
+        </command>
+        <command name="COP-Heating" protocmd="getaddr">
+            <addr>1681</addr>
+            <len>1</len>
+            <unit>SCOP</unit>
+            <description>COP Heating.</description>
+        </command>
+        <command name="COP-DHW" protocmd="getaddr">
+            <addr>1682</addr>
+            <len>1</len>
+            <unit>SCOP</unit>
+            <description>COP DHW.</description>
+        </command>
+        <command name="DHW/HeatingValve" protocmd="getaddr">
+            <addr>0494</addr>
+            <len>1</len>
+            <unit>USV</unit>
+            <description>Heating/DHW valve.</description>
+        </command>
+        <command name="Heating" protocmd="getaddr">
+            <addr>1800</addr>
+            <len>2</len>
+            <unit>UT</unit>
+            <description>Heating.</description>
+        </command>
+        <command name="CompressorHours" protocmd="getaddr">
+            <addr>0580</addr>
+            <len>4</len>
+            <unit>HS</unit>
+            <description>Compressor running hours.</description>
+        </command>
+        <command name="CompressorStarts" protocmd="getaddr">
+            <addr>0500</addr>
+            <len>4</len>
+            <unit>CO</unit>
+            <description>Number of compressor starts.</description>
+        </command>
+        <command name="CompressorSpeed" protocmd="getaddr">
+            <addr>B423</addr>
+            <len>2</len>
+            <unit>PC</unit>
+            <description>Compressor speed in %.</description>
+        </command>
+        <command name="PrimaryPumpHours" protocmd="getaddr">
+            <addr>0582</addr>
+            <len>4</len>
+            <unit>HS</unit>
+            <description>Primary pump running hours.</description>
+        </command>
+        <command name="PrimaryPumpStarts" protocmd="getaddr">
+            <addr>0502</addr>
+            <len>4</len>
+            <unit>CO</unit>
+            <description>Number of primary pump starts.</description>
+        </command>
+        <command name="SecondaryPumpHours" protocmd="getaddr">
+            <addr>0584</addr>
+            <len>4</len>
+            <unit>HS</unit>
+            <description>Secondary pump running hours.</description>
+        </command>
+        <command name="SecondaryPumpStarts" protocmd="getaddr">
+            <addr>0504</addr>
+            <len>4</len>
+            <unit>CO</unit>
+            <description>Number of secondary pump starts.</description>
+        </command>
+        <command name="ProducedHeatingEnergy" protocmd="getaddr">
+            <addr>1640</addr>
+            <len>4</len>
+            <unit>CE</unit>
+            <description>Amount of heating energy produced with compressor 1.</description>
+        </command>
+        <command name="ConsumedHeatingElectricity" protocmd="getaddr">
+            <addr>1660</addr>
+            <len>4</len>
+            <unit>CE</unit>
+            <description>Amount of electricity consumed for heating with compressor 1.</description>
+        </command>
+        <command name="ProducedWarmWaterEnergy" protocmd="getaddr">
+            <addr>1650</addr>
+            <len>4</len>
+            <unit>CE</unit>
+            <description>Amount of warm water energy produced with compressor 1.</description>
+        </command>
+        <command name="ConsumedWarmWaterElectricity" protocmd="getaddr">
+            <addr>1670</addr>
+            <len>4</len>
+            <unit>CE</unit>
+            <description>Amount of electricity consumed for warm water with compressor 1.</description>
+        </command>
+        <command name="ElectronicControllerValvePosition" protocmd="getaddr">
+            <addr>B421</addr>
+            <len>2</len>
+            <unit>PC</unit>
+            <description>Electronic controller valve position in %.</description>
+        </command>
+    </commands>
+</vito>

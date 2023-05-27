@@ -1,0 +1,39 @@
+---
+- name: Create config directory
+  file:
+    path: /etc/prometheus-viessmann-exporter
+    state: directory
+    mode: 0755
+  tags: viessmann_exporter
+
+- name: Copy config files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/prometheus-viessmann-exporter/
+  loop:
+    - commands.txt
+    - viessmann.prom.tpl
+  notify: Restart Prometheus Viessmann exporter
+  tags: viessmann_exporter
+
+- name: Copy script file
+  copy:
+    src: prometheus_viessmann_exporter.sh
+    dest: /usr/local/bin/
+    mode: 0755
+  tags: viessmann_exporter
+
+- name: Install Prometheus Viessmann exporter service file
+  copy:
+    src: prometheus-viessmann-exporter.service
+    dest: /etc/systemd/system/
+  notify: Restart Prometheus Viessmann exporter
+  tags: viessmann_exporter
+
+- name: Enable and start Prometheus Viessmann exporter
+  systemd:
+    name: prometheus-viessmann-exporter
+    daemon_reload: yes
+    enabled: yes
+    state: started
+  tags: viessmann_exporter

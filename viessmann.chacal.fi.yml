@@ -1,0 +1,91 @@
+---
+- hosts: all
+  remote_user: pi
+  gather_facts: yes
+  become: yes
+
+  handlers:
+    - include_tasks: ../../handlers/handlers.yml
+
+  vars:
+    - hostname: viessmann.chacal.fi
+    - timezone: Europe/Helsinki
+
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - common
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+    - role: sendgrid_with_dma
+      sendgrid_api_key: "{{ chacal.sendgrid.buster_base }}"
+    - role: debian_common
+      unattended_upgrades_origins: '"o=Raspbian"; "o=Raspberry Pi Foundation";'
+
+  tasks:
+    - name: Install vcontrold
+      ansible.builtin.apt:
+        deb: https://github.com/openv/vcontrold/releases/download/v0.98.12/vcontrold_0.98.12-16_armhf.deb
+      tags: vcontrold
+
+    - name: Create vcontrold config directory
+      ansible.builtin.file:
+        path: /etc/vcontrold
+        state: directory
+        mode: '0755'
+      tags: vcontrold
+
+    - name: Copy vcontrold config files
+      ansible.builtin.copy:
+        src: "./conf/viessmann.chacal.fi/{{ item }}"
+        dest: "/etc/vcontrold/{{ item }}"
+      with_items:
+        - vcontrold.xml
+        - vito.xml
+      register: config_file
+      tags:
+        - vcontrold
+        - vcontrold-config
+
+    - name: Copy vcontrold unit file
+      copy:
+        src: ./conf/viessmann.chacal.fi/vcontrold.service
+        dest: /etc/systemd/system/vcontrold.service
+      register: unit_file
+      tags:
+        - vcontrold
+        - vcontrold-config
+
+    - name: Enable vcontrold service and start it
+      systemd: name=vcontrold daemon_reload=yes state=restarted enabled=yes
+      when: unit_file.changed or config_file.changed
+      tags:
+        - vcontrold
+        - vcontrold-config
+
+    - name: Install Prometheus Viessmann exporter
+      include_role:
+        name: prometheus_viessmann_exporter
+      tags: viessmann_exporter
+
+    #
+    #  Install ufw firewall as vcontrold has no access control over network
+    #
+    - name: Install ufw
+      apt:
+        state: latest
+        pkg: ufw
+      tags: firewall
+
+    - name: Allow SSH traffic in
+      ufw: rule=allow name=ssh
+      tags: firewall
+
+    - name: Allow Prometheus scraping in
+      ufw: rule=allow port=9100 proto=tcp
+      tags: firewall
+
+    - name: Enable firewall & disable logging
+      ufw: state=enabled policy=deny logging=off
+      tags: firewall

@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<V-Control xmlns:vcontrol="http://www.openv.de/vcontrol">
+    <unix>
+        <config>
+            <serial>
+                <tty>/dev/ttyUSB0</tty>
+            </serial>
+            <net>
+                <port>3002</port>
+            </net>
+            <logging>
+                <syslog>y</syslog>
+                <debug>n</debug>
+            </logging>
+            <device ID="204D"/>
+        </config>
+    </unix>
+    <units>
+        <!-- Device list -->
+        <unit name="DeviceType">
+            <abbrev>DT</abbrev>
+            <type>enum</type>
+            <enum bytes="20 4D" text="Vitocal 333-G ID=204D Protokoll:P300"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+
+        <!-- Temperatures -->
+        <!-- Some definitions are redundant - kept for compatibility reasons -->
+        <unit name="Temperature (short)">
+            <abbrev>UT</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>short</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature (short)">
+            <abbrev>TD</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>short</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature">
+            <abbrev>T100</abbrev>
+            <calc get="V/100" set="V*100"/>
+            <type>short</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature (byte)">
+            <abbrev>UT1</abbrev>
+            <calc get="V/2" set="V*2"/>
+            <type>char</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature (unsigned byte)">
+            <abbrev>UT1U</abbrev>
+            <calc get="V/2" set="V*2"/>
+            <type>uchar</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature (unsinged byte integer)">
+            <abbrev>UTI</abbrev>
+            <calc get="V" set="V"/>
+            <type>uchar</type>
+            <entity>°C</entity>
+        </unit>
+        <unit name="Temperature (unsigned byte integer)">
+            <abbrev>T1U</abbrev>
+            <calc get="V" set="V"/>
+            <type>uchar</type>
+            <entity>°C</entity>
+        </unit>
+
+        <!-- Relative values -->
+
+        <unit name="SCOP">
+            <abbrev>SCOP</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>uchar</type>
+            <entity></entity>
+        </unit>
+        <unit name="Energy">
+            <abbrev>ENE</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>uchar</type>
+            <entity>kW</entity>
+        </unit>
+        <unit name="Percent">
+            <abbrev>PR</abbrev>
+            <calc get="V/2" set="V*2"/>
+            <type>short</type>
+            <entity>%</entity>
+        </unit>
+        <unit name="Percent (unsigned byte integer)">
+            <abbrev>PC</abbrev>
+            <calc get="V" set="V"/>
+            <type>uchar</type>
+            <entity>%</entity>
+        </unit>
+        <unit name="Percent (unsigned byte integer)">
+            <abbrev>PR1</abbrev>
+            <calc get="V" set="V"/>
+            <type>uchar</type>
+            <entity>%</entity>
+        </unit>
+
+        <!-- Counters -->
+
+        <unit name="Counter">
+            <abbrev>CO</abbrev>
+            <calc get="V" set="V"/>
+            <type>int</type>
+            <entity></entity>
+        </unit>
+        <unit name="Counter (kWh)">
+            <abbrev>CE</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>int</type>
+            <entity>kWh</entity>
+        </unit>
+        <unit name="Counter (hours)">
+            <abbrev>CS</abbrev>
+            <calc get="V/3600" set="V*3600"/>
+            <type>uint</type>
+            <entity>h</entity>
+        </unit>
+        <unit name="Counter (liter)">
+            <abbrev>COL</abbrev>
+            <calc get="V/1000" set="V*1000"/>
+            <type>int</type>
+            <entity>l</entity>
+        </unit>
+
+        <!-- Time units -->
+
+        <unit name="SystemTime">
+            <abbrev>TI</abbrev>
+            <type>systime</type>
+        </unit>
+        <unit name="CycleTime">
+            <abbrev>CT</abbrev>
+            <type>cycletime</type>
+        </unit>
+        <unit name="Burner Operation Hours">
+            <abbrev>BH</abbrev>
+            <type>uchar</type>
+            <calc get="(B1 * 100)+B0"/>
+            <entity>h</entity>
+        </unit>
+        <unit name="Operation Time">
+            <abbrev>HS</abbrev>
+            <calc get="V/3600" set="V*3600"/>
+            <type>uint</type>
+            <entity>h</entity>
+        </unit>
+        <unit name="Operation Hours">
+            <abbrev>HOP</abbrev>
+            <calc get="V" set="V"/>
+            <type>uint</type>
+            <entity>h</entity>
+        </unit>
+
+
+        <!-- Status values -->
+
+        <unit name="Status">
+            <abbrev>ST</abbrev>
+            <calc get="V" set="V"/>
+            <type>char</type>
+            <entity></entity>
+        </unit>
+        <unit name="ReturnStatus">
+            <abbrev>RT</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="0"/>
+            <enum bytes="01" text="1"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="On/Off">
+            <abbrev>OO</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="Off"/>
+            <enum bytes="01" text="On"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="SetReturnStatus">
+            <abbrev>SR</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="OK"/>
+            <enum bytes="05" text="SYNC (NOT OK)"/>
+            <enum text="NOT OK"/>
+        </unit>
+        <unit name="Bitstatus">
+            <abbrev>BST</abbrev>
+            <type>uchar</type>
+            <icalc get="(B0 &amp; (0x01&lt;&lt;BP))&gt;&gt; BP"/>
+            <enum bytes="00" text="0"/>
+            <enum bytes="01" text="1"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Internal Pump Status">
+            <abbrev>IPS</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="Off"/>
+            <enum bytes="01" text="On"/>
+            <enum bytes="02" text="UNKNOWN (02)"/>
+            <enum bytes="03" text="Off"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+
+        <!-- Errors -->
+
+        <unit name="Error Status">
+            <abbrev>ES</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="No error"/>
+            <enum bytes="01" text="ERROR"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Error Message">
+            <abbrev>EM</abbrev>
+            <type>errstate</type>
+            <enum bytes="00" text="Normal operation (no error)"/>
+            <enum bytes="0F" text="Maintenance (to reset: Set code address 24 to 0)"/>
+            <enum bytes="10" text="Short outdoor temperature sensor"/>
+            <enum bytes="18" text="Interruption outdoor temperature sensor"/>
+            <enum bytes="19" text="Communication error with wireless outdoor temperature sensor"/>
+            <enum bytes="1A" text="Communication error on KM-BUS (differential temperature controller)"/>
+            <enum bytes="1D" text="No connection to flow sensor"/>
+            <enum bytes="1E" text="Flow sensor defect"/>
+            <enum bytes="1F" text="Flow sensor defect"/>
+            <enum bytes="20" text="Short flowline temperature sensor"/>
+            <enum bytes="21" text="Short return flow temperature sensor"/>
+            <enum bytes="28" text="Interruption flowline temperature sensor"/>
+            <enum bytes="29" text="Interruption return flow temperature sensor"/>
+            <enum bytes="30" text="Short boiler temperature sensor"/>
+            <enum bytes="38" text="Interruption boiler temperature sensor"/>
+            <enum bytes="40" text="Short flowline temperature sensor M2"/>
+            <enum bytes="42" text="Interruption flowline temperature sensor M2"/>
+            <enum bytes="44" text="Short flowline temperature sensor M3"/>
+            <enum bytes="48" text="Interruption flowline temperature sensor M3"/>
+            <enum bytes="4C" text="Interruption flowline temperature sensor M3"/>
+            <enum bytes="50" text="Short buffer temperature sensor"/>
+            <enum bytes="51" text="Short warm-water outflow temperature sensor"/>
+            <enum bytes="58" text="Interruption buffer temperature sensor"/>
+            <enum bytes="59" text="Interruption warm-water outflow temperature sensor"/>
+            <enum bytes="60" text="Communication error with fuel cell unit"/>
+            <enum bytes="61" text="Fuel cell error"/>
+            <enum bytes="7C" text="Short return flow temperature sensor"/>
+            <enum bytes="7D" text="Interruption return flow temperature sensor"/>
+            <enum bytes="7E" text="Short upper buffer temperature sensor"/>
+            <enum bytes="7F" text="Interruption upper buffer temperature sensor"/>
+            <enum bytes="80" text="Short lower buffer temperature sensor"/>
+            <enum bytes="81" text="Interruption lower buffer temperature sensor"/>
+            <enum bytes="92" text="Solar: Short temperature sensor collector"/>
+            <enum bytes="93" text="Solar: Short sensor S3"/>
+            <enum bytes="94" text="Solar: Short buffer temperature sensor"/>
+            <enum bytes="9A" text="Solar: Interruption temperature sensor collector"/>
+            <enum bytes="9B" text="Solar: Interruption sensor S3"/>
+            <enum bytes="9C" text="Solar: Interruption buffer temperature sensor"/>
+            <enum bytes="9F" text="Solar: Error in solar unit (see solar controller)"/>
+            <enum bytes="A2" text="Water pressure too low"/>
+            <enum bytes="A3" text="Exhaust temperature sensor misplaced"/>
+            <enum bytes="A4" text="Maximum pressure exceeded"/>
+            <enum bytes="A7" text="Defect of panel"/>
+            <enum bytes="A8" text="Air in internal circulation pump or minimum volumetric flow not reached"/>
+            <enum bytes="A9" text="Internal circulation pump blocked"/>
+            <enum bytes="B0" text="Short exhaust temperature sensor"/>
+            <enum bytes="B1" text="Communication error with panel"/>
+            <enum bytes="B4" text="Internal error (electronics)"/>
+            <enum bytes="B5" text="Internal error (electronics)"/>
+            <enum bytes="B6" text="Invalid hardware ID (electronics)"/>
+            <enum bytes="B7" text="Internal error (boiler code plug)"/>
+            <enum bytes="B8" text="Interruption exhaust temperature sensor"/>
+            <enum bytes="B9" text="Internal error (repeat data input)"/>
+            <enum bytes="BA" text="Communication error extension for M2"/>
+            <enum bytes="BB" text="Communication error extension for M3"/>
+            <enum bytes="BC" text="Communication error Vitotrol remote M1"/>
+            <enum bytes="BD" text="Communication error Vitotrol remote M2"/>
+            <enum bytes="BE" text="Communication error Vitotrol remote M3"/>
+            <enum bytes="BF" text="Wrong communication module LON"/>
+            <enum bytes="C1" text="External security device (Boiler cools down)"/>
+            <enum bytes="C2" text="Communication error with solar controller"/>
+            <enum bytes="C3" text="Communication error with extension AM1"/>
+            <enum bytes="C4" text="Communication error with extension Open Therm"/>
+            <enum bytes="C5" text="Communication error with rotational speed controlled heat circuit pump M1"/>
+            <enum bytes="C6" text="Communication error with rotational speed controlled heat circuit pump M2"/>
+            <enum bytes="C7" text="Wrong coding E5 of heat circuit pump"/>
+            <enum bytes="C9" text="Error reporting contact of switching module V active"/>
+            <enum bytes="CD" text="Communication error with Vitocom 100 (KM-BUS)"/>
+            <enum bytes="CE" text="Communication error with switching module V"/>
+            <enum bytes="CF" text="Communication error with LON module"/>
+            <enum bytes="D1" text="Burner error"/>
+            <enum bytes="D4"
+                  text="Security temperature limiter has triggered or error reporting module incorrectly connected"/>
+            <enum bytes="D6" text="Error reported via DE1 on extension EA1"/>
+            <enum bytes="D7" text="Error reported via DE2 on extension EA1"/>
+            <enum bytes="D8" text="Error reported via DE3 on extension EA1"/>
+            <enum bytes="DA" text="Short room temperature sensor M1"/>
+            <enum bytes="DB" text="Short room temperature sensor M2"/>
+            <enum bytes="DC" text="Short room temperature sensor M3"/>
+            <enum bytes="DD" text="Interruption room temperature sensor M1"/>
+            <enum bytes="DE" text="Interruption room temperature sensor M2"/>
+            <enum bytes="DF" text="Interruption room temperature sensor M3"/>
+            <enum bytes="E0" text="Error external LON participant"/>
+            <enum bytes="E1" text="Ionisation flow too high during calibration"/>
+            <enum bytes="E2" text="Heat demand too low during calibration"/>
+            <enum bytes="E3" text="Heat demand too low during calibration - temperature guard switched off"/>
+            <enum bytes="E4" text="Power supply error 24V"/>
+            <enum bytes="E5" text="Internal error (ionisation electrode, flame amplifier)"/>
+            <enum bytes="E6" text="Exhaust/Air inflow system blocked or water pressure too low"/>
+            <enum bytes="E7" text="Ionisation flow too low during calibration"/>
+            <enum bytes="E8" text="Ionisation flow not within valid range"/>
+            <enum bytes="EA"
+                  text="Ionisation flow not within valid range during calibration (difference to last measurement too large)"/>
+            <enum bytes="EB" text="Flame extinguished too often during calibration"/>
+            <enum bytes="EC" text="Parameter eror during calibration"/>
+            <enum bytes="ED" text="Internal error (Replace control unit)"/>
+            <enum bytes="EE" text="No/too low flame signal at burner start"/>
+            <enum bytes="EF" text="Flame extiguished right after ignition (within the safety period)"/>
+            <enum bytes="F0" text="Internal error (Replace control unit)"/>
+            <enum bytes="F1" text="Exhaust temperature limiter has triggered"/>
+            <enum bytes="F2" text="Temperature limiter has triggered"/>
+            <enum bytes="F3" text="Flame signal already on on burner start"/>
+            <enum bytes="F4" text="No flame signal"/>
+            <enum bytes="F7" text="Differential pressure sensor broken"/>
+            <enum bytes="F8" text="Fuel valve closes too late"/>
+            <enum bytes="F9" text="Blower rotational speed too low on burner start"/>
+            <enum bytes="FA" text="Blower stand-still not achieved"/>
+            <enum bytes="FC"
+                  text="Gas combination regulator broken, wrong control of modulation valve or exhaust blocked"/>
+            <enum bytes="FD" text="Error in gas fire automatic/code plug missing (also error B7 will show)"/>
+            <enum bytes="FE"
+                  text="Strong electro-magnetic field (EMV) closeby or electronics broken or: codeplug wrong or broken or mainboard broken"/>
+            <enum bytes="FF" text="Strong electro-magnetic field (EMV) closeby or internal error or R-key blocked"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="ErrorStateGWG">
+            <abbrev>ESG</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="No Error"/>
+            <enum bytes="02" text="Error Security Chain"/>
+            <enum bytes="04" text="Burner Error 04"/>
+            <enum bytes="05" text="Burner Error 05"/>
+            <enum bytes="07" text="Burner Error 07"/>
+            <enum bytes="08" text="Burner Error 09"/>
+            <enum bytes="08" text="Burner Error 09"/>
+            <enum bytes="0A" text="Burner Error 10"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+
+
+        <!-- Operation modes -->
+
+        <unit name="Operation Mode">
+            <abbrev>OM</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="Standby"/>
+            <enum bytes="01" text="DHW only"/>
+            <enum bytes="02" text="Heating and DHW"/>
+            <enum bytes="04" text="Continuous Reduced"/>
+            <enum bytes="05" text="Continuous Normal"/>
+            <enum bytes="06" text="Shutdown"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+
+
+        <!-- Miscellaneous -->
+
+        <unit name="Device Template">
+            <abbrev>DC</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="No Heat Circuit/Buffer --> Multiple boilers setup"/>
+            <enum bytes="01" text="A1"/>
+            <enum bytes="02" text="A1 + WW"/>
+            <enum bytes="03" text="M2"/>
+            <enum bytes="04" text="M2 + WW"/>
+            <enum bytes="05" text="A1 + M2"/>
+            <enum bytes="06" text="A1 + M2 + WW"/>
+            <enum bytes="07" text="M2 + M3"/>
+            <enum bytes="08" text="M2 + M3 + WW"/>
+            <enum bytes="09" text="A1 + M2 + M3"/>
+            <enum bytes="0A" text="A1 + M2 + M3 + WW"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Buffer Priority">
+            <abbrev>BP</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="No priority"/>
+            <enum bytes="01" text="Mixer priority"/>
+            <enum bytes="02" text="Buffer priority"/>
+            <enum bytes="03" text="floating priority"/>
+            <enum bytes="04" text="floating priority"/>
+            <enum bytes="05" text="floating priority"/>
+            <enum bytes="06" text="floating priority"/>
+            <enum bytes="07" text="floating priority"/>
+            <enum bytes="08" text="floating priority"/>
+            <enum bytes="09" text="floating priority"/>
+            <enum bytes="0A" text="floating priority"/>
+            <enum bytes="0B" text="floating priority"/>
+            <enum bytes="0C" text="floating priority"/>
+            <enum bytes="0D" text="floating priority"/>
+            <enum bytes="0E" text="floating priority"/>
+            <enum bytes="0F" text="floating priority"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Summer Logic">
+            <abbrev>SL</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="No pump logic"/>
+            <enum bytes="01" text="Outdoor Temperature > Room Target Temperature + 5K"/>
+            <enum bytes="02" text="Outdoor Temperature > Room Target Temperature + 4K"/>
+            <enum bytes="03" text="Outdoor Temperature > Room Target Temperature + 3K"/>
+            <enum bytes="04" text="Outdoor Temperature > Room Target Temperature + 2K"/>
+            <enum bytes="05" text="Outdoor Temperature > Room Target Temperature + 1K"/>
+            <enum bytes="06" text="Outdoor Temperature > Room Target Temperature"/>
+            <enum bytes="07" text="Outdoor Temperature > Room Target Temperature - 1K"/>
+            <enum bytes="08" text="Outdoor Temperature > Room Target Temperature - 2K"/>
+            <enum bytes="09" text="Outdoor Temperature > Room Target Temperature - 3K"/>
+            <enum bytes="0A" text="Outdoor Temperature > Room Target Temperature - 4K"/>
+            <enum bytes="0B" text="Outdoor Temperature > Room Target Temperature - 5K"/>
+            <enum bytes="0C" text="Outdoor Temperature > Room Target Temperature - 6K"/>
+            <enum bytes="0D" text="Outdoor Temperature > Room Target Temperature - 7K"/>
+            <enum bytes="0E" text="Outdoor Temperature > Room Target Temperature - 8K"/>
+            <enum bytes="0F" text="Outdoor Temperature > Room Target Temperature - 9K"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Heating Curve Steepness">
+            <abbrev>UN</abbrev>
+            <calc get="V/10" set="V*10"/>
+            <type>short</type>
+            <entity></entity>
+        </unit>
+        <unit name="Volumetric Flow">
+            <abbrev>VS</abbrev>
+            <calc get="V" set="V"/>
+            <type>ushort</type>
+            <entity>l/h</entity>
+        </unit>
+        <unit name="HKP Pump Type">
+            <abbrev>HKT</abbrev>
+            <type>uchar</type>
+            <icalc get="(B0 &amp; (0x01&lt;&lt;BP))&gt;&gt; BP"/>
+            <enum bytes="00" text="staged"/>
+            <enum bytes="01" text="rotational speed controlled"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Mixer Valve Setting">
+            <abbrev>USV</abbrev>
+            <type>enum</type>
+            <enum bytes="00" text="Heating"/>
+            <enum bytes="01" text="DHW"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Holiday Mode">
+            <abbrev>BFB</abbrev>
+            <type>uchar</type>
+            <icalc get="(B7 &amp; (0x01&lt;&lt;BP))&gt;&gt; BP"/>
+            <enum bytes="00" text="inactive"/>
+            <enum bytes="01" text="active"/>
+            <enum text="UNKNOWN"/>
+        </unit>
+        <unit name="Inventory Number">
+            <abbrev>SN</abbrev>
+            <type>uint</type>
+            <icalc get="((((((((((((B0-48)*10)+(B1-48))*10)+(B2-48))*10)+(B3-48))*10)+(B4-48))*10)+(B5-48))*10)+B6-48"/>
+        </unit>
+
+
+    </units>
+    <protocols>
+        <protocol name="KW2">
+            <macros>
+                <macro name="SYNC">
+                    <command>SEND 04;WAIT 05</command>
+                </macro>
+                <macro name="GETADDR">
+                    <command>SEND 01 F7</command>
+                </macro>
+                <macro name="SETADDR">
+                    <command>SEND 01 F4</command>
+                </macro>
+            </macros>
+            <commands>
+                <command name="getaddr">
+                    <send>SYNC;GETADDR $addr $hexlen;RECV $len $unit</send>
+                </command>
+                <command name="setaddr">
+                    <send>SYNC;SETADDR $addr $hexlen;SEND BYTES $unit;RECV 1 SR</send>
+                </command>
+            </commands>
+        </protocol>
+        <protocol name="GWG">
+            <macros>
+                <macro name="SYNC">
+                    <command>SEND 04;WAIT 05</command>
+                </macro>
+                <macro name="GETADDR">
+                    <command>SEND 01 CB</command>
+                </macro>
+                <macro name="GETBADDR">
+                    <command>SEND 01 9E</command>
+                </macro>
+                <macro name="GETVADDR">
+                    <command>SEND 01 C7</command>
+                </macro>
+                <macro name="GETPADDR">
+                    <command>SEND 01 6E</command>
+                </macro>
+                <macro name="GETEADDR">
+                    <command>SEND 01 AE</command>
+                </macro>
+                <macro name="GETXADDR">
+                    <command>SEND 01 C5</command>
+                </macro>
+                <macro name="GETKMADDR">
+                    <command>SEND 01 43</command>
+                </macro>
+            </macros>
+            <commands>
+                <command name="getaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="gettestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="getbaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETBADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="getbtestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETBADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="getpaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETPADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="getptestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETPADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="getvaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETVADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="getvtestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETVADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="geteaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETEADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="getetestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETEADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="getxaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETXADDR $addr $hexlen 04;RECV $len $unit</send>
+                </command>
+                <command name="getxtestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETXADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="getkmaddr">
+                    <send>SYNC;GETKMDDR $addr $hexlen 04;RECV $len $unit</send>
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                </command>
+                <command name="getkmtestaddr">
+                    <retry>3</retry>
+                    <recvTimeout>150</recvTimeout>
+                    <send>SYNC;GETKMADDR;SEND BYTES;SEND 01 04;RECV 1</send>
+                </command>
+                <command name="init">
+                    <send>SEND 16 00 00;PAUSE 100;SEND 16 00 00;PAUSE 100;SEND 16 00 00;PAUSE 100;SEND 16 00 00;PAUSE
+                        100
+                    </send>
+                </command>
+                <command name="setaddr">
+                    <send>SYNC;RECV 1</send>
+                </command>
+            </commands>
+        </protocol>
+        <protocol name="P300">
+            <pid>41</pid>
+            <macros>
+                <macro name="GETADDR">
+                    <command>SEND 00 01</command>
+                </macro>
+                <macro name="SETADDR">
+                    <command>SEND 00 02</command>
+                </macro>
+            </macros>
+            <commands>
+                <command name="getaddr">
+                    <send>GETADDR $addr $hexlen;RECV $len $unit</send>
+                </command>
+                <command name="setaddr">
+                    <send>SETADDR $addr $hexlen;SEND BYTES $unit;RECV 1 SR</send>
+                </command>
+            </commands>
+        </protocol>
+    </protocols>
+    <extern xmlns:xi="http://www.w3.org/2003/XInclude">
+        <xi:include href="vito.xml" parse="xml"/>
+    </extern>
+</V-Control>

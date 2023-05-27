@@ -1,0 +1,12 @@
+[Unit]
+Description=Prometheus Viessmann exporter
+
+[Service]
+Restart=always
+User=root
+Environment=TMPDIR=/var/lib/prometheus/node-exporter
+ExecStart=/usr/local/bin/prometheus_viessmann_exporter.sh
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

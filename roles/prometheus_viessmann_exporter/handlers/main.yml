@@ -1,0 +1,6 @@
+---
+- name: Restart Prometheus Viessmann exporter
+  systemd:
+    name: prometheus-viessmann-exporter
+    daemon_reload: yes
+    state: restarted
