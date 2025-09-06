@@ -23,3 +23,10 @@
     daemon-reload: yes
     enabled: yes
     state: started
+
+- name: Restart node exporter
+  systemd:
+    name: prometheus-node-exporter
+    daemon-reload: yes
+    enabled: yes
+    state: restarted
