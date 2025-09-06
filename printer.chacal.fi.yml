@@ -32,6 +32,8 @@
     - common
     - role: prometheus_node_exporter
     - role: self_monitoring
+    - role: prometheus_journal_exporter
+      tags: journal_exporter
     - role: ikifi_with_dma
       tags: ikifi
     - role: debian_common

@@ -414,7 +414,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
+        "w": 4,
         "x": 6,
         "y": 1
       },
@@ -1527,7 +1527,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 11,
+        "x": 10,
         "y": 1
       },
       "id": 254,
@@ -1699,6 +1699,109 @@
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "hidden",
+            "barAlignment": 0,
+            "barWidthFactor": 0.8,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepBefore",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "rowspm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 14,
+        "y": 1
+      },
+      "id": 376,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "rate(journal_lines_priority_total{instance=~\"$host.*\"}[$__rate_interval]) * 60",
+          "fullMetaSearch": false,
+          "includeNullMetadata": false,
+          "instant": false,
+          "legendFormat": "{{priority}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Journal entries",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
           "displayName": "",
           "mappings": [
             {
@@ -1733,7 +1836,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 15,
+        "x": 18,
         "y": 1
       },
       "id": 165,
@@ -1760,11 +1863,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\",mountpoint!~\"/boot.*\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!~\"/boot.*\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!~\"/boot.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mountpoint}}",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1816,7 +1921,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 18,
+        "x": 21,
         "y": 1
       },
       "id": 95,
@@ -1898,5 +2003,5 @@
   "timezone": "",
   "title": "Server summary",
   "uid": "4d01a4c9-a34a-41e9-8247-77f9cd89b2f0",
-  "version": 2
+  "version": 4
 }

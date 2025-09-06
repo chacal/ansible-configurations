@@ -66,6 +66,8 @@
     - role: ikifi_with_dma
       tags: ikifi
     - role: prometheus_node_exporter
+    - role: prometheus_journal_exporter
+      tags: journal_exporter
     - role: self_monitoring
       tags: self_monitoring
     - role: ouroboros

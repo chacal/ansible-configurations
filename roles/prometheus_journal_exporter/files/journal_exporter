@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Where node_exporter reads textfile metrics
+TEXTDIR="/var/lib/prometheus/node-exporter"
+METRIC="${TEXTDIR}/journal_lines.prom"
+
+# State
+STATEDIR="/etc/prometheus-journal-exporter"
+CURSOR_FILE="${STATEDIR}/cursor.state"
+INIT_FLAG="${STATEDIR}/.initialized"
+mkdir -p "${STATEDIR}" "${TEXTDIR}"
+touch "${CURSOR_FILE}"
+
+
+# ---- FIRST-RUN PRIMING: avoid scanning the whole journal ----
+if [[ ! -f "${INIT_FLAG}" ]]; then
+  # Grab the tail cursor by reading exactly one entry (cheap) and extracting __CURSOR.
+  CUR=$(journalctl -n 1 --no-pager -o json 2>/dev/null | sed -n 's/.*"__CURSOR":"\([^"]*\)".*/\1/p' || true)
+  if [[ -n "${CUR:-}" ]]; then
+    printf '%s\n' "$CUR" > "${CURSOR_FILE}"
+  fi
+
+  # Initialize counters to zero and write a zeroed metrics file so Prometheus has types/series.
+  declare -A PNAME=([0]=emerg [1]=alert [2]=crit [3]=err [4]=warning [5]=notice [6]=info [7]=debug)
+  for p in {0..7}; do echo 0 > "${STATEDIR}/prio${p}.counter"; done
+  echo 0 > "${STATEDIR}/total.counter"
+
+  TMP="${METRIC}.tmp"
+  {
+    echo "# HELP journal_lines_total Cumulative systemd-journal entries observed by this host."
+    echo "# TYPE journal_lines_total counter"
+    echo "journal_lines_total 0"
+    echo "# HELP journal_lines_last_run Entries seen in the most recent collection interval."
+    echo "# TYPE journal_lines_last_run gauge"
+    echo "journal_lines_last_run 0"
+    echo "# HELP journal_lines_priority_total Cumulative journal entries by syslog priority."
+    echo "# TYPE journal_lines_priority_total counter"
+    for p in {0..7}; do
+      echo "journal_lines_priority_total{priority=\"${PNAME[$p]}\",level=\"${p}\"} 0"
+    done
+    echo "# HELP journal_lines_priority_last_run Entries seen (this run) by syslog priority."
+    echo "# TYPE journal_lines_priority_last_run gauge"
+    for p in {0..7}; do
+      echo "journal_lines_priority_last_run{priority=\"${PNAME[$p]}\",level=\"${p}\"} 0"
+    done
+  } > "${TMP}"
+  mv "${TMP}" "${METRIC}"
+
+  touch "${INIT_FLAG}"
+  exit 0
+fi
+
+
+# Priority map (syslog levels 0..7)
+# 0 emerg, 1 alert, 2 crit, 3 err, 4 warning, 5 notice, 6 info, 7 debug
+declare -A PNAME=(
+  [0]=emerg [1]=alert [2]=crit [3]=err
+  [4]=warning [5]=notice [6]=info [7]=debug
+)
+
+# Ensure per-priority counter files exist
+for p in {0..7}; do
+  [[ -f "${STATEDIR}/prio${p}.counter" ]] || echo 0 > "${STATEDIR}/prio${p}.counter"
+done
+[[ -f "${STATEDIR}/total.counter" ]] || echo 0 > "${STATEDIR}/total.counter"
+
+# Read new entries since last cursor, output JSON (one object per line)
+# Then count by PRIORITY with awk (no jq dependency).
+# Note: if PRIORITY missing, treat as "6" (info) to avoid losing the line.
+readarray -t LINES < <(journalctl --cursor-file="${CURSOR_FILE}" --no-pager --quiet -o json || true)
+
+declare -A NEW=([0]=0 [1]=0 [2]=0 [3]=0 [4]=0 [5]=0 [6]=0 [7]=0)
+if ((${#LINES[@]})); then
+  # Parse each JSON line, grab PRIORITY (0..7), default to 6 (info) if absent.
+  # Using a simple regex to avoid dragging in jq.
+  for line in "${LINES[@]}"; do
+    if [[ $line =~ \"PRIORITY\"[[:space:]]*:[[:space:]]*\"?([0-7])\"? ]]; then
+      prio="${BASH_REMATCH[1]}"
+    else
+      prio=6
+    fi
+    NEW[$prio]=$(( NEW[$prio] + 1 ))
+  done
+fi
+
+# Sum up total for this run
+NEW_TOTAL=0
+for p in {0..7}; do NEW_TOTAL=$(( NEW_TOTAL + NEW[$p] )); done
+
+# Update persistent counters
+TOTAL=$(<"${STATEDIR}/total.counter")
+TOTAL=$(( TOTAL + NEW_TOTAL ))
+echo "${TOTAL}" > "${STATEDIR}/total.counter"
+
+for p in {0..7}; do
+  CUR=$(<"${STATEDIR}/prio${p}.counter")
+  CUR=$(( CUR + NEW[$p] ))
+  echo "${CUR}" > "${STATEDIR}/prio${p}.counter"
+done
+
+# Write Prometheus metrics atomically
+TMP="${METRIC}.tmp"
+{
+  echo "# HELP journal_lines_total Cumulative systemd-journal entries observed by this host."
+  echo "# TYPE journal_lines_total counter"
+  echo "journal_lines_total ${TOTAL}"
+  echo "# HELP journal_lines_last_run Entries seen in the most recent collection interval."
+  echo "# TYPE journal_lines_last_run gauge"
+  echo "journal_lines_last_run ${NEW_TOTAL}"
+
+  echo "# HELP journal_lines_priority_total Cumulative journal entries by syslog priority."
+  echo "# TYPE journal_lines_priority_total counter"
+  for p in {0..7}; do
+    VAL=$(<"${STATEDIR}/prio${p}.counter")
+    echo "journal_lines_priority_total{priority=\"${PNAME[$p]}\",level=\"${p}\"} ${VAL}"
+  done
+
+  echo "# HELP journal_lines_priority_last_run Entries seen (this run) by syslog priority."
+  echo "# TYPE journal_lines_priority_last_run gauge"
+  for p in {0..7}; do
+    echo "journal_lines_priority_last_run{priority=\"${PNAME[$p]}\",level=\"${p}\"} ${NEW[$p]}"
+  done
+} > "${TMP}"
+mv "${TMP}" "${METRIC}"

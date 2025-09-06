@@ -1,0 +1,21 @@
+---
+- name: Create config directory
+  file:
+    path: /etc/prometheus-journal-exporter
+    state: directory
+    mode: 0755
+  tags: journal_exporter
+
+- name: Copy script file
+  copy:
+    src: journal_exporter
+    dest: /usr/local/bin/
+    mode: 0755
+  tags: journal_exporter
+
+- name: Run Prometheus journal exporter periodically
+  cron:
+    name: "Prometheus journal exporter"
+    minute: "*"
+    job: "/usr/local/bin/journal_exporter 2>&1 | /usr/bin/logger -t journal_exporter"
+  tags: journal_exporter

@@ -458,11 +458,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!=\"/boot\"}",
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!~\"/boot.*\"} - node_filesystem_avail_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!~\"/boot.*\"}) * 100 / node_filesystem_size_bytes{instance=~\"$host.*\",fstype!~\"zfs.*\",fstype!~\"fuse.*\",fstype!~\"tmpfs\",mountpoint!~\"/boot.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mountpoint}}",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -553,6 +555,90 @@
         }
       ],
       "title": "APT Upgrades Pending",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "rowspm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 18,
+        "y": 1
+      },
+      "id": 51,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "rate(journal_lines_total{instance=~\"$host.*\"}[$__rate_interval])*60",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Journal entries",
       "type": "stat"
     },
     {
@@ -724,6 +810,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "custom_cpu_usage{instance=~\"$host.*\",mode=\"user\"}",
           "format": "time_series",
           "hide": false,
@@ -2407,11 +2494,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "irate(node_disk_reads_completed_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m]) + irate(node_disk_writes_completed_total{instance=~\"$host.*\",device=~\"$blk_devices\"}[1m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{device}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -2949,12 +3038,115 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.8,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepBefore",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "rowspm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 50,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "rate(journal_lines_priority_total{instance=~\"$host.*\"}[$__rate_interval]) * 60",
+          "fullMetaSearch": false,
+          "includeNullMetadata": false,
+          "instant": false,
+          "legendFormat": "{{priority}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Journal entries",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 59
       },
       "id": 27,
       "panels": [],
@@ -3028,7 +3220,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 60
       },
       "id": 29,
       "options": {
@@ -3131,7 +3323,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 60
+        "y": 69
       },
       "id": 43,
       "options": {
@@ -3174,7 +3366,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 78
       },
       "id": 45,
       "panels": [],
@@ -3191,7 +3383,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 70
+        "y": 79
       },
       "id": 47,
       "options": {
@@ -3227,7 +3419,7 @@
         "h": 18,
         "w": 12,
         "x": 12,
-        "y": 70
+        "y": 79
       },
       "id": 49,
       "options": {
@@ -3342,5 +3534,5 @@
   "timezone": "",
   "title": "Servers",
   "uid": "17cfa698-5986-4664-b349-c93d217ac76d",
-  "version": 3
+  "version": 6
 }

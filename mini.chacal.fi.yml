@@ -24,6 +24,8 @@
     - role: debian_common
       unattended_upgrades_origins: '"o=Proxmox";"o=elastic";'
     - role: filebeat_remove
+    - role: prometheus_journal_exporter
+      tags: journal_exporter
 
   tasks:
     - name: Install prometheus self reporting for node exporter
