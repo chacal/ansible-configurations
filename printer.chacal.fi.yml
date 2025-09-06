@@ -1,7 +1,19 @@
+#
+# 1. Flash Raspbian using Raspberry Pi Imager
+# 2. Enable SSH using public key
+# 3. Set username to pi
+# 4. Configure liilaa WLAN
+# 5. Set locale
+#
+# 6. Boot Raspi & setup Static DHCP address on muuri: 10.50.1.12
+# 7. Provision using this playbook
+# 8. Add following lines to <Location /admin> in cupsd.conf
+#      Allow @LOCAL
+#      Allow 10.50.99.*
+#      Allow 10.10.0.*
 ---
-- hosts: all
+- hosts: printer.chacal.fi
   remote_user: pi
-  gather_facts: yes
   become: yes
 
   handlers:
@@ -11,11 +23,7 @@
 
   vars:
     - hostname: printer.chacal.fi
-    - apt_upgrade: false
     - timezone: Europe/Helsinki
-    - lan_network: 10.90.70.0/24
-    - router_ip_address: 10.90.70.1
-    - lan_ip_address: 10.90.70.3
 
   vars_files:
     - secrets.yml
@@ -24,61 +32,25 @@
     - common
     - role: prometheus_node_exporter
     - role: self_monitoring
-    - role: wificlient
-      wificlient_interface: wlan0
-      wificlient_networks:
-       - ssid: "{{ chacal.known_wlans.home.ssid }}"
-         psk: "{{ chacal.known_wlans.home.psk }}"
-    - role: sendgrid_with_dma
-      sendgrid_api_key: "{{ chacal.sendgrid.buster_base }}"
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: debian_common
       unattended_upgrades_origins: '"o=Raspbian"; "o=Raspberry Pi Foundation";'
 
   tasks:
-    - name: Remove dhcpcd
-      apt:
-        state: absent
-        cache_valid_time: 3600
-        pkg:
-          - dhcpcd5
-
-    - name: Setup networking
-      copy:
-        dest: /etc/network/interfaces
-        content: |
-          source-directory /etc/network/interfaces.d
-
-          auto lo
-          iface lo inet loopback
-              dns-nameservers {{ router_ip_address }} 1.1.1.1 8.8.8.8
-              dns-search chacal.fi
-
-          auto eth0
-          iface eth0 inet dhcp
-
-          auto wlan0
-          allow-hotplug wlan0
-          iface wlan0 inet static
-            address {{ lan_ip_address }}/24
-            gateway {{ router_ip_address }}
-            wpa-conf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
-
-      notify: restart-networking
-      tags: networking
-
-    - name: Add regular user to lpadmin group
-      user:
-        name: "pi"
-        groups: lpadmin
-        append: yes
-      tags: cups
-
     - name: Setup cups
       apt:
         pkg:
           - cups
           - printer-driver-splix
         state: latest
+      tags: cups
+
+    - name: Add regular user to lpadmin group
+      user:
+        name: "pi"
+        groups: lpadmin
+        append: yes
       tags: cups
 
     - name: Check cups status
@@ -97,8 +69,18 @@
       lineinfile:
         dest: /etc/cups/cupsd.conf
         state: present
-        regexp: '^  Allow 10.90.99'
+        regexp: '^  Allow 10.50.99'
         insertafter: '^  Allow @LOCAL'
-        line: '  Allow 10.90.99.*'
+        line: '  Allow 10.50.99.*'
+      notify: Restart cups
+      tags: cups
+
+    - name: Allow printing from WG network
+      lineinfile:
+        dest: /etc/cups/cupsd.conf
+        state: present
+        regexp: '^  Allow 10.10.0'
+        insertafter: '^  Allow 10.50.99.*'
+        line: '  Allow 10.10.0.*'
       notify: Restart cups
       tags: cups

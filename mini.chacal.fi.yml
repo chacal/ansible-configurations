@@ -5,9 +5,8 @@
 #  - Passwordless SSH connection with "root"
 #
 
-- hosts: all
+- hosts: mini.chacal.fi
   remote_user: root
-  gather_facts: yes
 
   vars_files:
     - secrets.yml
@@ -20,26 +19,24 @@
 
   roles:
     - role: pve_common
-    - role: sendgrid_with_dma
-      sendgrid_api_key: "{{ chacal.sendgrid.fujari }}"
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: debian_common
       unattended_upgrades_origins: '"o=Proxmox";"o=elastic";'
-    - role: filebeat
-      filebeat_elasticsearch_hosts:
-        - "elastic.chacal.fi"
-      filebeat_exclude_files:
-        - "/var/log/pveproxy/*"
+    - role: filebeat_remove
 
   tasks:
     - name: Install prometheus self reporting for node exporter
       include_role:
         name: self_monitoring
+      tags: self_monitoring
 
     - name: Install prometheus self reporting for zfs exporter
       include_role:
         name: self_monitoring
       vars:
         self_monitoring_target_port: 9134  # ZFS exporter listens on port 9134
+      tags: self_monitoring
 
     - name: Install prometheus self reporting for muuri.chacal.fi (pfSense) node exporter
       include_role:
@@ -142,17 +139,3 @@
                   autosnap = yes
                   autoprune = yes
       tags: sanoid
-
-    - name: Setup syncoid zfs dataset backups
-      import_role:
-        name: syncoid
-      vars:
-        syncoid_private_key: "{{ chacal.mini.syncoid.private_key }}"
-        syncoid_public_key: "{{ chacal.mini.syncoid.public_key }}"
-        syncoid_source: rpool
-        syncoid_dst_host: hessu.chacal.fi
-        syncoid_dst_dir: rpool/backups/mini/rpool  # Parents of this dataset has to exist on Hessu
-        syncoid_excludes:
-          - nonbackupped
-      tags: syncoid
-

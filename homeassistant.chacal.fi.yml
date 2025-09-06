@@ -10,7 +10,6 @@
     - secrets.yml
 
   vars:
-    docker_custom_registry: "https://docker-registry.chacal.fi"
     aws_cli_user: root
     aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
@@ -50,6 +49,9 @@
       - tag: P309
       - tag: P310
       - tag: P311
+      - tag: P312
+      - tag: P313
+      - tag: P314
 
   handlers:
     - name: Restart Home Assistant
@@ -58,13 +60,14 @@
       service: name=haproxy state=restarted
 
   roles:
-    - role: filebeat
-      filebeat_elasticsearch_hosts:
-        - elastic.chacal.fi
+    - role: filebeat_remove
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: prometheus_node_exporter
     - role: self_monitoring
+      tags: self_monitoring
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
     - role: duplicacy
@@ -81,6 +84,10 @@
       duplicacy_environment:
         DUPLICACY_B2_ID: "{{ chacal.ha.duplicacy.b2_id }}"
         DUPLICACY_B2_KEY: "{{ chacal.ha.duplicacy.b2_key }}"
+      duplicacy_prune_retentions:
+        - "0:90"
+        - "7:30"
+        - "1:7"
       tags: duplicacy
 
   tasks:

@@ -23,9 +23,8 @@
   roles:
     - role: pve_common
       tags: pve_common
-    - role: sendgrid_with_dma
-      sendgrid_api_key: "{{ chacal.sendgrid.hessu }}"
-      tags: sendgrid_with_dma
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: disable_log_compression
     - role: zfs_datasets
       zfs_datasets:

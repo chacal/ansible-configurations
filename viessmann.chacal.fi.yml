@@ -1,7 +1,6 @@
 ---
-- hosts: all
+- hosts: viessmann.chacal.fi
   remote_user: pi
-  gather_facts: yes
   become: yes
 
   handlers:
@@ -18,8 +17,8 @@
     - common
     - role: prometheus_node_exporter
     - role: self_monitoring
-    - role: sendgrid_with_dma
-      sendgrid_api_key: "{{ chacal.sendgrid.buster_base }}"
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: debian_common
       unattended_upgrades_origins: '"o=Raspbian"; "o=Raspberry Pi Foundation";'
 

@@ -26,6 +26,8 @@
       unattended_upgrades_origins: '"o=elastic";'
     - role: prometheus_node_exporter
     - role: self_monitoring
+    - role: ikifi_with_dma
+      tags: ikifi
 
   tasks:
 

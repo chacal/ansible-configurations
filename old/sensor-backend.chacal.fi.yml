@@ -30,6 +30,8 @@
         - elastic.chacal.fi
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";"o=InfluxDB";"o=main";"o=Docker";'
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: prometheus_node_exporter
     - role: ouroboros
       ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
@@ -137,6 +139,13 @@
             <user>{{ chacal.sensor_backend.clickhouse.interserver_user.username }}</user>
             <password>{{ chacal.sensor_backend.clickhouse.interserver_user.password }}</password>
           </interserver_http_credentials>
+
+          <openSSL>
+            <server>
+              <certificateFile>/etc/clickhouse-server/server.crt</certificateFile>
+              <privateKeyFile>/etc/clickhouse-server/server.key</privateKeyFile>
+            </server>
+          </openSSL>
 
           <macros>
             <shard>01</shard>

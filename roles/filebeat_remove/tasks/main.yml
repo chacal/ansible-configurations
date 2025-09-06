@@ -1,0 +1,29 @@
+---
+- name: Remove Elastic APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
+    state: absent
+  tags: filebeat_remove
+
+- name: Stop filebeat service
+  ansible.builtin.service:
+    name: filebeat
+    state: stopped
+    enabled: no
+  ignore_errors: true   # in case filebeat is not installed
+  tags: filebeat_remove
+
+- name: Uninstall filebeat package
+  ansible.builtin.apt:
+    name: filebeat
+    state: absent
+    purge: yes
+    autoremove: yes
+    update_cache: yes
+  tags: filebeat_remove
+
+- name: Remove filebeat configuration directory
+  ansible.builtin.file:
+    path: /etc/filebeat
+    state: absent
+  tags: filebeat_remove

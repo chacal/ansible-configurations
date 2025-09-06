@@ -13,14 +13,24 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
-    - docker_custom_registry: "https://docker-registry.chacal.fi"
+    - influx_cli_auth_params: '-username {{ chacal.influxdb.admin_user.username }} -password {{ chacal.influxdb.admin_user.password }}'
+    - influx_cmd: 'influx -ssl -host haukkakallio.chacal.fi'
+
+  handlers:
+    - name: Restart InfluxDB
+      service: name=influxdb state=restarted
+    - name: Restart Grafana
+      service: name=grafana state=restarted
+    - name: Restart Prometheus
+      service: name=prometheus state=restarted
+
 
   roles:
-    - role: filebeat
-      filebeat_elasticsearch_hosts:
-        - elastic.chacal.fi
+    - role: filebeat_remove
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: prometheus_node_exporter
     - role: self_monitoring
     - role: ouroboros
@@ -39,11 +49,28 @@
         chown mosquitto:mosquitto /etc/mosquitto/certs/*.pem
         chmod 0600 /etc/mosquitto/certs/*.pem
         pkill -HUP -x mosquitto || true
+
+        mkdir -p /etc/influxdb
+        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/fullchain.pem /etc/influxdb/
+        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/privkey.pem /etc/influxdb/
+        chown influxdb:influxdb /etc/influxdb/*.pem
+        systemctl restart influxdb || true
+
+        echo "Restarting Grafana due to updated certificates.."
+        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/fullchain.pem /srv/grafana/certs/
+        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/privkey.pem /srv/grafana/certs/
+        chown nobody:nogroup /srv/grafana/certs/*.pem
+        chmod -R 0600 /srv/grafana/certs/*
+        docker restart grafana || true
       tags: certbot
     - role: duplicacy
       duplicacy_filters: |
         +srv/
         +srv/thread-mgmt-server/*
+        +srv/prometheus/*
+        +var/
+        +var/lib/
+        +var/lib/influxdb/*
         -*
       duplicacy_backup_hours: "1,13"
       duplicacy_prune_hours: "2,14"
@@ -83,14 +110,6 @@
         certfile /etc/mosquitto/certs/cert.pem
         keyfile /etc/mosquitto/certs/privkey.pem
         tls_version tlsv1.2
-
-        connection sensor-backend
-        address sensor-backend.chacal.fi:8883
-        topic /sensor/# out 1 "" ""
-        remote_username {{ chacal.sensor_backend.mqtt_users[0].username }}
-        remote_password {{ chacal.sensor_backend.mqtt_users[0].password }}
-        bridge_tls_version tlsv1.2
-        bridge_capath /etc/ssl/certs
       mqtt_server_users: "{{ chacal.haukkakallio.mqtt_users }}"
       mqtt_server_acl_config: |
         user {{ chacal.haukkakallio.mqtt_users[0].username }}
@@ -115,7 +134,12 @@
         topic readwrite homeassistant/#
         user {{ chacal.haukkakallio.mqtt_users[7].username }}
         topic readwrite homeassistant/#
+        user {{ chacal.haukkakallio.mqtt_users[8].username }}
+        topic read /sensor/#
       tags: mosquitto
+
+    - name: influxdb
+      tags: influxdb
 
   tasks:
     - name: Install mqtt-houm-gw docker service
@@ -169,4 +193,338 @@
           - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[5].username }}"
           - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[5].password }}"
       tags: thread-mgmt-server
+
+
+    - name: Configure InfluxDB to use HTTPS
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  https-enabled = '
+        insertafter: '^  # https-enabled = false'
+        line: '  https-enabled = true'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB HTTPS certificate
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  https-certificate = '
+        insertafter: '^  # https-certificate = '
+        line: '  https-certificate = "/etc/influxdb/fullchain.pem"'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB HTTPS private key
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  https-private-key = '
+        insertafter: '^  # https-private-key = '
+        line: '  https-private-key = "/etc/influxdb/privkey.pem"'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB backup service to listen only on localhost
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^bind-address = '
+        insertafter: '^# bind-address = "127.0.0.1:8088"'
+        line: 'bind-address = "localhost:8088"'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB to use authentication
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  auth-enabled = '
+        insertafter: '^  # auth-enabled = false'
+        line: '  auth-enabled = true'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB to not log HTTP requests
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  log-enabled = '
+        insertafter: '^\[http\]'
+        line: '  log-enabled = false'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB to not log queries
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  query-log-enabled ='
+        insertafter: '^  # query-log-enabled = true'
+        line: '  query-log-enabled = false'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+    - name: Configure InfluxDB WAL fsync delay
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  wal-fsync-delay ='
+        insertafter: '^  # wal-fsync-delay = "0s"'
+        line: '  wal-fsync-delay = "5s"'
+      notify: Restart InfluxDB
+      tags: influxdb
+
+
+    # Flush handlers to restart InfluxDB with SSL connection enabled
+    - meta: flush_handlers
+
+
+    - name: Check if InfluxDB admin user has been created
+      command: '{{ influx_cmd }} -execute "SHOW USERS" {{ influx_cli_auth_params }}'
+      register: influx_admin_check
+      failed_when: influx_admin_check.rc > 1
+      changed_when: "influx_admin_check.rc > 0"
+      tags: influxdb
+
+    - name: Create InfluxDB admin user
+      command: "{{ influx_cmd }} -execute \"CREATE USER {{ chacal.influxdb.admin_user.username }} WITH PASSWORD '{{ chacal.influxdb.admin_user.password }}' WITH ALL PRIVILEGES\""
+      when: influx_admin_check.changed
+      tags: influxdb
+
+    - name: Check if sensors database has been created
+      command: '{{ influx_cmd }} -execute "SHOW DATABASES" {{ influx_cli_auth_params }}'
+      register: influx_db_check
+      changed_when: "'sensors' not in influx_db_check.stdout"
+      tags: influxdb
+
+    - name: Create InfluxDB database
+      command: '{{ influx_cmd }} -execute "CREATE DATABASE sensors" {{ influx_cli_auth_params }}'
+      when: influx_db_check.changed
+      tags: influxdb
+
+    - name: Gather InfluxDB users
+      command: '{{ influx_cmd }} -execute "SHOW USERS" {{ influx_cli_auth_params }}'
+      register: influxdb_users
+      changed_when: False
+      check_mode: no
+      tags: influxdb
+
+    - name: Create InfluxDB regular user
+      command: "{{ influx_cmd }} -execute \"CREATE USER {{ chacal.influxdb.regular_user.username }} WITH PASSWORD '{{ chacal.influxdb.regular_user.password }}'\" {{ influx_cli_auth_params }}"
+      when: "chacal.influxdb.regular_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+    - name: Grant DB access to regular user
+      command: '{{ influx_cmd }} -execute "GRANT ALL ON sensors TO {{ chacal.influxdb.regular_user.username }}" {{ influx_cli_auth_params }}'
+      when: "chacal.influxdb.regular_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+    - name: Create InfluxDB readonly user
+      command: "{{ influx_cmd }} -execute \"CREATE USER {{ chacal.influxdb.readonly_user.username }} WITH PASSWORD '{{ chacal.influxdb.readonly_user.password }}'\" {{ influx_cli_auth_params }}"
+      when: "chacal.influxdb.readonly_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+    - name: Grant DB access to readonly user
+      command: '{{ influx_cmd }} -execute "GRANT READ ON sensors TO {{ chacal.influxdb.readonly_user.username }}" {{ influx_cli_auth_params }}'
+      when: "chacal.influxdb.readonly_user.username not in influxdb_users.stdout"
+      tags: influxdb
+
+
+
+    - name: Install mqtt-to-db-sender for writing to InfluxDB
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "mqtt-to-db-sender-influxdb"
+        docker_app_container_name: "jihartik/mqtt-to-db-sender"
+        docker_app_extra_params: "--init"
+        docker_app_env:
+          - DB_TYPE=influxdb
+          - DB_HOST=haukkakallio.chacal.fi
+          - DB_PORT=8086
+          - DB_USERNAME={{ chacal.influxdb.regular_user.username }}
+          - DB_PASSWORD={{ chacal.influxdb.regular_user.password }}
+          - DB_NAME=sensors
+          - MQTT_BROKER=mqtts://haukkakallio.chacal.fi
+          - MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[8].username }}
+          - MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[8].password }}
+          - MQTT_CLIENT_ID=haukkakallio-influxdb-sender
+      tags: mqtt-to-db-sender-influxdb
+
+
+
+
+    - name: Create data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+      loop:
+        - /srv/grafana
+        - /srv/grafana/certs
+        - /srv/grafana/provisioning
+        - /srv/grafana/provisioning/datasources
+        - /srv/grafana/provisioning/dashboards
+        - /srv/grafana/provisioning/notifiers
+      tags:
+        - grafana
+
+    - name: Provision Grafana data sources
+      copy:
+        dest: /srv/grafana/provisioning/datasources/datasources.yml
+        content: |
+          apiVersion: 1
+
+          datasources:
+          - name: InfluxDB
+            id: 1
+            orgId: 1
+            type: influxdb
+            access: proxy
+            database: sensors
+            user: {{ chacal.influxdb.readonly_user.username }}
+            url: https://haukkakallio.chacal.fi:8086
+            secureJsonData:
+              password: {{ chacal.influxdb.readonly_user.password }}
+            jsonData:
+              httpMode: GET
+            isDefault: 1
+          - name: Prometheus
+            id: 2
+            orgId: 1
+            type: prometheus
+            access: proxy
+            url: http://haukkakallio.chacal.fi:9090
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboard provider
+      copy:
+        dest: /srv/grafana/provisioning/dashboards/dashboards.yaml
+        content: |
+          apiVersion: 1
+
+          providers:
+          - name: 'Dashboard provider'
+            orgId: 1
+            folder: 'Provisioned'
+            type: file
+            editable: true
+            updateIntervalSeconds: 10
+            allowUiUpdates: false
+            options:
+              path: /var/lib/grafana/dashboards
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Provision Grafana dashboards
+      copy:
+        src: "{{ item }}"
+        dest: /srv/grafana/dashboards/
+      loop:
+        - ./conf/haukkakallio.chacal.fi/sensors_dashboard.json
+        - ./conf/haukkakallio.chacal.fi/freya_dashboard.json
+        - ./conf/haukkakallio.chacal.fi/nihtimaki_dashboard.json
+        - ./conf/haukkakallio.chacal.fi/server_summary_dashboard.json
+        - ./conf/haukkakallio.chacal.fi/servers_dashboard.json
+        - ./conf/haukkakallio.chacal.fi/viessmann_dashboard.json
+      notify: Restart Grafana
+      tags: grafana
+
+    - name: Add Grafana docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "grafana"
+        docker_app_container_name: "grafana/grafana"
+        docker_app_extra_params: "--net=host -u nobody -v /srv/grafana:/var/lib/grafana -v /srv/grafana/provisioning:/etc/grafana/provisioning -v /srv/grafana/certs:/etc/grafana/certs"
+        docker_app_env:
+          - GF_SECURITY_ADMIN_PASSWORD={{ chacal.haukkakallio.grafana.password }}
+          - GF_SERVER_PROTOCOL=https
+          - GF_SERVER_CERT_FILE=/etc/grafana/certs/fullchain.pem
+          - GF_SERVER_CERT_KEY=/etc/grafana/certs/privkey.pem
+          - GF_SMTP_ENABLED=true
+          - GF_SMTP_HOST=smtp.iki.fi:587
+          - GF_SMTP_USER=jouni.hartikainen
+          - GF_SMTP_PASSWORD={{ chacal.ikifi_password }}
+          - GF_SMTP_FROM_ADDRESS=grafana@{{ inventory_hostname }}
+          - GF_SMTP_FROM_NAME='Grafana - haukkakallio.chacal.fi'
+      tags: grafana
+
+
+    - name: Create Prometheus data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+      loop:
+        - /srv/prometheus
+        - /srv/prometheus/targets
+        - /srv/prometheus/secure_targets
+      tags:
+        - prometheus
+
+    - name: Create Prometheus configuration
+      copy:
+        dest: /srv/prometheus/prometheus.yml
+        content: |
+          global:
+            scrape_interval:     15s
+            evaluation_interval: 15s
+
+          rule_files:
+            - custom_rules.yml
+
+          scrape_configs:
+            - job_name: prometheus-servers
+              static_configs:
+                - targets:
+                  - localhost:9090
+              metrics_path: /prometheus/metrics
+
+            - job_name: nodes
+              file_sd_configs:
+                - files:
+                   - /prometheus/targets/*.yml
+                  refresh_interval: 15s
+
+            - job_name: secure-nodes
+              scheme: https
+              file_sd_configs:
+                - files:
+                   - /prometheus/secure_targets/*.yml
+                  refresh_interval: 15s
+
+      notify: Restart Prometheus
+      tags: prometheus
+
+    - name: Create Prometheus custom rules
+      copy:
+        dest: /srv/prometheus/custom_rules.yml
+        content: |
+          groups:
+            - name: custom rules
+              rules:
+              - record: custom_cpu_count
+                expr: count(node_cpu_seconds_total{mode="idle"}) without (cpu, mode)
+              - record: custom_cpu_usage
+                expr: avg by (instance, mode) (irate(node_cpu_seconds_total[1m]))
+      notify: Restart Prometheus
+      tags: prometheus
+
+    - name: Add Prometheus docker service
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "prometheus"
+        docker_app_container_name: "prom/prometheus"
+        docker_app_extra_params: "--net=host -u nobody -v /srv/prometheus:/prometheus"
+        docker_app_container_params: "--config.file=/prometheus/prometheus.yml --web.enable-admin-api --storage.tsdb.retention.time=10y"
+      tags: prometheus
 

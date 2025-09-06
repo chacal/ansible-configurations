@@ -35,10 +35,6 @@ recorder:
       - sensor.energy_consumption
       - sensor.electric_power
 
-home_connect_alt:
-  client_id: !secret home_connect_client_id
-  client_secret: !secret home_connect_client_secret
-
 sonos:
   media_player:
     hosts:
@@ -187,6 +183,26 @@ sensor:
       - filter: time_throttle
         window_size: '00:01:00'
         precision: 4
+  - platform: rest
+    name: Viessmann DHWTopTemp
+    unique_id: "viessmann_heatpump_DHWTopTemp"
+    value_template: "{{ value_json.data.result[0].value[1] | float }}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    resource: http://haukkakallio.chacal.fi:9090/api/v1/query?query=heatpump_DHWTopTemp%7Binstance%3D%22viessmann.chacal.fi%3A9100%22%7D
+  - platform: rest
+    name: Viessmann SecondaryCircuitFlowTemp
+    unique_id: "viessmann_heatpump_SecondaryCircuitFlowTemp"
+    value_template: "{{ value_json.data.result[0].value[1] | float }}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    resource: http://haukkakallio.chacal.fi:9090/api/v1/query?query=heatpump_SecondaryCircuitFlowTemp%7Binstance%3D%22viessmann.chacal.fi%3A9100%22%7D
+  - platform: rest
+    name: Viessmann CompressorSpeed
+    unique_id: "viessmann_heatpump_CompressorSpeed"
+    value_template: "{{ value_json.data.result[0].value[1] | float }}"
+    unit_of_measurement: "%"
+    resource: http://haukkakallio.chacal.fi:9090/api/v1/query?query=heatpump_CompressorSpeed%7Binstance%3D%22viessmann.chacal.fi%3A9100%22%7D
 
 template:
   - sensor:
@@ -229,6 +245,29 @@ template:
             {{ ns.cheapestHour }}
             {%- set ns.cheapestPrice = (ns.cheapestPrice / numberOfSequentialHours) -%}
           {%- endif -%}
+  - trigger:
+      - event: start
+        platform: homeassistant
+      - platform: event
+        event_type: event_template_reloaded
+      - platform: time_pattern
+        minutes: '/5'
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: hourly
+        target:
+          entity_id:
+            - weather.nihtisilta
+            - weather.forecast_nihtimaki
+        response_variable: resp
+    sensor:
+      - name: Hourly forecasts
+        unique_id: hourly_forecasts
+        state: "{{ now().isoformat() }}"
+        icon: mdi:weather-cloudy-clock
+        attributes:
+          forecasts: "{{ resp }}"
 
 utility_meter:
   daily_energy:

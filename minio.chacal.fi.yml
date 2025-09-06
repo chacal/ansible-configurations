@@ -13,14 +13,13 @@
     - aws_cli_user: root
     - aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
     - aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
-    - docker_custom_registry: "https://docker-registry.chacal.fi"
 
   roles:
-    - role: filebeat
-      filebeat_elasticsearch_hosts:
-        - elastic.chacal.fi
+    - role: filebeat_remove
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: ikifi_with_dma
+      tags: ikifi
     - role: prometheus_node_exporter
     - role: self_monitoring
     - role: ouroboros

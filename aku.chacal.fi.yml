@@ -1,0 +1,58 @@
+---
+#
+# This playbook is used to provision Aku
+# Assumptions:
+#  - Passwordless SSH connection with "root"
+#
+
+- hosts: aku.chacal.fi
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+
+  handlers:
+    - name: Reload networking
+      shell: ifreload -a
+    - name: reload_sysctl
+      shell: "sysctl --system"
+
+  roles:
+    - role: ikifi_with_dma
+      tags: ikifi
+    - role: prometheus_node_exporter
+    - role: self_monitoring
+
+    - role: wireguard
+      wireguard_address: 10.10.0.10
+      wireguard_private_key: "{{ chacal.wireguard.aku.private_key }}"
+      wireguard_peers:
+        - name: iPhone
+          public_key: "{{ chacal.wireguard.iphone.public_key }}"
+          allowed_ips: 10.10.0.4/32
+        - name: Macbook
+          public_key: "{{ chacal.wireguard.macbook.public_key }}"
+          allowed_ips: 10.10.0.5/32
+        - name: muuri
+          public_key: "{{ chacal.wireguard.muuri.public_key }}"
+          allowed_ips: 10.10.0.6/32,10.50.0.0/16
+      tags: wireguard
+
+  tasks:
+    - name: Enable IPv4 and IPv6 forwarding
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-forwarding.conf
+        content: |
+          # Enable IPv4 forwarding
+          net.ipv4.ip_forward = 1
+
+          # Enable IPv6 forwarding
+          net.ipv6.conf.all.forwarding = 1
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload_sysctl
+      tags: networking

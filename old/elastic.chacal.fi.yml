@@ -26,6 +26,8 @@
         - elastic.chacal.fi
       filebeat_exclude_files:
         - "/var/log/elasticsearch/elasticsearch_deprecation*"
+    - role: ikifi_with_dma
+      tags: ikifi
 
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";'

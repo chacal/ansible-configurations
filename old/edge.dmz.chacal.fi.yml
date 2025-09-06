@@ -28,6 +28,8 @@
       unattended_upgrades_origins: '"o=elastic";"o=frr";'
     - role: prometheus_node_exporter
     - role: self_monitoring
+    - role: ikifi_with_dma
+      tags: ikifi
 
   tasks:
     - name: Remove default gateway from eth0
