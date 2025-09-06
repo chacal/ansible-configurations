@@ -267,6 +267,16 @@
       notify: Restart InfluxDB
       tags: influxdb
 
+    - name: Configure InfluxDB to not log info level
+      lineinfile:
+        dest: /etc/influxdb/influxdb.conf
+        state: present
+        regexp: '^  level = '
+        insertafter: '^\[logging\]'
+        line: '  level = "warn"'
+      notify: Restart InfluxDB
+      tags: influxdb
+
     - name: Configure InfluxDB WAL fsync delay
       lineinfile:
         dest: /etc/influxdb/influxdb.conf
