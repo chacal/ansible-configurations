@@ -13,6 +13,15 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+rest_command:
+  notify_pentti:
+    url: "http://claw.chacal.fi:3000/webhook/api"
+    method: POST
+    headers:
+      Authorization: !secret claw_webhook_bearer_token
+    content_type: "application/json"
+    payload: "{{ payload }}"
+
 recorder:
   purge_keep_days: 180
   db_url: !secret recorder_db_url
