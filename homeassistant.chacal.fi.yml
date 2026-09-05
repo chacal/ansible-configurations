@@ -197,6 +197,7 @@
 
     - name: Provision HA secrets
       template: src=./conf/homeassistant.chacal.fi/secrets.yaml.j2 dest=/srv/home-assistant/secrets.yaml mode=0600
+      diff: false
       notify: Restart Home Assistant
       tags: homeassistant
 
