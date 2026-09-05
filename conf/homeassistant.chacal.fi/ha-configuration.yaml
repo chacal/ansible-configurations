@@ -205,8 +205,34 @@ sensor:
     value_template: "{{ value_json.data.result[0].value[1] | float }}"
     unit_of_measurement: "%"
     resource: http://haukkakallio.chacal.fi:9090/api/v1/query?query=heatpump_CompressorSpeed%7Binstance%3D%22viessmann.chacal.fi%3A9100%22%7D
+  # Latest stable Home Assistant container version, same feed the built-in version integration uses
+  - platform: rest
+    name: Home Assistant latest version
+    unique_id: home_assistant_latest_version
+    resource: https://version.home-assistant.io/stable.json
+    value_template: "{{ value_json.homeassistant.default }}"
+    scan_interval: 3600
+    icon: mdi:home-assistant
+
+# Currently running Home Assistant version (HA writes it to .HA_VERSION in the config dir on startup)
+command_line:
+  - sensor:
+      name: Home Assistant installed version
+      unique_id: home_assistant_installed_version
+      command: "cat /config/.HA_VERSION"
+      scan_interval: 3600
+      icon: mdi:home-assistant
 
 template:
+  # Update entity: shows installed vs. latest version and turns "on" when a newer version is available.
+  # Upgrade by bumping the tag in homeassistant.chacal.fi.yml and re-provisioning with tag "homeassistant".
+  - update:
+      - name: Home Assistant Core
+        unique_id: home_assistant_core_update
+        title: Home Assistant Core
+        installed_version: "{{ states('sensor.home_assistant_installed_version') if has_value('sensor.home_assistant_installed_version') else none }}"
+        latest_version: "{{ states('sensor.home_assistant_latest_version') if has_value('sensor.home_assistant_latest_version') else none }}"
+        release_url: "https://github.com/home-assistant/core/releases/tag/{{ states('sensor.home_assistant_latest_version') }}"
   - sensor:
       - name: Sunrise
         unique_id: sunrise_time
