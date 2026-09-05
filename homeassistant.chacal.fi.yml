@@ -153,7 +153,7 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "zigbee2mqtt"
-        docker_app_container_name: "koenkk/zigbee2mqtt"
+        docker_app_container_name: "koenkk/zigbee2mqtt:2.14.1"
         docker_app_extra_params: >-
           -v /srv/zigbee2mqtt:/app/data
           -v /etc/letsencrypt:/certs
