@@ -123,7 +123,7 @@ action:
           service: light.turn_on
           target: !input light_target
           data:
-            kelvin: !input day_mode_color_temp
+            color_temp_kelvin: !input day_mode_color_temp
             brightness_pct: !input day_mode_brightness
     - conditions:
         - condition: time
@@ -134,7 +134,7 @@ action:
           service: light.turn_on
           target: !input light_target
           data:
-            kelvin: !input evening_mode_color_temp
+            color_temp_kelvin: !input evening_mode_color_temp
             brightness_pct: !input evening_mode_brightness
     - conditions:
         - condition: time
@@ -145,7 +145,7 @@ action:
           service: light.turn_on
           target: !input light_target
           data:
-            kelvin: !input night_mode_color_temp
+            color_temp_kelvin: !input night_mode_color_temp
             brightness_pct: !input night_mode_brightness
   - alias: "Wait until there is no motion from any device"
     wait_template: "{{ motion_sensors | select('is_state', 'on') | list | length == 0 }}"

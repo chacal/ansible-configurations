@@ -226,7 +226,7 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "home-assistant"
-        docker_app_container_name: "ghcr.io/home-assistant/home-assistant:stable"
+        docker_app_container_name: "ghcr.io/home-assistant/home-assistant:2026.9.0"
         docker_app_extra_params: >-
           --privileged
           --net=host
