@@ -60,6 +60,7 @@
     enabled: false
     daemon_reload: yes
   when: ansible_virtualization_role == "guest"
+  failed_when: false
   tags: prometheus_node_exporter
 
 - name: Remove existing smartmon run data

@@ -6,6 +6,7 @@
 
 - name: Reset smartd systemd fail state
   command: systemctl reset-failed smartd
+  failed_when: false
 
 - name: Restart journald
   service:
