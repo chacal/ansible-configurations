@@ -191,6 +191,21 @@
           - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[5].password }}"
       tags: thread-mgmt-server
 
+    - name: Install Sensor UI
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "sensor-ui"
+        docker_app_container_name: "ghcr.io/chacal/sensor-ui"
+        docker_app_ports:
+          - 8100:3000
+        docker_app_env:
+          - "MQTT_HOST=mqtt-home.chacal.fi"
+          - "MQTT_PORT=8883"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[3].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[3].password }}"
+      tags: sensor-ui
 
     - name: Configure InfluxDB to use HTTPS
       lineinfile:
