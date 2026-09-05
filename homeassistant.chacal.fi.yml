@@ -339,3 +339,28 @@
           - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[7].username }}"
           - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[7].password }}"
       tags: free-at-home-mqtt-bridge
+
+
+    - name: Setup ipv6 config
+      copy:
+        dest: /etc/sysctl.d/60-otbr-accept-ra.conf
+        content: |
+          net.ipv6.conf.eth0.accept_ra = 2
+          net.ipv6.conf.eth0.accept_ra_rt_info_max_plen = 64
+      tags: otbr
+
+    - name: Setup ip forwarding
+      copy:
+        dest: /etc/sysctl.d/60-otbr-ip-forward.conf
+        content: |
+          net.ipv6.conf.all.forwarding = 1
+          net.ipv4.ip_forward = 1
+      tags: otbr
+
+    - name: Setup ipv6 address
+      copy:
+        dest: /etc/network/interfaces.d/eth0-ipv6
+        content: |
+          iface eth0 inet6 static
+            address fddd:eeee:ffff:100::2/64
+      tags: otbr
