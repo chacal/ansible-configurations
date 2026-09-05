@@ -1,0 +1,37 @@
+---
+#
+# Playbook that sets up claw.chacal.fi
+#
+- hosts: claw.chacal.fi
+  remote_user: jihartik
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    aws_cli_user: root
+    aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+
+  roles:
+    - role: filebeat_remove
+    - role: debian_common
+      unattended_upgrades_origins: '"o=Docker";'
+    - role: ikifi_with_dma
+      tags: ikifi
+    - role: prometheus_node_exporter
+    - role: prometheus_journal_exporter
+      tags: journal_exporter
+    - role: self_monitoring
+      tags: self_monitoring
+
+  tasks:
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_certificate_domains:
+          - claw.chacal.fi
+      tags: certbot
