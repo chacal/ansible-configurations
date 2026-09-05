@@ -70,8 +70,6 @@
       tags: journal_exporter
     - role: self_monitoring
       tags: self_monitoring
-    - role: ouroboros
-      ouroboros_notifier: "sendgrid://{{ chacal.sendgrid.ouroboros }}:root@{{ inventory_hostname }}/{{ chacal.ouroboros.email }}"
     - role: duplicacy
       duplicacy_filters: |
         +srv/
