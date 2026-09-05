@@ -35,10 +35,6 @@
       - tag: S218
         name: Freezer
         temperature: true
-      - tag: S222
-        name: Outside
-        temperature: true
-        pressure: true
     ha_motion_sensors:
       - tag: P302
       - tag: P303
