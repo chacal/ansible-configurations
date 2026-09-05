@@ -46,11 +46,13 @@
         #!/bin/bash
         echo "Updating mosquitto certificates.."
         cp /etc/letsencrypt/live/haukkakallio.chacal.fi/chain.pem /etc/mosquitto/certs/chain.pem
-        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/cert.pem /etc/mosquitto/certs/cert.pem
+        cp /etc/letsencrypt/live/haukkakallio.chacal.fi/fullchain.pem /etc/mosquitto/certs/fullchain.pem
         cp /etc/letsencrypt/live/haukkakallio.chacal.fi/privkey.pem /etc/mosquitto/certs/privkey.pem
         chown mosquitto:mosquitto /etc/mosquitto/certs/*.pem
         chmod 0600 /etc/mosquitto/certs/*.pem
-        pkill -HUP -x mosquitto || true
+        # Full restart instead of SIGHUP: HUP doesn't reliably reload intermediates,
+        # which broke TLS clients when Let's Encrypt rotated intermediates (Aug 2026)
+        systemctl restart mosquitto || true
 
         mkdir -p /etc/influxdb
         cp /etc/letsencrypt/live/haukkakallio.chacal.fi/fullchain.pem /etc/influxdb/
@@ -102,14 +104,7 @@
 
         listener 8883
         cafile /etc/mosquitto/certs/chain.pem
-        certfile /etc/mosquitto/certs/cert.pem
-        keyfile /etc/mosquitto/certs/privkey.pem
-        tls_version tlsv1.2
-
-        listener 9883
-        protocol websockets
-        cafile /etc/mosquitto/certs/chain.pem
-        certfile /etc/mosquitto/certs/cert.pem
+        certfile /etc/mosquitto/certs/fullchain.pem
         keyfile /etc/mosquitto/certs/privkey.pem
         tls_version tlsv1.2
       mqtt_server_users: "{{ chacal.haukkakallio.mqtt_users }}"
