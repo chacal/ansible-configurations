@@ -36,6 +36,7 @@ recorder:
       - sensor.energy_use_in_last_2_minutes
       - sensor.energy_consumption
       - sensor.electric_power
+      - sensor.hourly_forecasts
 
 sonos:
   media_player:
