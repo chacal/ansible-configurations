@@ -71,6 +71,7 @@
       duplicacy_filters: |
         +srv/
         +srv/thread-mgmt-server/*
+        +srv/packing-list/*
         +srv/prometheus/*
         +var/
         +var/lib/
@@ -206,6 +207,29 @@
           - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[3].username }}"
           - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[3].password }}"
       tags: sensor-ui
+
+    # Packing list app (https://github.com/chacal/packing-list). Plain HTTP on the home
+    # network only; SQLite database and daily snapshots live in /srv/packing-list.
+    - name: Create packing-list data directory
+      file:
+        path: /srv/packing-list
+        state: directory
+        owner: 1000   # "node" user inside the container
+        group: 1000
+        mode: 0750
+      tags: packing-list
+
+    - name: Install packing-list
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "packing-list"
+        docker_app_container_name: "ghcr.io/chacal/packing-list"
+        docker_app_extra_params: "-v /srv/packing-list:/data"
+        docker_app_ports:
+          - 8200:3000
+      tags: packing-list
 
     - name: Configure InfluxDB to use HTTPS
       lineinfile:
