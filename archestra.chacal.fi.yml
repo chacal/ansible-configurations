@@ -1,0 +1,248 @@
+---
+#
+# Playbook that sets up archestra.chacal.fi (netcup RS 2000 G12, 8 cores / 16 GB / 512 GB)
+#
+# Runs Archestra (https://archestra.ai) in "quickstart" mode: a single container with
+# embedded PostgreSQL and an embedded KinD cluster (via the Docker socket) that hosts the
+# MCP servers and the Dagger code sandbox engine. HAProxy terminates TLS and proxies to
+# the container, which only listens on localhost.
+#
+# Assumptions:
+#  - Passwordless SSH connection with "root"
+#  - Secrets: chacal.archestra.admin_email & chacal.archestra.admin_password,
+#             chacal.wireguard.archestra.private_key (public key goes to aku's peer list)
+#
+- hosts: archestra.chacal.fi
+  remote_user: root
+  gather_facts: yes
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    aws_cli_user: root
+    aws_access_key_id: "{{ chacal.aws.home_infra_certbot.access_key }}"
+    aws_secret_access_key: "{{ chacal.aws.home_infra_certbot.secret_key }}"
+    archestra_hostname: archestra.chacal.fi
+    archestra_image: "archestra/platform:1.4.0-beta.7"
+    archestra_wireguard_address: 10.10.0.20
+
+  handlers:
+    - name: Restart HAProxy
+      service: name=haproxy state=restarted
+    - name: Restart sshd
+      service: name=ssh state=restarted
+
+  roles:
+    - role: ikifi_with_dma
+      tags: ikifi
+    - role: prometheus_node_exporter
+    - role: debian_common
+      unattended_upgrades_origins: '"o=Docker";'
+    - role: self_monitoring
+      tags: self_monitoring
+    - role: prometheus_journal_exporter
+      tags: journal_exporter
+    - role: docker
+      docker_regular_user: root
+      tags: docker
+
+    # Join the home network via the WireGuard hub on aku (see aku.chacal.fi.yml for the
+    # matching peer entry). Routes the WireGuard subnet and the home LAN over the tunnel.
+    - role: wireguard
+      wireguard_address: "{{ archestra_wireguard_address }}"
+      wireguard_private_key: "{{ chacal.wireguard.archestra.private_key }}"
+      wireguard_peers:
+        - name: aku
+          public_key: "{{ chacal.wireguard.aku.public_key }}"
+          allowed_ips: 10.10.0.0/24,10.50.0.0/16
+          # aku's public IP (Hetzner). aku.chacal.fi resolves to its WireGuard address, which
+          # is unusable as a tunnel endpoint.
+          endpoint: 65.108.218.65
+          persistent_keepalive: 25
+      tags: wireguard
+
+  tasks:
+    - name: Set hostname
+      hostname: name={{ archestra_hostname }}
+      tags: hostname
+
+    #
+    #  SSH hardening: key-based root login only (netcup image ships with passwords enabled)
+    #
+    - name: Disable SSH password authentication
+      copy:
+        dest: /etc/ssh/sshd_config.d/10-no-passwords.conf
+        content: |
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin prohibit-password
+        mode: "0644"
+      notify: Restart sshd
+      tags: sshd
+
+    #
+    #  Firewall (public host). archestra.chacal.fi resolves to the WireGuard address, so
+    #  HTTP(S) and node exporter are reachable from the internal networks only. SSH stays
+    #  open on the public IP as the recovery path if the tunnel is down.
+    #
+    - name: Install ufw
+      apt:
+        state: present
+        pkg: ufw
+      tags: ufw
+
+    - name: Allow SSH
+      ufw: rule=allow name=ssh
+      tags: ufw
+
+    - name: Remove public HTTP & HTTPS rules
+      ufw: rule=allow port={{ item }} proto=tcp delete=yes
+      loop: [80, 443]
+      tags: ufw
+
+    - name: Allow HTTP, HTTPS and node exporter from WireGuard and home networks only
+      ufw: rule=allow port={{ item.0 }} proto=tcp src={{ item.1 }}
+      loop: "{{ [80, 443, 9100] | product(['10.10.0.0/24', '10.50.0.0/16']) | list }}"
+      tags: ufw
+
+    - name: Enable ufw
+      ufw: state=enabled policy=deny logging=off
+      tags: ufw
+
+    #
+    #  HAProxy + Let's Encrypt certificate
+    #
+    - name: Install HAProxy
+      apt:
+        state: present
+        pkg: haproxy
+      tags: haproxy
+
+    - name: Create letsencrypt certificate
+      include_role:
+        name: certbot-dns-route53
+      vars:
+        certbot_email: "{{ chacal.certbot.email }}"
+        certbot_certificate_domains:
+          - "{{ archestra_hostname }}"
+        certbot_deploy_hook: |
+          #!/bin/bash
+          echo "Updating haproxy certificates with certbot deploy-hook.."
+          cat /etc/letsencrypt/live/{{ archestra_hostname }}/fullchain.pem /etc/letsencrypt/live/{{ archestra_hostname }}/privkey.pem > \
+          /etc/haproxy/letsencrypt-chain.pem
+          chmod 600 /etc/haproxy/letsencrypt-chain.pem
+          systemctl restart haproxy
+          echo "Certificates updated"
+      tags: certbot
+
+    # Same split as the Helm chart's ingress (routeBackendApisDirectly): the LLM proxy
+    # and A2A APIs (/v1, /v2) go straight to the backend, everything else to the
+    # Next.js frontend which proxies the rest of the API itself.
+    - name: Create HAProxy configuration
+      copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              log /dev/log    local0
+              log /dev/log    local1 notice
+              chroot /var/lib/haproxy
+              user haproxy
+              group haproxy
+              daemon
+
+              ca-base /etc/ssl/certs
+              crt-base /etc/ssl/private
+
+              # See: https://ssl-config.mozilla.org/#server=haproxy&config=intermediate
+              ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+              ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+              ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+              tune.ssl.default-dh-param 2048
+
+          defaults
+              mode http
+              option forwardfor
+              timeout connect 5s
+              timeout client 10m        # long-lived SSE streams from the LLM proxy / MCP gateway
+              timeout client-fin 30s
+              timeout server 10m
+              timeout tunnel 1h         # WebSockets
+
+              errorfile 400 /etc/haproxy/errors/400.http
+              errorfile 403 /etc/haproxy/errors/403.http
+              errorfile 408 /etc/haproxy/errors/408.http
+              errorfile 500 /etc/haproxy/errors/500.http
+              errorfile 502 /etc/haproxy/errors/502.http
+              errorfile 503 /etc/haproxy/errors/503.http
+              errorfile 504 /etc/haproxy/errors/504.http
+
+          frontend http-in
+              bind *:80
+              bind *:443 ssl crt /etc/haproxy/letsencrypt-chain.pem alpn h2,http/1.1
+              redirect scheme https code 301 if !{ ssl_fc }
+              http-response set-header Strict-Transport-Security max-age=63072000
+              http-request set-header X-Forwarded-Proto https
+
+              acl is_backend_api path_beg /v1/ /v2/
+              use_backend archestra-api if is_backend_api
+              default_backend archestra-ui
+
+          backend archestra-ui
+              option httpchk GET /health
+              server ui1 127.0.0.1:3000 check
+
+          backend archestra-api
+              option httpchk GET /health
+              server api1 127.0.0.1:9000 check
+      notify: Restart HAProxy
+      tags: haproxy
+
+    - name: Enable and start HAProxy
+      service: name=haproxy enabled=yes state=started
+      tags: haproxy
+
+    #
+    #  Archestra
+    #
+    # The embedded PostgreSQL runs as uid/gid 70 inside the image and must own its data dir
+    - name: Create Archestra data directories
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ item.owner }}"
+        group: "{{ item.owner }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: /srv/archestra/postgres, owner: 70, mode: "0700" }
+        - { path: /srv/archestra/data, owner: 0, mode: "0755" }
+      tags: archestra
+
+    # The Docker socket mount is what enables the embedded KinD cluster (quickstart mode).
+    # It gives the container root-equivalent access to this host, which is acceptable on
+    # this dedicated VM. Trust X-Forwarded-* only from HAProxy, which reaches the container
+    # via the Docker bridge (172.17.0.0/16).
+    - name: Install Archestra
+      include_role:
+        name: docker-app
+      vars:
+        docker_app_name: "archestra"
+        docker_app_container_name: "{{ archestra_image }}"
+        docker_app_start_timeout: "15min"
+        docker_app_extra_params: >-
+          -v /var/run/docker.sock:/var/run/docker.sock
+          -v /srv/archestra/postgres:/var/lib/postgresql/data
+          -v /srv/archestra/data:/app/data
+        docker_app_ports:
+          - "127.0.0.1:3000:3000"
+          - "127.0.0.1:9000:9000"
+        docker_app_env:
+          - TZ=Europe/Helsinki
+          - ARCHESTRA_QUICKSTART=true
+          - ARCHESTRA_CODE_RUNTIME_ENABLED=true
+          - ARCHESTRA_FRONTEND_URL=https://{{ archestra_hostname }}
+          - ARCHESTRA_API_BASE_URL=https://{{ archestra_hostname }}
+          - ARCHESTRA_TRUST_PROXY=172.17.0.0/16
+          - "ARCHESTRA_AUTH_ADMIN_EMAIL={{ chacal.archestra.admin_email }}"
+          - "ARCHESTRA_AUTH_ADMIN_PASSWORD={{ chacal.archestra.admin_password }}"
+      tags: archestra

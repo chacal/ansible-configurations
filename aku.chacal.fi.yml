@@ -42,6 +42,9 @@
         - name: muuri
           public_key: "{{ chacal.wireguard.muuri.public_key }}"
           allowed_ips: 10.10.0.6/32,10.50.0.0/16
+        - name: archestra
+          public_key: "{{ chacal.wireguard.archestra.public_key }}"
+          allowed_ips: 10.10.0.20/32
       tags: wireguard
 
   tasks:
