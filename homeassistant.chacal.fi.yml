@@ -32,9 +32,6 @@
       - tag: S215
         name: Car
         temperature: true
-      - tag: S218
-        name: Freezer
-        temperature: true
     ha_motion_sensors:
       - tag: P302
       - tag: P303
