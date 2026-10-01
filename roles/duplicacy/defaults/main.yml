@@ -1,5 +1,10 @@
 ---
 duplicacy_version: "2.7.2"
+# sha256 of the release binaries. Update together with duplicacy_version. With a checksum
+# get_url skips the download when the installed binary already matches.
+duplicacy_checksums:
+  x64: "b83c2c8095839f00b7851967615e81ca4fbd4d255b4bfde9da9ba74ff85a852d"
+  arm: "fe92fe2bff4941a3c165cb9a02666457d871973396006dedbaea66009798fc8d"
 duplicacy_backup_id: "{{ inventory_hostname | replace('.','-') }}"
 duplicacy_repository: "/"
 duplicacy_storage: "b2://chacal-backups/{{ inventory_hostname }}"
