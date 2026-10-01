@@ -71,6 +71,7 @@
         +srv/thread-mgmt-server/*
         +srv/packing-list/*
         +srv/prometheus/*
+        +srv/sensor-archive/*
         +var/
         +var/lib/
         +var/lib/influxdb/*
@@ -228,6 +229,32 @@
         docker_app_ports:
           - 8200:3000
       tags: packing-list
+
+    # Sensor data archive (https://github.com/chacal/sensor-archiver). Archives all
+    # /sensor/# MQTT messages to daily compressed JSON Lines files in /srv/sensor-archive.
+    - name: Create sensor archive directory
+      file:
+        path: /srv/sensor-archive
+        state: directory
+        owner: 65532   # "nonroot" user inside the container
+        group: 65532
+        mode: 0755
+      tags: sensor-archiver
+
+    - name: Install sensor-archiver
+      include_role:
+        name: docker-app
+      vars:
+        docker_regular_user: "{{ ansible_user }}"
+        docker_app_name: "sensor-archiver"
+        docker_app_container_name: "ghcr.io/chacal/sensor-archiver"
+        docker_app_extra_params: "--network host -v /srv/sensor-archive:/data"
+        docker_app_env:
+          - "MQTT_BROKER=tcp://localhost:1883"
+          - "MQTT_USERNAME={{ chacal.haukkakallio.mqtt_users[8].username }}"
+          - "MQTT_PASSWORD={{ chacal.haukkakallio.mqtt_users[8].password }}"
+          - "MQTT_CLIENT_ID=haukkakallio-sensor-archiver"
+      tags: sensor-archiver
 
     - name: Configure InfluxDB to use HTTPS
       lineinfile:
