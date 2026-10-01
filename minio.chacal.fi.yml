@@ -66,7 +66,10 @@
       vars:
         docker_regular_user: "{{ ansible_user }}"
         docker_app_name: "minio"
+        # MinIO no longer publishes images (minio/minio was removed from Docker Hub), so
+        # keep running the last locally pulled image (RELEASE.2025-09-07T16-13-09Z)
         docker_app_container_name: "minio/minio"
+        docker_app_pull_image: false
         docker_app_extra_params: "-v /srv/minio:/data -v /home/minio/certs:/.minio/certs --user {{ getent_passwd.minio[1] }}:{{ getent_passwd.minio[2] }}"
         docker_app_container_params: "server /data"
         docker_app_ports:
