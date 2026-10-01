@@ -83,8 +83,8 @@
 
     #
     #  Firewall (public host). archestra.chacal.fi resolves to the WireGuard address, so
-    #  HTTP(S) and node exporter are reachable from the internal networks only. SSH stays
-    #  open on the public IP as the recovery path if the tunnel is down.
+    #  everything, SSH included, is reachable from the internal networks only. If the
+    #  tunnel is down, recover via the netcup VNC console (root password login).
     #
     - name: Install ufw
       apt:
@@ -92,18 +92,19 @@
         pkg: ufw
       tags: ufw
 
-    - name: Allow SSH
-      ufw: rule=allow name=ssh
+    # Added before the public rules are removed so the current SSH session stays allowed
+    - name: Allow SSH, HTTP, HTTPS and node exporter from WireGuard and home networks only
+      ufw: rule=allow port={{ item.0 }} proto=tcp src={{ item.1 }}
+      loop: "{{ [22, 80, 443, 9100] | product(['10.10.0.0/24', '10.50.0.0/16']) | list }}"
+      tags: ufw
+
+    - name: Remove public SSH rule
+      ufw: rule=allow name=ssh delete=yes
       tags: ufw
 
     - name: Remove public HTTP & HTTPS rules
       ufw: rule=allow port={{ item }} proto=tcp delete=yes
       loop: [80, 443]
-      tags: ufw
-
-    - name: Allow HTTP, HTTPS and node exporter from WireGuard and home networks only
-      ufw: rule=allow port={{ item.0 }} proto=tcp src={{ item.1 }}
-      loop: "{{ [80, 443, 9100] | product(['10.10.0.0/24', '10.50.0.0/16']) | list }}"
       tags: ufw
 
     - name: Enable ufw
