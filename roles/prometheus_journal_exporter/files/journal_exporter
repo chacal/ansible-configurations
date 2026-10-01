@@ -12,6 +12,11 @@ INIT_FLAG="${STATEDIR}/.initialized"
 mkdir -p "${STATEDIR}" "${TEXTDIR}"
 touch "${CURSOR_FILE}"
 
+# Cron starts a run every minute; if a run is still going (e.g. after a log burst), skip
+# instead of piling up overlapping runs.
+exec 9>"${STATEDIR}/.lock"
+flock -n 9 || exit 0
+
 
 # ---- FIRST-RUN PRIMING: avoid scanning the whole journal ----
 if [[ ! -f "${INIT_FLAG}" ]]; then
@@ -65,24 +70,17 @@ for p in {0..7}; do
 done
 [[ -f "${STATEDIR}/total.counter" ]] || echo 0 > "${STATEDIR}/total.counter"
 
-# Read new entries since last cursor, output JSON (one object per line)
-# Then count by PRIORITY with awk (no jq dependency).
+# Stream new entries since last cursor (PRIORITY field only) and count them with awk, so
+# memory stays constant however many lines there are (no jq dependency).
 # Note: if PRIORITY missing, treat as "6" (info) to avoid losing the line.
-readarray -t LINES < <(journalctl --cursor-file="${CURSOR_FILE}" --no-pager --quiet -o json || true)
+read -r -a COUNTS < <(
+  { journalctl --cursor-file="${CURSOR_FILE}" --no-pager --quiet -o json --output-fields=PRIORITY || true; } |
+    awk '{ p = match($0, /"PRIORITY":"[0-7]"/) ? substr($0, RSTART + 12, 1) : 6; n[p]++ }
+         END { for (i = 0; i < 8; i++) printf "%d ", n[i]; print "" }'
+)
 
-declare -A NEW=([0]=0 [1]=0 [2]=0 [3]=0 [4]=0 [5]=0 [6]=0 [7]=0)
-if ((${#LINES[@]})); then
-  # Parse each JSON line, grab PRIORITY (0..7), default to 6 (info) if absent.
-  # Using a simple regex to avoid dragging in jq.
-  for line in "${LINES[@]}"; do
-    if [[ $line =~ \"PRIORITY\"[[:space:]]*:[[:space:]]*\"?([0-7])\"? ]]; then
-      prio="${BASH_REMATCH[1]}"
-    else
-      prio=6
-    fi
-    NEW[$prio]=$(( NEW[$prio] + 1 ))
-  done
-fi
+declare -A NEW
+for p in {0..7}; do NEW[$p]=${COUNTS[$p]}; done
 
 # Sum up total for this run
 NEW_TOTAL=0
