@@ -69,6 +69,8 @@
     - role: duplicacy
       duplicacy_filters: |
         +srv/
+        +srv/grafana/
+        +srv/grafana/grafana.db
         +srv/thread-mgmt-server/*
         +srv/packing-list/*
         +srv/prometheus/*
