@@ -560,7 +560,6 @@
               static_configs:
                 - targets:
                   - localhost:9090
-              metrics_path: /prometheus/metrics
 
             - job_name: nodes
               file_sd_configs:
