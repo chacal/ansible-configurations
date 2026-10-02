@@ -1,0 +1,70 @@
+---
+# Without swap the kernel evicts file-backed pages (binaries, libraries) under memory
+# pressure and thrashes before the OOM killer acts. A small swapfile lets it page out
+# cold anonymous memory of idle daemons instead.
+- name: Check swapfile
+  stat:
+    path: "{{ swapfile_path }}"
+  register: swapfile_stat
+  tags: swapfile
+
+- name: Disable swapfile with wrong size
+  command: "swapoff {{ swapfile_path }}"
+  when: swapfile_stat.stat.exists and swapfile_stat.stat.size != swapfile_size_mb * 1024 * 1024
+  failed_when: false
+  tags: swapfile
+
+- name: Remove swapfile with wrong size
+  file:
+    path: "{{ swapfile_path }}"
+    state: absent
+  when: swapfile_stat.stat.exists and swapfile_stat.stat.size != swapfile_size_mb * 1024 * 1024
+  tags: swapfile
+
+- name: Create swapfile
+  command: "dd if=/dev/zero of={{ swapfile_path }} bs=1M count={{ swapfile_size_mb }}"
+  args:
+    creates: "{{ swapfile_path }}"
+  register: swapfile_created
+  tags: swapfile
+
+- name: Set swapfile permissions
+  file:
+    path: "{{ swapfile_path }}"
+    owner: root
+    group: root
+    mode: 0600
+  when: not (ansible_check_mode and swapfile_created is changed)
+  tags: swapfile
+
+- name: Format swapfile
+  command: "mkswap {{ swapfile_path }}"
+  when: swapfile_created is changed
+  tags: swapfile
+
+- name: Add swapfile to fstab
+  ansible.posix.mount:
+    src: "{{ swapfile_path }}"
+    path: none
+    fstype: swap
+    opts: sw
+    state: present
+  tags: swapfile
+
+- name: Read active swaps
+  slurp:
+    src: /proc/swaps
+  register: swapfile_active
+  tags: swapfile
+
+- name: Enable swapfile
+  command: "swapon {{ swapfile_path }}"
+  when: (swapfile_path + ' ') not in (swapfile_active.content | b64decode)
+  tags: swapfile
+
+- name: Set swappiness
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "{{ swapfile_swappiness }}"
+    sysctl_file: /etc/sysctl.d/90-swappiness.conf
+  tags: swapfile

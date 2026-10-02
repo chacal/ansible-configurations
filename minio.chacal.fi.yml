@@ -18,6 +18,8 @@
     - role: filebeat_remove
     - role: debian_common
       unattended_upgrades_origins: '"o=elastic";"o=Docker";'
+    - role: swapfile
+      swapfile_size_mb: 512
     - role: ikifi_with_dma
       tags: ikifi
     - role: prometheus_node_exporter
