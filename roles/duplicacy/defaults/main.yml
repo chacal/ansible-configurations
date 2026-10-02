@@ -13,10 +13,12 @@ duplicacy_backup_hours: "*/12"
 duplicacy_backup_minutes: "0"
 duplicacy_prune_hours: "*/12"
 duplicacy_prune_minutes: "45"
-duplicacy_threads: 16
+# Each thread keeps ~2 chunk buffers of up to 16 MB, so live memory is ~30 MB per thread
+duplicacy_threads: 8
 # Soft heap limit for the Go runtime. Without it the heap grows to ~2x the live data
-# between GCs (571 MB RSS for a 450 MB incremental backup with 8 threads). Too low a
-# limit makes the GC run continuously and slows the backup down instead of failing it.
+# between GCs (571 MB RSS for a 450 MB incremental backup with 8 threads). It must stay
+# above the live memory of the threads: with 16 threads and 384MiB the GC ran 340 times
+# in a 10 s backup without lowering the peak.
 duplicacy_gomemlimit: "384MiB"
 # Log Go memory stats every second, for tuning the two settings above
 duplicacy_print_memory_usage: false
